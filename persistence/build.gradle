@@ -2,8 +2,16 @@ dependencies {
 
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.21'
 
+    implementation group: 'org.springframework', name: 'spring-context', version: '5.2.9.RELEASE'
+    implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.2.9.RELEASE'
+
     testImplementation(platform('org.junit:junit-bom:5.7.0'))
     testImplementation('org.junit.jupiter:junit-jupiter')
+    testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
 
     implementation project(":")
+}
+
+test {
+    useJUnitPlatform()
 }
