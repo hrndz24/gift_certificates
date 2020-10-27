@@ -1,10 +1,12 @@
 package com.epam.esm.entity;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
-public class GiftCertificate {
+public class GiftCertificate implements Serializable {
 
     private int id;
     private String name;
@@ -13,6 +15,10 @@ public class GiftCertificate {
     private Date createDate;
     private Date lastUpdateDate;
     private int duration;
+    private Set<Tag> tags;
+
+    public GiftCertificate() {
+    }
 
     public int getId() {
         return id;
@@ -70,6 +76,22 @@ public class GiftCertificate {
         this.duration = duration;
     }
 
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public void addTag(Tag tag) {
+        this.tags.add(tag);
+    }
+
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -81,7 +103,8 @@ public class GiftCertificate {
                 description.equals(that.description) &&
                 price.equals(that.price) &&
                 createDate.equals(that.createDate) &&
-                lastUpdateDate.equals(that.lastUpdateDate);
+                lastUpdateDate.equals(that.lastUpdateDate) &&
+                tags.equals(that.tags);
     }
 
     @Override
@@ -91,7 +114,7 @@ public class GiftCertificate {
 
     @Override
     public String toString() {
-        return "Certificate{" +
+        return "GiftCertificate{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
@@ -99,6 +122,7 @@ public class GiftCertificate {
                 ", createDate=" + createDate +
                 ", lastUpdateDate=" + lastUpdateDate +
                 ", duration=" + duration +
+                ", tags=" + tags +
                 '}';
     }
 }
