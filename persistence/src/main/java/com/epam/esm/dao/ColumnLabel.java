@@ -7,9 +7,7 @@ public enum ColumnLabel {
 
     CERTIFICATE_NAME("name"), CERTIFICATE_DESCRIPTION("description"),
     CERTIFICATE_PRICE("price"), CERTIFICATE_CREATE_DATE("create_date"),
-    CERTIFICATE_LAST_UPDATE_DATE("last_update_date"), DURATION("duration"),
-
-    CERTIFICATE_ID("certificate_id"), TAG_ID("tag_id");
+    CERTIFICATE_LAST_UPDATE_DATE("last_update_date"), CERTIFICATE_DURATION("duration");
 
     private String columnName;
 

@@ -21,7 +21,5 @@ CREATE TABLE certificate_tags
     tag_id         INT,
     PRIMARY KEY (certificate_id, tag_id),
     FOREIGN KEY (tag_id) REFERENCES tags (id),
-    FOREIGN KEY (certificate_id) REFERENCES gift_certificates (id)
+    FOREIGN KEY (certificate_id) REFERENCES gift_certificates (id) ON DELETE CASCADE
 );
-
-/*SET FOREIGN_KEY_CHECKS=0; */

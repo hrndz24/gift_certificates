@@ -21,7 +21,7 @@ class TagDAOImplTest {
     private Tag existentTag;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         embeddedDatabase = new EmbeddedDatabaseBuilder()
                 .addDefaultScripts()
                 .setType(EmbeddedDatabaseType.H2)
@@ -89,7 +89,7 @@ class TagDAOImplTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         embeddedDatabase.shutdown();
     }
 }
