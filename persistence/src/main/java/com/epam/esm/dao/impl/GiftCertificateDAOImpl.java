@@ -53,11 +53,12 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     private static final String GET_CERTIFICATES_BY_DESCRIPTION =
             "SELECT " + ALL_FIELDS + JOIN_TAGS + " WHERE description LIKE ?";
     private static final String GET_CERTIFICATES_BY_TAG_NAME =
-            "SELECT " + ALL_FIELDS +" FROM gift_certificates JOIN \n" +
-                    "(SELECT certificate_tags.certificate_id FROM certificate_tags WHERE certificate_tags.tag_id =\n" +
-                    "(SELECT id from tags WHERE tags.name LIKE ?)) AS ct ON gift_certificates.id = ct.certificate_id" +
-                    " LEFT JOIN certificate_tags ct " +
-                    "ON gift_certificates.id = ct.certificate_id LEFT JOIN tags ON ct.tag_id = tags.id";
+            "SELECT " + ALL_FIELDS + " FROM gift_certificates AS gc JOIN " +
+                    "(SELECT certificate_tags.certificate_id FROM certificate_tags " +
+                    "WHERE certificate_tags.tag_id =\n" +
+                    "(SELECT id from tags WHERE tags.name LIKE ?)) AS ct " +
+                    "ON gc.id = ct.certificate_id LEFT JOIN certificate_tags as cct \n" +
+                    "ON gc.id = cct.certificate_id LEFT JOIN tags ON cct.tag_id = tags.id";
     private static final String GET_CERTIFICATES_SORTED_BY_DATE_ASCENDING =
             "SELECT " + ALL_FIELDS + JOIN_TAGS + " ORDER BY create_date";
     private static final String GET_CERTIFICATES_SORTED_BY_DATE_DESCENDING =
