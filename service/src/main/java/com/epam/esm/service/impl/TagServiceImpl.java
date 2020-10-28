@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.service.TagService;
+import com.epam.esm.validation.TagValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +13,12 @@ import java.util.List;
 public class TagServiceImpl implements TagService {
 
     private TagDAO tagDAO;
+    private TagValidator validator;
 
     @Autowired
-    public TagServiceImpl(TagDAO tagDAO) {
+    public TagServiceImpl(TagDAO tagDAO, TagValidator validator) {
         this.tagDAO = tagDAO;
+        this.validator = validator;
     }
 
     @Override
