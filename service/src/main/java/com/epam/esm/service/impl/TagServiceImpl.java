@@ -23,6 +23,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void addTag(Tag tag) {
+        validator.validate(tag);
         tagDAO.addTag(tag);
     }
 

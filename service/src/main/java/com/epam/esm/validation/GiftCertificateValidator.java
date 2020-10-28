@@ -10,7 +10,7 @@ import java.util.Date;
 @Component
 public class GiftCertificateValidator {
 
-    public void validate(GiftCertificate certificate) throws ValidatorException {
+    public void validate(GiftCertificate certificate){
         checkNonNull(certificate);
         validateStringField(certificate.getName(), "name");
         validateStringField(certificate.getDescription(), "description");
@@ -20,13 +20,13 @@ public class GiftCertificateValidator {
         validateDuration(certificate.getDuration());
     }
 
-    private void checkNonNull(GiftCertificate certificate) throws ValidatorException {
+    private void checkNonNull(GiftCertificate certificate) {
         if (certificate == null) {
             throw new ValidatorException("Null certificate");
         }
     }
 
-    private void validateStringField(String string, String field) throws ValidatorException {
+    private void validateStringField(String string, String field) {
         if (string == null) {
             throw new ValidatorException("Null certificate" + field);
         }
@@ -35,7 +35,7 @@ public class GiftCertificateValidator {
         }
     }
 
-    private void validatePrice(BigDecimal price) throws ValidatorException {
+    private void validatePrice(BigDecimal price) {
         if (price == null) {
             throw new ValidatorException("Null certificate price");
         }
@@ -44,7 +44,7 @@ public class GiftCertificateValidator {
         }
     }
 
-    private void validateDateField(Date date, String field) throws ValidatorException {
+    private void validateDateField(Date date, String field) {
         if (date == null) {
             throw new ValidatorException("Null certificate " + field);
         }
@@ -53,7 +53,7 @@ public class GiftCertificateValidator {
         }
     }
 
-    private void validateDuration(int duration) throws ValidatorException {
+    private void validateDuration(int duration) {
         if (duration <= 0) {
             throw new ValidatorException("Negative certificate duration");
         }

@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class TagValidator {
 
-    public void validate(Tag tag) throws ValidatorException {
+    public void validate(Tag tag){
         checkNonNull(tag);
         validateName(tag.getName());
     }
 
-    private void validateName(String name) throws ValidatorException {
+    private void validateName(String name) {
         if (name == null) {
             throw new ValidatorException("Null tag name");
         }
@@ -21,7 +21,7 @@ public class TagValidator {
         }
     }
 
-    private void checkNonNull(Tag tag) throws ValidatorException {
+    private void checkNonNull(Tag tag){
         if (tag == null) {
             throw new ValidatorException("Null tag");
         }

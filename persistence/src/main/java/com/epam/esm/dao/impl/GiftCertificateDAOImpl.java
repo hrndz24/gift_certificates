@@ -30,7 +30,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             "DELETE FROM gift_certificates WHERE id = ?";
     private static final String UPDATE_GIFT_CERTIFICATE =
             "UPDATE gift_certificates SET name = ?, description = ?, price = ?," +
-                    " duration = ? WHERE id = ?";
+                    " last_update_date = ?, duration = ? WHERE id = ?";
     private static final String ADD_TAG_TO_CERTIFICATE =
             "INSERT INTO certificate_tags(certificate_id, tag_id) VALUES (?, ?)";
     private static final String REMOVE_TAG_FROM_CERTIFICATE =
@@ -105,7 +105,8 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     public void updateCertificate(GiftCertificate certificate) {
         jdbcTemplate.update(UPDATE_GIFT_CERTIFICATE, certificate.getName(),
                 certificate.getDescription(), certificate.getPrice(),
-                certificate.getDuration(), certificate.getId());
+                certificate.getLastUpdateDate(), certificate.getDuration(),
+                certificate.getId());
     }
 
     @Override

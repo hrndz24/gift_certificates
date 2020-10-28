@@ -8,6 +8,7 @@ import com.epam.esm.validation.GiftCertificateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -24,6 +25,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void addCertificate(GiftCertificate certificate) {
+        validator.validate(certificate);
         certificateDAO.addCertificate(certificate);
     }
 
@@ -34,6 +36,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void updateCertificate(GiftCertificate certificate) {
+        validator.validate(certificate);
+        certificate.setLastUpdateDate(new Date());
         certificateDAO.updateCertificate(certificate);
     }
 
