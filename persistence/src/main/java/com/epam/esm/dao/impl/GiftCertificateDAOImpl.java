@@ -3,14 +3,17 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.ColumnLabel;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,35 +23,49 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     private JdbcTemplate jdbcTemplate;
 
-    private GiftCertificateRowMapper giftCertificateRowMapper = GiftCertificateRowMapper.INSTANCE;
+    private GiftCertificateResultSetExtractor giftCertificateResultSetExtractor =
+            GiftCertificateResultSetExtractor.INSTANCE;
 
     private static final String DELETE_GIFT_CERTIFICATE =
             "DELETE FROM gift_certificates WHERE id = ?";
     private static final String UPDATE_GIFT_CERTIFICATE =
             "UPDATE gift_certificates SET name = ?, description = ?, price = ?," +
                     " duration = ? WHERE id = ?";
+    private static final String ADD_TAG_TO_CERTIFICATE =
+            "INSERT INTO certificate_tags(certificate_id, tag_id) VALUES (?, ?)";
+    private static final String REMOVE_TAG_FROM_CERTIFICATE =
+            "DELETE FROM certificate_tags WHERE certificate_id = ? AND tag_id = ?";
+
     private static final String ALL_FIELDS =
-            "id, name, description, price, create_date, last_update_date, duration";
+            "gc.id id, gc.name name, description, price, create_date, " +
+                    "last_update_date, duration, tag_id, tags.name as tag_name";
+    private static final String JOIN_TAGS =
+            " FROM gift_certificates gc LEFT JOIN certificate_tags ct " +
+                    "ON gc.id = ct.certificate_id " +
+                    "LEFT JOIN tags ON ct.tag_id = tags.id";
+
     private static final String GET_CERTIFICATES_ALL =
-            "SELECT " + ALL_FIELDS + " FROM gift_certificates";
+            "SELECT " + ALL_FIELDS + JOIN_TAGS;
     private static final String GET_CERTIFICATE_BY_ID =
-            "SELECT " + ALL_FIELDS + " FROM gift_certificates WHERE id = ?";
+            "SELECT " + ALL_FIELDS + JOIN_TAGS + " WHERE gc.id = ?";
     private static final String GET_CERTIFICATES_BY_NAME =
-            "SELECT " + ALL_FIELDS + " FROM gift_certificates WHERE name LIKE ?";
+            "SELECT " + ALL_FIELDS + JOIN_TAGS + " WHERE gc.name LIKE ?";
     private static final String GET_CERTIFICATES_BY_DESCRIPTION =
-            "SELECT " + ALL_FIELDS + " FROM gift_certificates WHERE description LIKE ?";
+            "SELECT " + ALL_FIELDS + JOIN_TAGS + " WHERE description LIKE ?";
     private static final String GET_CERTIFICATES_BY_TAG_NAME =
-            "SELECT " + ALL_FIELDS + " FROM gift_certificates AS gc JOIN \n" +
-                    "(SELECT certificate_id FROM certificate_tags WHERE certificate_tags.tag_id =\n" +
-                    "(SELECT id from tags WHERE tags.name LIKE ?)) AS ct ON gc.id = ct.certificate_id;";
+            "SELECT " + ALL_FIELDS +" FROM gift_certificates JOIN \n" +
+                    "(SELECT certificate_tags.certificate_id FROM certificate_tags WHERE certificate_tags.tag_id =\n" +
+                    "(SELECT id from tags WHERE tags.name LIKE ?)) AS ct ON gift_certificates.id = ct.certificate_id" +
+                    " LEFT JOIN certificate_tags ct " +
+                    "ON gift_certificates.id = ct.certificate_id LEFT JOIN tags ON ct.tag_id = tags.id";
     private static final String GET_CERTIFICATES_SORTED_BY_DATE_ASCENDING =
-            "SELECT " + ALL_FIELDS + " FROM gift_certificates ORDER BY create_date";
+            "SELECT " + ALL_FIELDS + JOIN_TAGS + " ORDER BY create_date";
     private static final String GET_CERTIFICATES_SORTED_BY_DATE_DESCENDING =
-            "SELECT " + ALL_FIELDS + " FROM gift_certificates ORDER BY create_date DESC";
+            "SELECT " + ALL_FIELDS + JOIN_TAGS + " ORDER BY create_date DESC";
     private static final String GET_CERTIFICATES_SORTED_BY_NAME_ASCENDING =
-            "SELECT " + ALL_FIELDS + " FROM gift_certificates ORDER BY name";
+            "SELECT " + ALL_FIELDS + JOIN_TAGS + " ORDER BY gc.name";
     private static final String GET_CERTIFICATES_SORTED_BY_NAME_DESCENDING =
-            "SELECT " + ALL_FIELDS + " FROM gift_certificates ORDER BY name DESC";
+            "SELECT " + ALL_FIELDS + JOIN_TAGS + " ORDER BY gc.name DESC";
     private static final String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificates";
 
     @Autowired
@@ -92,62 +109,100 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public List<GiftCertificate> getCertificates() {
-        return jdbcTemplate.query(GET_CERTIFICATES_ALL, giftCertificateRowMapper);
+        return jdbcTemplate.query(GET_CERTIFICATES_ALL, giftCertificateResultSetExtractor);
     }
+
 
     @Override
     public GiftCertificate getCertificateById(int id) {
-        return jdbcTemplate.queryForObject(GET_CERTIFICATE_BY_ID,
-                new Object[]{id}, giftCertificateRowMapper);
+        return jdbcTemplate.query(GET_CERTIFICATE_BY_ID, rs -> {
+            GiftCertificate certificate = null;
+            while (rs.next()) {
+                if (certificate == null) {
+                    certificate = giftCertificateResultSetExtractor.mapCertificate(rs);
+                }
+                certificate.addTag(giftCertificateResultSetExtractor.mapTag(rs));
+            }
+            return certificate;
+        }, id);
+    }
+
+    @Override
+    public void addTagToCertificate(int certificateId, Tag tag) {
+        jdbcTemplate.update(ADD_TAG_TO_CERTIFICATE, certificateId, tag.getId());
+    }
+
+    @Override
+    public void removeTagFromCertificate(int certificateId, Tag tag) {
+        jdbcTemplate.update(REMOVE_TAG_FROM_CERTIFICATE, certificateId, tag.getId());
     }
 
     @Override
     public List<GiftCertificate> getCertificatesByTagName(String name) {
         return jdbcTemplate.query(GET_CERTIFICATES_BY_TAG_NAME,
-                new Object[]{"%" + name + "%"}, giftCertificateRowMapper);
+                new Object[]{"%" + name + "%"}, giftCertificateResultSetExtractor);
     }
 
     @Override
     public List<GiftCertificate> getCertificatesByName(String name) {
         return jdbcTemplate.query(GET_CERTIFICATES_BY_NAME,
-                new Object[]{"%" + name + "%"}, giftCertificateRowMapper);
+                new Object[]{"%" + name + "%"}, giftCertificateResultSetExtractor);
     }
 
     @Override
     public List<GiftCertificate> getCertificatesByDescription(String description) {
         return jdbcTemplate.query(GET_CERTIFICATES_BY_DESCRIPTION,
-                new Object[]{"%" + description + "%"}, giftCertificateRowMapper);
+                new Object[]{"%" + description + "%"}, giftCertificateResultSetExtractor);
     }
 
     @Override
     public List<GiftCertificate> getCertificatesSortedByDateAscending() {
         return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_DATE_ASCENDING,
-                giftCertificateRowMapper);
+                giftCertificateResultSetExtractor);
     }
 
     @Override
     public List<GiftCertificate> getCertificatesSortedByDateDescending() {
         return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_DATE_DESCENDING,
-                giftCertificateRowMapper);
+                giftCertificateResultSetExtractor);
     }
 
     @Override
     public List<GiftCertificate> getCertificatesSortedByNameAscending() {
         return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_NAME_ASCENDING,
-                giftCertificateRowMapper);
+                giftCertificateResultSetExtractor);
     }
 
     @Override
     public List<GiftCertificate> getCertificatesSortedByNameDescending() {
         return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_NAME_DESCENDING,
-                giftCertificateRowMapper);
+                giftCertificateResultSetExtractor);
     }
 
-    private enum GiftCertificateRowMapper implements RowMapper<GiftCertificate> {
+    private enum GiftCertificateResultSetExtractor implements ResultSetExtractor<List<GiftCertificate>> {
         INSTANCE;
 
         @Override
-        public GiftCertificate mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public List<GiftCertificate> extractData(ResultSet rs) throws SQLException, DataAccessException {
+            List<GiftCertificate> certificates = new ArrayList<>();
+            GiftCertificate currentCertificate = null;
+            while (rs.next()) {
+                int id = rs.getInt(ColumnLabel.ID.getColumnName());
+                if (currentCertificate == null) {
+                    currentCertificate = mapCertificate(rs);
+                } else if (currentCertificate.getId() != id) {
+                    certificates.add(currentCertificate);
+                    currentCertificate = mapCertificate(rs);
+                }
+                currentCertificate.addTag(mapTag(rs));
+            }
+            if (currentCertificate != null) {
+                certificates.add(currentCertificate);
+            }
+            return certificates;
+        }
+
+        GiftCertificate mapCertificate(ResultSet rs) throws SQLException {
             GiftCertificate giftCertificate = new GiftCertificate();
             giftCertificate.setId(rs.getInt(ColumnLabel.ID.getColumnName()));
             giftCertificate.setName(rs.getString(ColumnLabel.CERTIFICATE_NAME.getColumnName()));
@@ -157,6 +212,13 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             giftCertificate.setLastUpdateDate(rs.getTimestamp(ColumnLabel.CERTIFICATE_LAST_UPDATE_DATE.getColumnName()));
             giftCertificate.setDuration(rs.getInt(ColumnLabel.CERTIFICATE_DURATION.getColumnName()));
             return giftCertificate;
+        }
+
+        Tag mapTag(ResultSet rs) throws SQLException {
+            Tag tag = new Tag();
+            tag.setId(rs.getInt(ColumnLabel.TAG_ID.getColumnName()));
+            tag.setName(rs.getString(ColumnLabel.TAG_NAME.getColumnName()));
+            return tag;
         }
     }
 }

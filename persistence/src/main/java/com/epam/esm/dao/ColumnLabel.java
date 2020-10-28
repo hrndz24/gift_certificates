@@ -3,7 +3,10 @@ package com.epam.esm.dao;
 public enum ColumnLabel {
     ID("id"),
 
-    TAG_NAME("name"),
+    NAME("name"),
+
+    TAG_NAME("tag_name"),
+    TAG_ID("tag_id"),
 
     CERTIFICATE_NAME("name"), CERTIFICATE_DESCRIPTION("description"),
     CERTIFICATE_PRICE("price"), CERTIFICATE_CREATE_DATE("create_date"),

@@ -1,6 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,10 @@ class GiftCertificateDAOImplTest {
         existentCertificate.setLastUpdateDate(new SimpleDateFormat(
                 "yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).parse("2020-10-27 21:17:24"));
         existentCertificate.setDuration(120);
+        Tag tag = new Tag();
+        tag.setId(1);
+        tag.setName("entertainment");
+        existentCertificate.addTag(tag);
     }
 
     @Test
@@ -72,6 +77,22 @@ class GiftCertificateDAOImplTest {
         certificate.setName("Not Disney Land anymore");
         giftCertificateDAO.updateCertificate(certificate);
         assertEquals(certificate, giftCertificateDAO.getCertificateById(1));
+    }
+
+    @Test
+    void addTagToCertificate() {
+        Tag tag = new Tag();
+        tag.setId(2);
+        giftCertificateDAO.addTagToCertificate(1, tag);
+        assertEquals(2, giftCertificateDAO.getCertificateById(1).getTags().size());
+    }
+
+    @Test
+    void removeTagFromCertificate() {
+        Tag tag = new Tag();
+        tag.setId(2);
+        giftCertificateDAO.removeTagFromCertificate(2, tag);
+        assertEquals(1, giftCertificateDAO.getCertificateById(2).getTags().size());
     }
 
     @Test

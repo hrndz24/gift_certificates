@@ -45,7 +45,7 @@ public class TagDAOImpl implements TagDAO {
     private Map<String, Object> fillInTagParameters(Tag tag) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(ColumnLabel.ID.getColumnName(), tag.getId());
-        parameters.put(ColumnLabel.TAG_NAME.getColumnName(), tag.getName());
+        parameters.put(ColumnLabel.NAME.getColumnName(), tag.getName());
         return parameters;
     }
 
@@ -76,7 +76,7 @@ public class TagDAOImpl implements TagDAO {
         public Tag mapRow(ResultSet rs, int rowNum) throws SQLException {
             Tag tag = new Tag();
             tag.setId(rs.getInt(ColumnLabel.ID.getColumnName()));
-            tag.setName(rs.getString(ColumnLabel.TAG_NAME.getColumnName()));
+            tag.setName(rs.getString(ColumnLabel.NAME.getColumnName()));
             return tag;
         }
     }

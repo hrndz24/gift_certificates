@@ -3,6 +3,7 @@ package com.epam.esm.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -15,7 +16,7 @@ public class GiftCertificate implements Serializable {
     private Date createDate;
     private Date lastUpdateDate;
     private int duration;
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     public GiftCertificate() {
     }
