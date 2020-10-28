@@ -2,6 +2,10 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     implementation project(":persistence")
+    implementation project(":")
+
+    implementation group: 'org.springframework', name: 'spring-context', version: '5.2.9.RELEASE'
+    implementation group: 'org.springframework', name: 'spring-core', version: '5.2.9.RELEASE'
 
     testImplementation(platform('org.junit:junit-bom:5.7.0'))
     testImplementation('org.junit.jupiter:junit-jupiter')
