@@ -43,6 +43,7 @@ class TagDAOImplTest {
         newTag.setName("beauty");
         tagDAO.addTag(newTag);
         assertNotEquals(0, newTag.getId());
+        assertEquals(4, tagDAO.getTags().size());
     }
 
     @Test

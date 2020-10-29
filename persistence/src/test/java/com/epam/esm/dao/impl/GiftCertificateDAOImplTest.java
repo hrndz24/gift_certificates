@@ -63,6 +63,7 @@ class GiftCertificateDAOImplTest {
         newCertificate.setDuration(10);
         giftCertificateDAO.addCertificate(newCertificate);
         assertNotEquals(0, newCertificate.getId());
+        assertEquals(4, giftCertificateDAO.getCertificates().size());
     }
 
     @Test
@@ -103,7 +104,7 @@ class GiftCertificateDAOImplTest {
 
     @Test
     void getGiftCertificatesByTagName() {
-        assertEquals(3, giftCertificateDAO.getCertificatesByTagName("entert").size());
+        assertEquals(1, giftCertificateDAO.getCertificatesByTagName("geek").size());
     }
 
     @Test

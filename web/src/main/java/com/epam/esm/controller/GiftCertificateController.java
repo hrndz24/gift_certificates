@@ -45,37 +45,37 @@ public class GiftCertificateController {
         return certificateService.getCertificateById(id);
     }
 
-    @GetMapping("?tagName={name}")
+    @GetMapping("/tagName={name}")
     public List<GiftCertificate> getCertificatesByTagName(@PathVariable("name") String name) {
         return certificateService.getCertificatesByTagName(name);
     }
 
-    @GetMapping("?name={name}")
+    @GetMapping("/name={name}")
     public List<GiftCertificate> getCertificatesByName(@PathVariable("name") String name) {
         return certificateService.getCertificatesByName(name);
     }
 
-    @GetMapping("?description={description}")
+    @GetMapping("/description={description}")
     public List<GiftCertificate> getCertificatesByDescription(@PathVariable("description") String description) {
         return certificateService.getCertificatesByDescription(description);
     }
 
-    @GetMapping("?sort=date_asc")
+    @GetMapping("/sort=date_asc")
     public List<GiftCertificate> getCertificatesSortedByDate() {
         return certificateService.getCertificatesSortedByDateAscending();
     }
 
-    @GetMapping("?sort=date_desc")
+    @GetMapping("/sort=date_desc")
     public List<GiftCertificate> getCertificatesSortedByDateDescending() {
         return certificateService.getCertificatesSortedByDateDescending();
     }
 
-    @GetMapping("?sort=name_asc")
+    @GetMapping("/sort=name_asc")
     public List<GiftCertificate> getCertificatesSortedByName() {
         return certificateService.getCertificatesSortedByNameAscending();
     }
 
-    @GetMapping("?sort=name_desc")
+    @GetMapping("/sort=name_desc")
     public List<GiftCertificate> getCertificatesSortedByNameDescending() {
         return certificateService.getCertificatesSortedByNameDescending();
     }
