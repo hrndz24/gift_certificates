@@ -20,18 +20,4 @@ public interface GiftCertificateService {
     void addTagToCertificate(int certificateId, int tagId);
 
     void removeTagFromCertificate(int certificateId, int tagId);
-
-    List<GiftCertificate> getCertificatesByTagName(String name);
-
-    List<GiftCertificate> getCertificatesByName(String name);
-
-    List<GiftCertificate> getCertificatesByDescription(String description);
-
-    List<GiftCertificate> getCertificatesSortedByDateAscending();
-
-    List<GiftCertificate> getCertificatesSortedByDateDescending();
-
-    List<GiftCertificate> getCertificatesSortedByNameAscending();
-
-    List<GiftCertificate> getCertificatesSortedByNameDescending();
 }

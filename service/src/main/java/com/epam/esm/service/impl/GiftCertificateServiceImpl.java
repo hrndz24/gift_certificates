@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.utils.QueryGenerator;
 import com.epam.esm.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,11 +17,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private GiftCertificateDAO certificateDAO;
     private Validator validator;
+    private QueryGenerator queryGenerator;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateDAO certificateDAO, Validator validator) {
+    public GiftCertificateServiceImpl(GiftCertificateDAO certificateDAO,
+                                      Validator validator,
+                                      QueryGenerator queryGenerator) {
         this.certificateDAO = certificateDAO;
         this.validator = validator;
+        this.queryGenerator = queryGenerator;
     }
 
     @Override
@@ -43,7 +48,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificate> getCertificates(Map<String, String> params) {
-        return certificateDAO.getCertificates();
+        validator.validateParams(params);
+        String query = queryGenerator.generateQuery(params);
+        return certificateDAO.getCertificates(query);
     }
 
     @Override
@@ -61,7 +68,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         certificateDAO.removeTagFromCertificate(certificateId, tagId);
     }
 
-    @Override
+    /*@Override
     public List<GiftCertificate> getCertificatesByTagName(String name) {
         return certificateDAO.getCertificatesByTagName(name);
     }
@@ -94,5 +101,5 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificate> getCertificatesSortedByNameDescending() {
         return certificateDAO.getCertificatesSortedByNameDescending();
-    }
+    }*/
 }

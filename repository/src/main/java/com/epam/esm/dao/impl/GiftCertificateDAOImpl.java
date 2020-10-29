@@ -43,31 +43,13 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     private static final String JOIN_TAGS =
             " FROM gift_certificates gc LEFT JOIN certificate_tags ct " +
                     "ON gc.id = ct.certificate_id " +
-                    "LEFT JOIN tags ON ct.tag_id = tags.id";
+                    "LEFT JOIN tags ON ct.tag_id = tags.id ";
 
-    private static final String GET_CERTIFICATES_ALL =
+    private static final String GET_CERTIFICATES =
             "SELECT " + ALL_FIELDS + JOIN_TAGS;
     private static final String GET_CERTIFICATE_BY_ID =
             "SELECT " + ALL_FIELDS + JOIN_TAGS + " WHERE gc.id = ?";
-    private static final String GET_CERTIFICATES_BY_NAME =
-            "SELECT " + ALL_FIELDS + JOIN_TAGS + " WHERE gc.name LIKE ?";
-    private static final String GET_CERTIFICATES_BY_DESCRIPTION =
-            "SELECT " + ALL_FIELDS + JOIN_TAGS + " WHERE description LIKE ?";
-    private static final String GET_CERTIFICATES_BY_TAG_NAME =
-            "SELECT " + ALL_FIELDS + " FROM gift_certificates AS gc JOIN " +
-                    "(SELECT certificate_tags.certificate_id FROM certificate_tags " +
-                    "WHERE certificate_tags.tag_id =\n" +
-                    "(SELECT id from tags WHERE tags.name LIKE ?)) AS ct " +
-                    "ON gc.id = ct.certificate_id LEFT JOIN certificate_tags as cct \n" +
-                    "ON gc.id = cct.certificate_id LEFT JOIN tags ON cct.tag_id = tags.id";
-    private static final String GET_CERTIFICATES_SORTED_BY_DATE_ASCENDING =
-            "SELECT " + ALL_FIELDS + JOIN_TAGS + " ORDER BY create_date";
-    private static final String GET_CERTIFICATES_SORTED_BY_DATE_DESCENDING =
-            "SELECT " + ALL_FIELDS + JOIN_TAGS + " ORDER BY create_date DESC";
-    private static final String GET_CERTIFICATES_SORTED_BY_NAME_ASCENDING =
-            "SELECT " + ALL_FIELDS + JOIN_TAGS + " ORDER BY gc.name";
-    private static final String GET_CERTIFICATES_SORTED_BY_NAME_DESCENDING =
-            "SELECT " + ALL_FIELDS + JOIN_TAGS + " ORDER BY gc.name DESC";
+
     private static final String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificates";
 
     @Autowired
@@ -123,9 +105,10 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public List<GiftCertificate> getCertificates() {
+    public List<GiftCertificate> getCertificates(String queryCondition) {
         try {
-            return jdbcTemplate.query(GET_CERTIFICATES_ALL, giftCertificateResultSetExtractor);
+            System.out.println(GET_CERTIFICATES + queryCondition);
+            return jdbcTemplate.query(GET_CERTIFICATES + queryCondition, giftCertificateResultSetExtractor);
         } catch (DataAccessException e) {
             throw new DAOException("Failed to get certificates from the database", e);
         }
@@ -164,76 +147,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             jdbcTemplate.update(REMOVE_TAG_FROM_CERTIFICATE, certificateId, tagId);
         } catch (DataAccessException e) {
             throw new DAOException("Failed to remove tag from certificate in the database", e);
-        }
-    }
-
-    @Override
-    public List<GiftCertificate> getCertificatesByTagName(String name) {
-        try {
-            return jdbcTemplate.query(GET_CERTIFICATES_BY_TAG_NAME,
-                    new Object[]{"%" + name + "%"}, giftCertificateResultSetExtractor);
-        } catch (DataAccessException e) {
-            throw new DAOException("Failed to get certificates by tag name from the database", e);
-        }
-    }
-
-    @Override
-    public List<GiftCertificate> getCertificatesByName(String name) {
-        try {
-            return jdbcTemplate.query(GET_CERTIFICATES_BY_NAME,
-                    new Object[]{"%" + name + "%"}, giftCertificateResultSetExtractor);
-        } catch (DataAccessException e) {
-            throw new DAOException("Failed to get certificates by name from the database", e);
-        }
-    }
-
-    @Override
-    public List<GiftCertificate> getCertificatesByDescription(String description) {
-        try {
-            return jdbcTemplate.query(GET_CERTIFICATES_BY_DESCRIPTION,
-                    new Object[]{"%" + description + "%"}, giftCertificateResultSetExtractor);
-        } catch (DataAccessException e) {
-            throw new DAOException("Failed to get certificates by description from the database", e);
-        }
-    }
-
-    @Override
-    public List<GiftCertificate> getCertificatesSortedByDateAscending() {
-        try {
-            return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_DATE_ASCENDING,
-                    giftCertificateResultSetExtractor);
-        } catch (DataAccessException e) {
-            throw new DAOException("Failed to get certificates sorted by date from the database", e);
-        }
-    }
-
-    @Override
-    public List<GiftCertificate> getCertificatesSortedByDateDescending() {
-        try {
-            return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_DATE_DESCENDING,
-                    giftCertificateResultSetExtractor);
-        } catch (DataAccessException e) {
-            throw new DAOException("Failed to get certificates sorted by date descending from the database", e);
-        }
-    }
-
-    @Override
-    public List<GiftCertificate> getCertificatesSortedByNameAscending() {
-        try {
-            return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_NAME_ASCENDING,
-                    giftCertificateResultSetExtractor);
-        } catch (DataAccessException e) {
-            throw new DAOException("Failed to get certificates sorted by name from the database", e);
-        }
-    }
-
-    @Override
-    public List<GiftCertificate> getCertificatesSortedByNameDescending() {
-        try {
-            return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_NAME_DESCENDING,
-                    giftCertificateResultSetExtractor);
-        } catch (DataAccessException e) {
-            throw new DAOException("Failed to get certificates sorted by name descending from the database", e);
         }
     }
 
