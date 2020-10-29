@@ -1,10 +1,10 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.entity.Tag;
+import com.epam.esm.exception.DAOException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -47,7 +47,7 @@ class TagDAOImplTest {
 
     @Test
     void addTag_TagWithExistentId() {
-        assertThrows(DataAccessException.class, () -> tagDAO.addTag(existentTag));
+        assertThrows(DAOException.class, () -> tagDAO.addTag(existentTag));
     }
 
     @Test
@@ -60,7 +60,7 @@ class TagDAOImplTest {
 
     @Test
     void removeTag_WithAssignedCertificate() {
-        assertThrows(DataAccessException.class, () -> tagDAO.removeTag(existentTag));
+        assertThrows(DAOException.class, () -> tagDAO.removeTag(existentTag));
     }
 
     @Test
@@ -75,7 +75,7 @@ class TagDAOImplTest {
 
     @Test
     void getTagById_NonExistentId() {
-        assertThrows(DataAccessException.class, () -> tagDAO.getTagById(4));
+        assertThrows(DAOException.class, () -> tagDAO.getTagById(4));
     }
 
     @Test
@@ -85,7 +85,7 @@ class TagDAOImplTest {
 
     @Test
     void getTagByName_NonExistentName() {
-        assertThrows(DataAccessException.class, () -> tagDAO.getTagByName("swan"));
+        assertThrows(DAOException.class, () -> tagDAO.getTagByName("swan"));
     }
 
     @AfterEach

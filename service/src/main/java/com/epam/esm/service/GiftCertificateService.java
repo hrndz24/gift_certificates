@@ -17,9 +17,9 @@ public interface GiftCertificateService {
 
     GiftCertificate getCertificateById(int id);
 
-    void addTagToCertificate(int certificateId, Tag tag);
+    void addTagToCertificate(int certificateId, int tagId);
 
-    void removeTagFromCertificate(int certificateId, Tag tag);
+    void removeTagFromCertificate(int certificateId, int tagId);
 
     List<GiftCertificate> getCertificatesByTagName(String name);
 

@@ -2,7 +2,6 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.Tag;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.validation.GiftCertificateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,13 +51,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void addTagToCertificate(int certificateId, Tag tag) {
-        certificateDAO.addTagToCertificate(certificateId, tag);
+    public void addTagToCertificate(int certificateId, int tagId) {
+        certificateDAO.addTagToCertificate(certificateId, tagId);
     }
 
     @Override
-    public void removeTagFromCertificate(int certificateId, Tag tag) {
-        certificateDAO.removeTagFromCertificate(certificateId, tag);
+    public void removeTagFromCertificate(int certificateId, int tagId) {
+        certificateDAO.removeTagFromCertificate(certificateId, tagId);
     }
 
     @Override

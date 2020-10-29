@@ -4,6 +4,7 @@ import com.epam.esm.dao.ColumnLabel;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.exception.DAOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -80,7 +81,11 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(GIFT_CERTIFICATE_TABLE_NAME)
                 .usingGeneratedKeyColumns(ColumnLabel.ID.getColumnName());
-        certificate.setId(simpleJdbcInsert.executeAndReturnKey(parameters).intValue());
+        try {
+            certificate.setId(simpleJdbcInsert.executeAndReturnKey(parameters).intValue());
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to add certificate to the database", e);
+        }
     }
 
     private Map<String, Object> fillInCertificateParameters(GiftCertificate certificate) {
@@ -98,87 +103,138 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public void removeCertificate(GiftCertificate certificate) {
-        jdbcTemplate.update(DELETE_GIFT_CERTIFICATE, certificate.getId());
+        try {
+            jdbcTemplate.update(DELETE_GIFT_CERTIFICATE, certificate.getId());
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to remove certificate from the database", e);
+        }
     }
 
     @Override
     public void updateCertificate(GiftCertificate certificate) {
-        jdbcTemplate.update(UPDATE_GIFT_CERTIFICATE, certificate.getName(),
-                certificate.getDescription(), certificate.getPrice(),
-                certificate.getLastUpdateDate(), certificate.getDuration(),
-                certificate.getId());
+        try {
+            jdbcTemplate.update(UPDATE_GIFT_CERTIFICATE, certificate.getName(),
+                    certificate.getDescription(), certificate.getPrice(),
+                    certificate.getLastUpdateDate(), certificate.getDuration(),
+                    certificate.getId());
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to update certificate in the database", e);
+        }
     }
 
     @Override
     public List<GiftCertificate> getCertificates() {
-        return jdbcTemplate.query(GET_CERTIFICATES_ALL, giftCertificateResultSetExtractor);
+        try {
+            return jdbcTemplate.query(GET_CERTIFICATES_ALL, giftCertificateResultSetExtractor);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to get certificates from the database", e);
+        }
     }
-
 
     @Override
     public GiftCertificate getCertificateById(int id) {
-        return jdbcTemplate.query(GET_CERTIFICATE_BY_ID, rs -> {
-            GiftCertificate certificate = null;
-            while (rs.next()) {
-                if (certificate == null) {
-                    certificate = giftCertificateResultSetExtractor.mapCertificate(rs);
+        try {
+            return jdbcTemplate.query(GET_CERTIFICATE_BY_ID, rs -> {
+                GiftCertificate certificate = null;
+                while (rs.next()) {
+                    if (certificate == null) {
+                        certificate = giftCertificateResultSetExtractor.mapCertificate(rs);
+                    }
+                    certificate.addTag(giftCertificateResultSetExtractor.mapTag(rs));
                 }
-                certificate.addTag(giftCertificateResultSetExtractor.mapTag(rs));
-            }
-            return certificate;
-        }, id);
+                return certificate;
+            }, id);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to get certificate by id from the database", e);
+        }
     }
 
     @Override
-    public void addTagToCertificate(int certificateId, Tag tag) {
-        jdbcTemplate.update(ADD_TAG_TO_CERTIFICATE, certificateId, tag.getId());
+    public void addTagToCertificate(int certificateId, int tagId) {
+        try {
+            jdbcTemplate.update(ADD_TAG_TO_CERTIFICATE, certificateId, tagId);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to add tag to certificate in the database", e);
+        }
     }
 
     @Override
-    public void removeTagFromCertificate(int certificateId, Tag tag) {
-        jdbcTemplate.update(REMOVE_TAG_FROM_CERTIFICATE, certificateId, tag.getId());
+    public void removeTagFromCertificate(int certificateId, int tagId) {
+        try {
+            jdbcTemplate.update(REMOVE_TAG_FROM_CERTIFICATE, certificateId, tagId);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to remove tag from certificate in the database", e);
+        }
     }
 
     @Override
     public List<GiftCertificate> getCertificatesByTagName(String name) {
-        return jdbcTemplate.query(GET_CERTIFICATES_BY_TAG_NAME,
-                new Object[]{"%" + name + "%"}, giftCertificateResultSetExtractor);
+        try {
+            return jdbcTemplate.query(GET_CERTIFICATES_BY_TAG_NAME,
+                    new Object[]{"%" + name + "%"}, giftCertificateResultSetExtractor);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to get certificates by tag name from the database", e);
+        }
     }
 
     @Override
     public List<GiftCertificate> getCertificatesByName(String name) {
-        return jdbcTemplate.query(GET_CERTIFICATES_BY_NAME,
-                new Object[]{"%" + name + "%"}, giftCertificateResultSetExtractor);
+        try {
+            return jdbcTemplate.query(GET_CERTIFICATES_BY_NAME,
+                    new Object[]{"%" + name + "%"}, giftCertificateResultSetExtractor);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to get certificates by name from the database", e);
+        }
     }
 
     @Override
     public List<GiftCertificate> getCertificatesByDescription(String description) {
-        return jdbcTemplate.query(GET_CERTIFICATES_BY_DESCRIPTION,
-                new Object[]{"%" + description + "%"}, giftCertificateResultSetExtractor);
+        try {
+            return jdbcTemplate.query(GET_CERTIFICATES_BY_DESCRIPTION,
+                    new Object[]{"%" + description + "%"}, giftCertificateResultSetExtractor);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to get certificates by description from the database", e);
+        }
     }
 
     @Override
     public List<GiftCertificate> getCertificatesSortedByDateAscending() {
-        return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_DATE_ASCENDING,
-                giftCertificateResultSetExtractor);
+        try {
+            return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_DATE_ASCENDING,
+                    giftCertificateResultSetExtractor);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to get certificates sorted by date from the database", e);
+        }
     }
 
     @Override
     public List<GiftCertificate> getCertificatesSortedByDateDescending() {
-        return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_DATE_DESCENDING,
-                giftCertificateResultSetExtractor);
+        try {
+            return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_DATE_DESCENDING,
+                    giftCertificateResultSetExtractor);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to get certificates sorted by date descending from the database", e);
+        }
     }
 
     @Override
     public List<GiftCertificate> getCertificatesSortedByNameAscending() {
-        return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_NAME_ASCENDING,
-                giftCertificateResultSetExtractor);
+        try {
+            return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_NAME_ASCENDING,
+                    giftCertificateResultSetExtractor);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to get certificates sorted by name from the database", e);
+        }
     }
 
     @Override
     public List<GiftCertificate> getCertificatesSortedByNameDescending() {
-        return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_NAME_DESCENDING,
-                giftCertificateResultSetExtractor);
+        try {
+            return jdbcTemplate.query(GET_CERTIFICATES_SORTED_BY_NAME_DESCENDING,
+                    giftCertificateResultSetExtractor);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to get certificates sorted by name descending from the database", e);
+        }
     }
 
     private enum GiftCertificateResultSetExtractor implements ResultSetExtractor<List<GiftCertificate>> {

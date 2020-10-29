@@ -3,7 +3,9 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.ColumnLabel;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.exception.DAOException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -39,7 +41,11 @@ public class TagDAOImpl implements TagDAO {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TAG_TABLE_NAME)
                 .usingGeneratedKeyColumns(ColumnLabel.ID.getColumnName());
-        tag.setId(simpleJdbcInsert.executeAndReturnKey(parameters).intValue());
+        try {
+            tag.setId(simpleJdbcInsert.executeAndReturnKey(parameters).intValue());
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to add tag to the database", e);
+        }
     }
 
     private Map<String, Object> fillInTagParameters(Tag tag) {
@@ -51,22 +57,38 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public void removeTag(Tag tag) {
-        jdbcTemplate.update(DELETE_TAG, tag.getId());
+        try {
+            jdbcTemplate.update(DELETE_TAG, tag.getId());
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to remove tag from the database", e);
+        }
     }
 
     @Override
     public List<Tag> getTags() {
-        return jdbcTemplate.query(GET_TAGS_ALL, tagRowMapper);
+        try {
+            return jdbcTemplate.query(GET_TAGS_ALL, tagRowMapper);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to get tags from the database", e);
+        }
     }
 
     @Override
     public Tag getTagById(int id) {
-        return jdbcTemplate.queryForObject(GET_TAG_BY_ID, new Object[]{id}, tagRowMapper);
+        try {
+            return jdbcTemplate.queryForObject(GET_TAG_BY_ID, new Object[]{id}, tagRowMapper);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to get tag by id from the database", e);
+        }
     }
 
     @Override
     public Tag getTagByName(String name) {
-        return jdbcTemplate.queryForObject(GET_TAG_BY_NAME, new Object[]{name}, tagRowMapper);
+        try {
+            return jdbcTemplate.queryForObject(GET_TAG_BY_NAME, new Object[]{name}, tagRowMapper);
+        } catch (DataAccessException e) {
+            throw new DAOException("Failed to get tag by name from the database", e);
+        }
     }
 
     private enum TagRowMapper implements RowMapper<Tag> {

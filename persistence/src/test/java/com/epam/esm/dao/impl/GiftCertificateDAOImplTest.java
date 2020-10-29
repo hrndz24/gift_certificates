@@ -81,17 +81,13 @@ class GiftCertificateDAOImplTest {
 
     @Test
     void addTagToCertificate() {
-        Tag tag = new Tag();
-        tag.setId(2);
-        giftCertificateDAO.addTagToCertificate(1, tag);
+        giftCertificateDAO.addTagToCertificate(1, 2);
         assertEquals(2, giftCertificateDAO.getCertificateById(1).getTags().size());
     }
 
     @Test
     void removeTagFromCertificate() {
-        Tag tag = new Tag();
-        tag.setId(2);
-        giftCertificateDAO.removeTagFromCertificate(2, tag);
+        giftCertificateDAO.removeTagFromCertificate(2, 2);
         assertEquals(1, giftCertificateDAO.getCertificateById(2).getTags().size());
     }
 
