@@ -6,8 +6,6 @@ dependencies {
     testImplementation(platform('org.junit:junit-bom:5.7.0'))
     testImplementation('org.junit.jupiter:junit-jupiter')
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
-
-    implementation project(":")
 }
 
 test {

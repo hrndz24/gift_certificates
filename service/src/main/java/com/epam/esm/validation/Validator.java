@@ -1,7 +1,9 @@
 package com.epam.esm.validation;
 
-import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.Tag;
+import com.epam.esm.dto.GiftCertificateDTO;
+import com.epam.esm.dto.TagDTO;
+import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.model.Tag;
 import com.epam.esm.exception.ValidatorException;
 import org.springframework.stereotype.Component;
 
@@ -34,19 +36,19 @@ public class Validator {
         orderByValues.add("-date");
     }
 
-    public void validateCertificate(GiftCertificate certificate) {
-        checkNonNull(certificate, certificate.getClass().getName());
-        validateStringField(certificate.getName(), " certificate name");
-        validateStringField(certificate.getDescription(), "description");
-        validatePrice(certificate.getPrice());
-        validateDateField(certificate.getCreateDate(), "create date");
-        validateDateField(certificate.getLastUpdateDate(), "last update date");
-        validateDuration(certificate.getDuration());
+    public void validateCertificate(GiftCertificateDTO giftCertificateDTO) {
+        checkNonNull(giftCertificateDTO, giftCertificateDTO.getClass().getName());
+        validateStringField(giftCertificateDTO.getName(), " certificate name");
+        validateStringField(giftCertificateDTO.getDescription(), "description");
+        validatePrice(giftCertificateDTO.getPrice());
+        validateDateField(giftCertificateDTO.getCreateDate(), "create date");
+        validateDateField(giftCertificateDTO.getLastUpdateDate(), "last update date");
+        validateDuration(giftCertificateDTO.getDuration());
     }
 
-    public void validateTag(Tag tag) {
-        checkNonNull(tag, tag.getClass().getName());
-        validateStringField(tag.getName(), "tag name");
+    public void validateTag(TagDTO tagDTO) {
+        checkNonNull(tagDTO, tagDTO.getClass().getName());
+        validateStringField(tagDTO.getName(), "tag name");
     }
 
     private void checkNonNull(Object object, String className) {

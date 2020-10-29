@@ -2,9 +2,11 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     implementation project(":repository")
-    implementation project(":")
 
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
+
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.3'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.3'
 
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.6.0'
     testImplementation(platform('org.junit:junit-bom:5.7.0'))

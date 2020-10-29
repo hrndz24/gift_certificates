@@ -1,6 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.entity.Tag;
+import com.epam.esm.dto.TagDTO;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,23 +19,23 @@ public class TagController {
     }
 
     @GetMapping("/")
-    public List<Tag> getAllTags() {
+    public List<TagDTO> getAllTags() {
         return tagService.getTags();
     }
 
     @GetMapping("/{id}")
-    public Tag getTagById(@PathVariable("id") int id) {
+    public TagDTO getTagById(@PathVariable("id") int id) {
         return tagService.getTagById(id);
     }
 
     @PostMapping("/")
-    public void createTag(@RequestBody Tag tag) {
+    public void createTag(@RequestBody TagDTO tag) {
         tagService.addTag(tag);
     }
 
     @DeleteMapping("/{id}")
     public void deleteTag(@PathVariable("id") int id) {
-        Tag tag = new Tag();
+        TagDTO tag = new TagDTO();
         tag.setId(id);
         tagService.removeTag(tag);
     }

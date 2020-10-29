@@ -1,14 +1,13 @@
-package com.epam.esm.entity;
+package com.epam.esm.dto;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public class Tag implements Serializable {
+public class TagDTO {
 
     private int id;
     private String name;
 
-    public Tag() {
+    public TagDTO() {
     }
 
     public int getId() {
@@ -31,9 +30,9 @@ public class Tag implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Tag tag = (Tag) o;
-        return id == tag.id &&
-                name.equals(tag.name);
+        TagDTO tagDTO = (TagDTO) o;
+        return id == tagDTO.id &&
+                name.equals(tagDTO.name);
     }
 
     @Override
@@ -43,7 +42,7 @@ public class Tag implements Serializable {
 
     @Override
     public String toString() {
-        return "Tag{" +
+        return "TagDTO{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';

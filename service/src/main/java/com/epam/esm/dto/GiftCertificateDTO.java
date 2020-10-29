@@ -1,24 +1,28 @@
-package com.epam.esm.entity;
+package com.epam.esm.dto;
 
-import java.io.Serializable;
+import com.epam.esm.model.Tag;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class GiftCertificate implements Serializable {
+public class GiftCertificateDTO {
 
     private int id;
     private String name;
     private String description;
     private BigDecimal price;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm'Z'")
     private Date createDate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm'Z'")
     private Date lastUpdateDate;
     private int duration;
     private Set<Tag> tags = new HashSet<>();
 
-    public GiftCertificate() {
+    public GiftCertificateDTO() {
     }
 
     public int getId() {
@@ -85,19 +89,11 @@ public class GiftCertificate implements Serializable {
         this.tags = tags;
     }
 
-    public void addTag(Tag tag) {
-        this.tags.add(tag);
-    }
-
-    public void removeTag(Tag tag) {
-        this.tags.remove(tag);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GiftCertificate that = (GiftCertificate) o;
+        GiftCertificateDTO that = (GiftCertificateDTO) o;
         return id == that.id &&
                 duration == that.duration &&
                 name.equals(that.name) &&
@@ -115,7 +111,7 @@ public class GiftCertificate implements Serializable {
 
     @Override
     public String toString() {
-        return "GiftCertificate{" +
+        return "GiftCertificateDTO{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +

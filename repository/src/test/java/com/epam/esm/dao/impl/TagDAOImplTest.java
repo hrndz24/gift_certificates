@@ -1,6 +1,6 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.entity.Tag;
+import com.epam.esm.model.Tag;
 import com.epam.esm.exception.DAOException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
