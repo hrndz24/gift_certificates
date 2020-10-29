@@ -2,9 +2,9 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.ColumnLabel;
 import com.epam.esm.dao.GiftCertificateDAO;
+import com.epam.esm.exception.DAOException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
-import com.epam.esm.exception.DAOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -107,7 +107,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Override
     public List<GiftCertificate> getCertificates(String queryCondition) {
         try {
-            System.out.println(GET_CERTIFICATES + queryCondition);
             return jdbcTemplate.query(GET_CERTIFICATES + queryCondition, giftCertificateResultSetExtractor);
         } catch (DataAccessException e) {
             throw new DAOException("Failed to get certificates from the database", e);

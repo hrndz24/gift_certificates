@@ -18,7 +18,7 @@ public class TagController {
         this.tagService = tagService;
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<TagDTO> getAllTags() {
         return tagService.getTags();
     }
