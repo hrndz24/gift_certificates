@@ -9,7 +9,7 @@ public interface GiftCertificateService {
 
     void addCertificate(GiftCertificateDTO giftCertificateDTO);
 
-    void removeCertificate(GiftCertificateDTO certificateDTO);
+    void removeCertificate(int certificateId);
 
     void updateCertificate(GiftCertificateDTO certificateDTO);
 

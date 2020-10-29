@@ -8,7 +8,7 @@ public interface TagService {
 
     void addTag(TagDTO tag);
 
-    void removeTag(TagDTO tag);
+    void removeTag(int tagId);
 
     List<TagDTO> getTags();
 

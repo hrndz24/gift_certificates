@@ -8,7 +8,7 @@ public interface GiftCertificateDAO {
 
     void addCertificate(GiftCertificate certificate);
 
-    void removeCertificate(GiftCertificate certificate);
+    void removeCertificate(int certificateId);
 
     void updateCertificate(GiftCertificate certificate);
 

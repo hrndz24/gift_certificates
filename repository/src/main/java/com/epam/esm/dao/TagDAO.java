@@ -8,7 +8,7 @@ public interface TagDAO {
 
     void addTag(Tag tag);
 
-    void removeTag(Tag tag);
+    void removeTag(int tagId);
 
     List<Tag> getTags();
 

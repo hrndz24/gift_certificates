@@ -32,8 +32,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void removeTag(TagDTO tagDTO) {
-        tagDAO.removeTag(mapper.toModel(tagDTO));
+    public void removeTag(int tagId) {
+        tagDAO.removeTag(tagId);
     }
 
     @Override

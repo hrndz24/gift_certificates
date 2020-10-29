@@ -84,9 +84,9 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
 
     @Override
-    public void removeCertificate(GiftCertificate certificate) {
+    public void removeCertificate(int certificateId) {
         try {
-            jdbcTemplate.update(DELETE_GIFT_CERTIFICATE, certificate.getId());
+            jdbcTemplate.update(DELETE_GIFT_CERTIFICATE, certificateId);
         } catch (DataAccessException e) {
             throw new DAOException("Failed to remove certificate from the database", e);
         }

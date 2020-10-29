@@ -2,8 +2,8 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.ColumnLabel;
 import com.epam.esm.dao.TagDAO;
-import com.epam.esm.model.Tag;
 import com.epam.esm.exception.DAOException;
+import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -56,9 +56,9 @@ public class TagDAOImpl implements TagDAO {
     }
 
     @Override
-    public void removeTag(Tag tag) {
+    public void removeTag(int tagId) {
         try {
-            jdbcTemplate.update(DELETE_TAG, tag.getId());
+            jdbcTemplate.update(DELETE_TAG, tagId);
         } catch (DataAccessException e) {
             throw new DAOException("Failed to remove tag from the database", e);
         }

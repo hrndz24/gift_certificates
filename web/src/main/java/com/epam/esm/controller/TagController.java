@@ -3,6 +3,7 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,14 +30,14 @@ public class TagController {
     }
 
     @PostMapping("/")
-    public void createTag(@RequestBody TagDTO tag) {
+    public TagDTO createTag(@RequestBody TagDTO tag) {
         tagService.addTag(tag);
+        return tag;
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTag(@PathVariable("id") int id) {
-        TagDTO tag = new TagDTO();
-        tag.setId(id);
-        tagService.removeTag(tag);
+    public HttpStatus deleteTag(@PathVariable("id") int id) {
+        tagService.removeTag(id);
+        return HttpStatus.OK;
     }
 }

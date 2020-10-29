@@ -3,6 +3,7 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class GiftCertificateController {
     }
 
     @PostMapping("/")
-    public void addCertificate(@RequestBody GiftCertificateDTO certificate) {
+    public void createCertificate(@RequestBody GiftCertificateDTO certificate) {
         certificateService.addCertificate(certificate);
     }
 
@@ -30,10 +31,9 @@ public class GiftCertificateController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCertificate(@PathVariable("id") int id) {
-        GiftCertificateDTO certificate = new GiftCertificateDTO();
-        certificate.setId(id);
-        certificateService.removeCertificate(certificate);
+    public HttpStatus deleteCertificate(@PathVariable("id") int id) {
+        certificateService.removeCertificate(id);
+        return HttpStatus.OK;
     }
 
     @GetMapping

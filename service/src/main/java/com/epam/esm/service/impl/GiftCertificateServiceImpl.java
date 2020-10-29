@@ -40,8 +40,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void removeCertificate(GiftCertificateDTO certificateDTO) {
-        certificateDAO.removeCertificate(mapper.toModel(certificateDTO));
+    public void removeCertificate(int certificateId) {
+        certificateDAO.removeCertificate(certificateId);
     }
 
     @Override
