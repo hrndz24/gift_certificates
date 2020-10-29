@@ -7,11 +7,5 @@ allprojects {
     repositories {
         mavenCentral()
     }
-
 }
-
 version '1.0-SNAPSHOT'
-
-dependencies {
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
-}

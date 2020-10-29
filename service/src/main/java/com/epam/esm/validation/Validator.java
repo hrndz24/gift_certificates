@@ -1,6 +1,7 @@
 package com.epam.esm.validation;
 
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.ValidatorException;
 import org.springframework.stereotype.Component;
 
@@ -8,10 +9,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Component
-public class GiftCertificateValidator {
+public class Validator {
 
-    public void validate(GiftCertificate certificate){
-        checkNonNull(certificate);
+    public void validateCertificate(GiftCertificate certificate) {
+        checkNonNull(certificate, certificate.getClass().getName());
         validateStringField(certificate.getName(), "name");
         validateStringField(certificate.getDescription(), "description");
         validatePrice(certificate.getPrice());
@@ -20,9 +21,14 @@ public class GiftCertificateValidator {
         validateDuration(certificate.getDuration());
     }
 
-    private void checkNonNull(GiftCertificate certificate) {
-        if (certificate == null) {
-            throw new ValidatorException("Null certificate");
+    public void validateTag(Tag tag) {
+        checkNonNull(tag, tag.getClass().getName());
+        validateStringField(tag.getName(), "name");
+    }
+
+    private void checkNonNull(Object object, String className) {
+        if (object == null) {
+            throw new ValidatorException("Null " + className);
         }
     }
 

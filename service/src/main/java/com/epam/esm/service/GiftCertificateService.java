@@ -3,6 +3,7 @@ package com.epam.esm.service;
 import com.epam.esm.entity.GiftCertificate;
 
 import java.util.List;
+import java.util.Map;
 
 public interface GiftCertificateService {
 
@@ -12,7 +13,7 @@ public interface GiftCertificateService {
 
     void updateCertificate(GiftCertificate certificate);
 
-    List<GiftCertificate> getCertificates();
+    List<GiftCertificate> getCertificates(Map<String, String> params);
 
     GiftCertificate getCertificateById(int id);
 

@@ -3,28 +3,29 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
-import com.epam.esm.validation.GiftCertificateValidator;
+import com.epam.esm.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private GiftCertificateDAO certificateDAO;
-    private GiftCertificateValidator validator;
+    private Validator validator;
 
     @Autowired
-    public GiftCertificateServiceImpl(GiftCertificateDAO certificateDAO, GiftCertificateValidator validator) {
+    public GiftCertificateServiceImpl(GiftCertificateDAO certificateDAO, Validator validator) {
         this.certificateDAO = certificateDAO;
         this.validator = validator;
     }
 
     @Override
     public void addCertificate(GiftCertificate certificate) {
-        validator.validate(certificate);
+        validator.validateCertificate(certificate);
         certificateDAO.addCertificate(certificate);
     }
 
@@ -35,13 +36,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void updateCertificate(GiftCertificate certificate) {
-        validator.validate(certificate);
+        validator.validateCertificate(certificate);
         certificate.setLastUpdateDate(new Date());
         certificateDAO.updateCertificate(certificate);
     }
 
     @Override
-    public List<GiftCertificate> getCertificates() {
+    public List<GiftCertificate> getCertificates(Map<String, String> params) {
         return certificateDAO.getCertificates();
     }
 

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/v1/certificates", produces = "application/json")
@@ -35,9 +36,9 @@ public class GiftCertificateController {
         certificateService.removeCertificate(certificate);
     }
 
-    @GetMapping("/")
-    public List<GiftCertificate> getCertificates() {
-        return certificateService.getCertificates();
+    @GetMapping
+    public List<GiftCertificate> getCertificates(@RequestParam Map<String, String> params) {
+        return certificateService.getCertificates(params);
     }
 
     @GetMapping("/{id}")
