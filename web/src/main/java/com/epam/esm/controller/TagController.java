@@ -29,7 +29,7 @@ public class TagController {
     }
 
     @PostMapping("/")
-    public void addTag(@RequestBody Tag tag) {
+    public void createTag(@RequestBody Tag tag) {
         tagService.addTag(tag);
     }
 
