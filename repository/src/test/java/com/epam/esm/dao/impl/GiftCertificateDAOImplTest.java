@@ -63,13 +63,13 @@ class GiftCertificateDAOImplTest {
         newCertificate.setDuration(10);
         giftCertificateDAO.addCertificate(newCertificate);
         assertNotEquals(0, newCertificate.getId());
-        assertEquals(4, giftCertificateDAO.getCertificates().size());
+        assertEquals(4, giftCertificateDAO.getCertificates("").size());
     }
 
     @Test
     void removeGiftCertificate() {
-        giftCertificateDAO.removeCertificate(existentCertificate);
-        assertEquals(2, giftCertificateDAO.getCertificates().size());
+        giftCertificateDAO.removeCertificate(1);
+        assertEquals(2, giftCertificateDAO.getCertificates("").size());
     }
 
     @Test
@@ -94,47 +94,12 @@ class GiftCertificateDAOImplTest {
 
     @Test
     void getGiftCertificates() {
-        assertEquals(3, giftCertificateDAO.getCertificates().size());
+        assertEquals(3, giftCertificateDAO.getCertificates("").size());
     }
 
     @Test
     void getGiftCertificateById() {
         assertEquals(existentCertificate, giftCertificateDAO.getCertificateById(1));
-    }
-
-    @Test
-    void getGiftCertificatesByTagName() {
-        assertEquals(1, giftCertificateDAO.getCertificatesByTagName("geek").size());
-    }
-
-    @Test
-    void getGiftCertificatesByName() {
-        assertEquals(1, giftCertificateDAO.getCertificatesByName("Dis").size());
-    }
-
-    @Test
-    void getGiftCertificatesByDescription() {
-        assertEquals(1, giftCertificateDAO.getCertificatesByDescription("About").size());
-    }
-
-    @Test
-    void getGiftCertificatesSortedByDateAscending() {
-        assertEquals(existentCertificate, giftCertificateDAO.getCertificatesSortedByDateAscending().get(2));
-    }
-
-    @Test
-    void getGiftCertificatesSortedByDateDescending() {
-        assertEquals(existentCertificate, giftCertificateDAO.getCertificatesSortedByDateDescending().get(0));
-    }
-
-    @Test
-    void getGiftCertificatesSortedByNameAscending() {
-        assertEquals(existentCertificate, giftCertificateDAO.getCertificatesSortedByNameAscending().get(1));
-    }
-
-    @Test
-    void getGiftCertificatesSortedByNameDescending() {
-        assertEquals(existentCertificate, giftCertificateDAO.getCertificatesSortedByNameDescending().get(1));
     }
 
     @AfterEach

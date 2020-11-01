@@ -26,9 +26,9 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void addTag(TagDTO tagDTO) {
+    public TagDTO addTag(TagDTO tagDTO) {
         validator.validateTag(tagDTO);
-        tagDAO.addTag(mapper.toModel(tagDTO));
+        return mapper.toDTO(tagDAO.addTag(mapper.toModel(tagDTO)));
     }
 
     @Override

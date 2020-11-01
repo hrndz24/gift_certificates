@@ -53,15 +53,13 @@ class TagDAOImplTest {
 
     @Test
     void removeTag_WithoutAssignedCertificate() {
-        Tag tag = new Tag();
-        tag.setId(3);
-        tagDAO.removeTag(tag);
+        tagDAO.removeTag(3);
         assertEquals(2, tagDAO.getTags().size());
     }
 
     @Test
     void removeTag_WithAssignedCertificate() {
-        assertThrows(DAOException.class, () -> tagDAO.removeTag(existentTag));
+        assertThrows(DAOException.class, () -> tagDAO.removeTag(1));
     }
 
     @Test

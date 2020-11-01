@@ -1,6 +1,5 @@
 package com.epam.esm.dto;
 
-import com.epam.esm.model.Tag;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.math.BigDecimal;
@@ -20,7 +19,7 @@ public class GiftCertificateDTO {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm'Z'")
     private Date lastUpdateDate;
     private int duration;
-    private Set<Tag> tags = new HashSet<>();
+    private Set<TagDTO> tags = new HashSet<>();
 
     public GiftCertificateDTO() {
     }
@@ -81,11 +80,11 @@ public class GiftCertificateDTO {
         this.duration = duration;
     }
 
-    public Set<Tag> getTags() {
+    public Set<TagDTO> getTags() {
         return tags;
     }
 
-    public void setTags(Set<Tag> tags) {
+    public void setTags(Set<TagDTO> tags) {
         this.tags = tags;
     }
 

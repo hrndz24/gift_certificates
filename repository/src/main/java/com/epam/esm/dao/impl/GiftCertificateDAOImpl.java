@@ -58,7 +58,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public void addCertificate(GiftCertificate certificate) {
+    public GiftCertificate addCertificate(GiftCertificate certificate) {
         Map<String, Object> parameters = fillInCertificateParameters(certificate);
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(GIFT_CERTIFICATE_TABLE_NAME)
@@ -68,6 +68,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         } catch (DataAccessException e) {
             throw new DAOException("Failed to add certificate to the database", e);
         }
+        return certificate;
     }
 
     private Map<String, Object> fillInCertificateParameters(GiftCertificate certificate) {

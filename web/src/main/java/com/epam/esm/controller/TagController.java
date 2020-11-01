@@ -4,6 +4,7 @@ import com.epam.esm.dto.TagDTO;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,20 +25,20 @@ public class TagController {
         return tagService.getTags();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public TagDTO getTagById(@PathVariable("id") int id) {
         return tagService.getTagById(id);
     }
 
-    @PostMapping("/")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public TagDTO createTag(@RequestBody TagDTO tag) {
-        tagService.addTag(tag);
-        return tag;
+        return tagService.addTag(tag);
     }
 
-    @DeleteMapping("/{id}")
-    public HttpStatus deleteTag(@PathVariable("id") int id) {
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteTag(@PathVariable("id") int id) {
         tagService.removeTag(id);
-        return HttpStatus.OK;
     }
 }

@@ -36,7 +36,7 @@ public class TagDAOImpl implements TagDAO {
     }
 
     @Override
-    public void addTag(Tag tag) {
+    public Tag addTag(Tag tag) {
         Map<String, Object> parameters = fillInTagParameters(tag);
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TAG_TABLE_NAME)
@@ -46,6 +46,7 @@ public class TagDAOImpl implements TagDAO {
         } catch (DataAccessException e) {
             throw new DAOException("Failed to add tag to the database", e);
         }
+        return tag;
     }
 
     private Map<String, Object> fillInTagParameters(Tag tag) {

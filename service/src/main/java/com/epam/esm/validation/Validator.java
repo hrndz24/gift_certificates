@@ -2,8 +2,6 @@ package com.epam.esm.validation;
 
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.TagDTO;
-import com.epam.esm.model.GiftCertificate;
-import com.epam.esm.model.Tag;
 import com.epam.esm.exception.ValidatorException;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +35,6 @@ public class Validator {
     }
 
     public void validateCertificate(GiftCertificateDTO giftCertificateDTO) {
-        checkNonNull(giftCertificateDTO, giftCertificateDTO.getClass().getName());
         validateStringField(giftCertificateDTO.getName(), " certificate name");
         validateStringField(giftCertificateDTO.getDescription(), "description");
         validatePrice(giftCertificateDTO.getPrice());
@@ -51,7 +48,7 @@ public class Validator {
         validateStringField(tagDTO.getName(), "tag name");
     }
 
-    private void checkNonNull(Object object, String className) {
+    public void checkNonNull(Object object, String className) {
         if (object == null) {
             throw new ValidatorException("Null " + className);
         }

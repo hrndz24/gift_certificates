@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface TagService {
 
-    void addTag(TagDTO tag);
+    TagDTO addTag(TagDTO tag);
 
     void removeTag(int tagId);
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface GiftCertificateDAO {
 
-    void addCertificate(GiftCertificate certificate);
+    GiftCertificate addCertificate(GiftCertificate certificate);
 
     void removeCertificate(int certificateId);
 
