@@ -20,11 +20,22 @@ public class TagController {
         this.tagService = tagService;
     }
 
+    /**
+     * This methods returns list of {@code TagDTO}
+     * that represent all tags in the database.
+     *
+     * @return list of TagDTOs corresponding to tags in the database
+     */
     @GetMapping
     public List<TagDTO> getAllTags() {
         return tagService.getTags();
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     @GetMapping("{id}")
     public TagDTO getTagById(@PathVariable("id") int id) {
         return tagService.getTagById(id);

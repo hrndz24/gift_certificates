@@ -1,7 +1,7 @@
 package com.epam.esm.dao.impl;
 
-import com.epam.esm.model.Tag;
 import com.epam.esm.exception.DAOException;
+import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,17 +74,7 @@ class TagDAOImplTest {
 
     @Test
     void getTagById_NonExistentId() {
-        assertThrows(DAOException.class, () -> tagDAO.getTagById(4));
-    }
-
-    @Test
-    void getTagByName_ExistentName() {
-        assertEquals(existentTag, tagDAO.getTagByName("entertainment"));
-    }
-
-    @Test
-    void getTagByName_NonExistentName() {
-        assertThrows(DAOException.class, () -> tagDAO.getTagByName("swan"));
+        assertNull(tagDAO.getTagById(4));
     }
 
     @AfterEach

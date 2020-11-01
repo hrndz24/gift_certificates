@@ -13,6 +13,4 @@ public interface TagDAO {
     List<Tag> getTags();
 
     Tag getTagById(int id);
-
-    Tag getTagByName(String name);
 }

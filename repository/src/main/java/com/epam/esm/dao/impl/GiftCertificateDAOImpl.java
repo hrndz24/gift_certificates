@@ -14,10 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class GiftCertificateDAOImpl implements GiftCertificateDAO {
@@ -117,16 +114,8 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Override
     public GiftCertificate getCertificateById(int id) {
         try {
-            return jdbcTemplate.query(GET_CERTIFICATE_BY_ID, rs -> {
-                GiftCertificate certificate = null;
-                while (rs.next()) {
-                    if (certificate == null) {
-                        certificate = giftCertificateResultSetExtractor.mapCertificate(rs);
-                    }
-                    certificate.addTag(giftCertificateResultSetExtractor.mapTag(rs));
-                }
-                return certificate;
-            }, id);
+            return Objects.requireNonNull(jdbcTemplate.query(
+                    GET_CERTIFICATE_BY_ID, giftCertificateResultSetExtractor, id)).stream().findFirst().orElse(null);
         } catch (DataAccessException e) {
             throw new DAOException("Failed to get certificate by id from the database", e);
         }

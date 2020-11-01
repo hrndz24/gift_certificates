@@ -77,18 +77,9 @@ public class TagDAOImpl implements TagDAO {
     @Override
     public Tag getTagById(int id) {
         try {
-            return jdbcTemplate.queryForObject(GET_TAG_BY_ID, new Object[]{id}, tagRowMapper);
+            return jdbcTemplate.query(GET_TAG_BY_ID, tagRowMapper, id).stream().findFirst().orElse(null);
         } catch (DataAccessException e) {
             throw new DAOException("Failed to get tag by id from the database", e);
-        }
-    }
-
-    @Override
-    public Tag getTagByName(String name) {
-        try {
-            return jdbcTemplate.queryForObject(GET_TAG_BY_NAME, new Object[]{name}, tagRowMapper);
-        } catch (DataAccessException e) {
-            throw new DAOException("Failed to get tag by name from the database", e);
         }
     }
 

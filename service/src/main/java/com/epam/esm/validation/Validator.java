@@ -44,11 +44,11 @@ public class Validator {
     }
 
     public void validateTag(TagDTO tagDTO) {
-        checkNonNull(tagDTO, tagDTO.getClass().getName());
+        validateNonNull(tagDTO, TagDTO.class.getName());
         validateStringField(tagDTO.getName(), "tag name");
     }
 
-    public void checkNonNull(Object object, String className) {
+    public void validateNonNull(Object object, String className) {
         if (object == null) {
             throw new ValidatorException("Null " + className);
         }
@@ -88,7 +88,7 @@ public class Validator {
     }
 
     public void validateParams(Map<String, String> params) {
-        checkNonNull(params, params.getClass().getName());
+        validateNonNull(params, params.getClass().getName());
         removeNonExistentParameterNames(params);
         checkParamsHaveOrderBy(params);
     }

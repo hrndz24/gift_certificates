@@ -4,9 +4,10 @@ import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.TagDTO;
-import com.epam.esm.exception.DAOException;
+import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.mapper.GiftCertificateMapper;
 import com.epam.esm.mapper.TagMapper;
+import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.utils.QueryGenerator;
 import com.epam.esm.validation.Validator;
@@ -50,7 +51,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     private void prepareCertificateBeforeAddingToDatabase(GiftCertificateDTO certificateDTO) {
-        validator.checkNonNull(certificateDTO, certificateDTO.getClass().getName());
+        validator.validateNonNull(certificateDTO, GiftCertificateDTO.class.getName());
         certificateDTO.setCreateDate(new Date());
         certificateDTO.setLastUpdateDate(new Date());
         validator.validateCertificate(certificateDTO);
@@ -69,12 +70,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     private boolean isTagExistent(TagDTO tagDTO) {
-        try {
-            tagDAO.getTagById(tagDTO.getId());
-        } catch (DAOException e) {
-            return false;
-        }
-        return true;
+        return tagDAO.getTagById(tagDTO.getId()) != null;
     }
 
     @Override
@@ -84,10 +80,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void updateCertificate(int id, GiftCertificateDTO certificateDTO) {
+        if (!isCertificateExistent(id)) {
+            throw new EntityNotFoundException("Certificate with id " + id + " does not exist");
+        }
         validator.validateCertificate(certificateDTO);
         certificateDTO.setLastUpdateDate(new Date());
         certificateDTO.setId(id);
         certificateDAO.updateCertificate(certificateMapper.toModel(certificateDTO));
+    }
+
+    private boolean isCertificateExistent(int id) {
+        return certificateDAO.getCertificateById(id) != null;
     }
 
     @Override
@@ -102,7 +105,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificateDTO getCertificateById(int id) {
-        return certificateMapper.toDTO(certificateDAO.getCertificateById(id));
+        GiftCertificate certificate = certificateDAO.getCertificateById(id);
+        if (certificate == null) {
+            throw new EntityNotFoundException("Gift certificate with id " + id + " does not exist");
+        }
+        return certificateMapper.toDTO(certificate);
     }
 
     @Override
