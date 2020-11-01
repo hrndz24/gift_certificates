@@ -41,9 +41,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public List<TagDTO> getTags() {
         List<TagDTO> tags = new ArrayList<>();
-        tagDAO.getTags().forEach(tag -> {
-            tags.add(mapper.toDTO(tag));
-        });
+        tagDAO.getTags().forEach(tag -> tags.add(mapper.toDTO(tag)));
         return tags;
     }
 

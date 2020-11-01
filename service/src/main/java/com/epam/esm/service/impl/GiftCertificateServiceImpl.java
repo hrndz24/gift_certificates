@@ -83,9 +83,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (!isCertificateExistent(id)) {
             throw new EntityNotFoundException("Certificate with id " + id + " does not exist");
         }
-        validator.validateCertificate(certificateDTO);
+        validator.validateNonNull(certificateDTO, GiftCertificateDTO.class.getName());
         certificateDTO.setLastUpdateDate(new Date());
         certificateDTO.setId(id);
+        validator.validateCertificate(certificateDTO);
         certificateDAO.updateCertificate(certificateMapper.toModel(certificateDTO));
     }
 

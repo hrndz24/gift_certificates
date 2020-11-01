@@ -2,22 +2,24 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.exception.EntityNotFoundException;
+import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.Tag;
 import com.epam.esm.validation.Validator;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class TagServiceImplTest {
 
@@ -36,26 +38,30 @@ class TagServiceImplTest {
 
     @Test
     void addTag() {
-        /*Tag tag = new Tag();
-        tag.setName("name");
-        when(tagDAO.addTag(new Tag())).thenAnswer(new Answer<Tag>() {
-            @Override
-            public Tag answer(InvocationOnMock invocation) throws Throwable {
-                Tag addedTag = new Tag();
-                addedTag.setName(invocation.getArgument(1));
-                addedTag.setId(24);
-                return addedTag;
-            }
-        });
-        TagDTO tagDTOtoAdd = new TagDTO();
-        tagDTOtoAdd.setName("name");
-        when(mapper.toModel(tagDTOtoAdd)).thenReturn(tag);
-        tag.setId(24);
-        tagDTOtoAdd.setId(24);
-        when(mapper.toDTO(tag)).thenReturn(tagDTOtoAdd);
-        TagDTO returnedTagDTO = tagService.addTag(tagDTOtoAdd);
-        assertEquals(returnedTagDTO.getName(), "name");
-        assertEquals(returnedTagDTO.getId(), 24);*/
+        String name = "newTag";
+        Tag tagToAdd = new Tag();
+        tagToAdd.setName(name);
+        Tag tagReturned = new Tag();
+        tagReturned.setName(tagToAdd.getName());
+        tagReturned.setId(24);
+        when(tagDAO.addTag(tagToAdd)).thenReturn(tagReturned);
+        TagDTO tagDTOToAdd = new TagDTO();
+        tagDTOToAdd.setName(tagToAdd.getName());
+        TagDTO tagDTOReturned = new TagDTO();
+        tagDTOReturned.setName(tagDTOToAdd.getName());
+        tagDTOReturned.setId(24);
+        doNothing().when(validator).validateTag(tagDTOToAdd);
+        when(mapper.toModel(tagDTOToAdd)).thenReturn(tagToAdd);
+        when(mapper.toDTO(tagReturned)).thenReturn(tagDTOReturned);
+        assertEquals(tagDTOReturned.getId(), tagReturned.getId());
+    }
+
+    @Test
+    void addTag_NullName() {
+        TagDTO tagDTOToAdd = new TagDTO();
+        tagDTOToAdd.setName(null);
+        doThrow(ValidatorException.class).when(validator).validateTag(tagDTOToAdd);
+        assertThrows(ValidatorException.class, ()->tagService.addTag(tagDTOToAdd));
     }
 
     @Test
@@ -66,10 +72,29 @@ class TagServiceImplTest {
 
     @Test
     void getTags() {
-        List<TagDTO> tags = new ArrayList<>();
-        tags.add(new TagDTO());
-        tags.add(new TagDTO());
-        //when(tagDAO.getTags()).thenReturn(tags);
+        Tag tag1 = new Tag();
+        tag1.setId(1);
+        tag1.setName("tag1");
+        Tag tag2 = new Tag();
+        tag2.setId(2);
+        tag2.setName("tag2");
+        List<Tag> tags = new ArrayList<>();
+        tags.add(tag1);
+        tags.add(tag2);
+
+        TagDTO tagDTO1 = new TagDTO();
+        tagDTO1.setId(1);
+        tagDTO1.setName("tag1");
+        TagDTO tagDTO2 = new TagDTO();
+        tagDTO2.setId(2);
+        tagDTO2.setName("tag2");
+        List<TagDTO> tagDTOs = new ArrayList<>();
+        tagDTOs.add(tagDTO1);
+        tagDTOs.add(tagDTO2);
+        when(tagDAO.getTags()).thenReturn(tags);
+        when(mapper.toDTO(tag1)).thenReturn(tagDTO1);
+        when(mapper.toDTO(tag2)).thenReturn(tagDTO2);
+        Assertions.assertEquals(tagDTOs, tagService.getTags());
     }
 
     @Test
@@ -84,5 +109,13 @@ class TagServiceImplTest {
         when(mapper.toDTO(tag)).thenReturn(tagDTO);
         TagDTO returnedTag = tagService.getTagById(1);
         assertEquals(tag.getName(), returnedTag.getName());
+    }
+
+    @Test
+    void getTagById_NonExistentId() {
+        Tag tag = new Tag();
+        tag.setId(24);
+        when(tagDAO.getTagById(24)).thenReturn(null);
+        assertThrows(EntityNotFoundException.class, () -> tagService.getTagById(24));
     }
 }
