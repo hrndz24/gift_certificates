@@ -3,19 +3,16 @@ package com.epam.esm.validation;
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.ValidatorException;
-import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ValidatorTest {
@@ -90,20 +87,6 @@ class ValidatorTest {
     }
 
     @Test
-    void validateCertificate_FutureCreatedDate() {
-        validGiftCertificate.setCreateDate(new Date(new Date().getTime() + 10000));
-        assertThrows(ValidatorException.class,
-                () -> validator.validateCertificate(validGiftCertificate));
-    }
-
-    @Test
-    void validateCertificate_FutureLastUpdatedDate() {
-        validGiftCertificate.setLastUpdateDate(new Date(new Date().getTime() + 10000));
-        assertThrows(ValidatorException.class,
-                () -> validator.validateCertificate(validGiftCertificate));
-    }
-
-    @Test
     void validateCertificate_NegativeDuration() {
         validGiftCertificate.setDuration(-12);
         assertThrows(ValidatorException.class,
@@ -123,18 +106,6 @@ class ValidatorTest {
     }
 
     @Test
-    void checkNonNull_NonNullObject() {
-        Tag tag = new Tag();
-        validator.validateNonNull(tag, tag.getClass().getName());
-    }
-
-    @Test
-    void checkNonNull_NullObject() {
-        assertThrows(ValidatorException.class,
-                () -> validator.validateNonNull(null, Tag.class.getName()));
-    }
-
-    @Test
     void validateParams() {
         validator.validateParams(params);
     }
@@ -142,8 +113,7 @@ class ValidatorTest {
     @Test
     void validateParams_NonExistentParam() {
         params.put("nonExistent", "alpha");
-        validator.validateParams(params);
-        assertEquals(2, params.size());
+        assertThrows(ValidatorException.class, () -> validator.validateParams(params));
     }
 
     @Test

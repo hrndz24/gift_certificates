@@ -2,22 +2,22 @@ package com.epam.esm.exception;
 
 public class ExceptionResponse {
 
-    private int code;
+    private String code;
     private String message;
 
     public ExceptionResponse() {
     }
 
-    public ExceptionResponse(int code, String message) {
+    public ExceptionResponse(String code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(String code) {
         this.code = code;
     }
 

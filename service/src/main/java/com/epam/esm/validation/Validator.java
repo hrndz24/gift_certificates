@@ -2,11 +2,11 @@ package com.epam.esm.validation;
 
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.exception.ExceptionServiceMessage;
 import com.epam.esm.exception.ValidatorException;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -35,11 +35,10 @@ public class Validator {
     }
 
     public void validateCertificate(GiftCertificateDTO giftCertificateDTO) {
-        validateStringField(giftCertificateDTO.getName(), " certificate name");
+        validateNonNull(giftCertificateDTO, GiftCertificateDTO.class.getName());
+        validateStringField(giftCertificateDTO.getName(), "certificate name");
         validateStringField(giftCertificateDTO.getDescription(), "description");
         validatePrice(giftCertificateDTO.getPrice());
-        validateDateField(giftCertificateDTO.getCreateDate(), "create date");
-        validateDateField(giftCertificateDTO.getLastUpdateDate(), "last update date");
         validateDuration(giftCertificateDTO.getDuration());
     }
 
@@ -48,54 +47,55 @@ public class Validator {
         validateStringField(tagDTO.getName(), "tag name");
     }
 
-    public void validateNonNull(Object object, String className) {
+    public void checkIdIsPositive(int id) {
+        if (id <= 0) {
+            throw new ValidatorException(
+                    ExceptionServiceMessage.NEGATIVE.getErrorCode(), "id = " + id);
+        }
+    }
+
+    private void validateNonNull(Object object, String className) {
         if (object == null) {
-            throw new ValidatorException("Null " + className);
+            throw new ValidatorException(ExceptionServiceMessage.NULL.getErrorCode(), className);
         }
     }
 
     private void validateStringField(String string, String field) {
         if (string == null) {
-            throw new ValidatorException("Null " + field);
+            throw new ValidatorException(ExceptionServiceMessage.NULL.getErrorCode(), field);
         }
         if (string.isEmpty()) {
-            throw new ValidatorException("Empty " + field);
+            throw new ValidatorException(ExceptionServiceMessage.EMPTY.getErrorCode(), field);
         }
     }
 
     private void validatePrice(BigDecimal price) {
         if (price == null) {
-            throw new ValidatorException("Null certificate price");
+            throw new ValidatorException(ExceptionServiceMessage.NULL.getErrorCode(), "price");
         }
         if (price.doubleValue() <= 0) {
-            throw new ValidatorException("Negative certificate price");
-        }
-    }
-
-    private void validateDateField(Date date, String field) {
-        if (date == null) {
-            throw new ValidatorException("Null certificate " + field);
-        }
-        if (date.after(new Date())) {
-            throw new ValidatorException("Future certificate " + field);
+            throw new ValidatorException(ExceptionServiceMessage.NEGATIVE.getErrorCode(), "price = " + price);
         }
     }
 
     private void validateDuration(int duration) {
         if (duration <= 0) {
-            throw new ValidatorException("Negative certificate duration");
+            throw new ValidatorException(ExceptionServiceMessage.NEGATIVE.getErrorCode(), "duration = " + duration);
         }
     }
 
     public void validateParams(Map<String, String> params) {
         validateNonNull(params, params.getClass().getName());
-        removeNonExistentParameterNames(params);
+        checkAllParametersExist(params);
         checkParamsHaveOrderBy(params);
     }
 
-    private void removeNonExistentParameterNames(Map<String, String> params) {
-        params.entrySet().removeIf(
-                entry -> !parameterNames.contains(entry.getKey()));
+    private void checkAllParametersExist(Map<String, String> params) {
+        params.forEach((key, value) -> {
+            if (!parameterNames.contains(key)) {
+                throw new ValidatorException(ExceptionServiceMessage.NON_EXISTING_PARAM_NAME.getErrorCode(), key);
+            }
+        });
     }
 
     private void checkParamsHaveOrderBy(Map<String, String> params) {
@@ -106,7 +106,7 @@ public class Validator {
 
     private void validateOrderByValue(String value) {
         if (!orderByValues.contains(value)) {
-            throw new ValidatorException("Invalid orderBy value");
+            throw new ValidatorException(ExceptionServiceMessage.INVALID_ORDER_BY_VALUE.getErrorCode(), value);
         }
     }
 }

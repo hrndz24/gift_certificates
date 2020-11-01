@@ -5,6 +5,7 @@ import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
+import com.epam.esm.exception.ExceptionServiceMessage;
 import com.epam.esm.mapper.GiftCertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.GiftCertificate;
@@ -43,18 +44,21 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificateDTO addCertificate(GiftCertificateDTO certificateDTO) {
+        return addNewCertificateToDatabase(certificateDTO);
+    }
+
+    private void prepareCertificateBeforeAddingToDatabase(GiftCertificateDTO certificateDTO) {
+        certificateDTO.setCreateDate(new Date());
+        certificateDTO.setLastUpdateDate(new Date());
+        validator.validateCertificate(certificateDTO);
+    }
+
+    private GiftCertificateDTO addNewCertificateToDatabase(GiftCertificateDTO certificateDTO) {
         prepareCertificateBeforeAddingToDatabase(certificateDTO);
         GiftCertificateDTO addedCertificateDTO = certificateMapper.toDTO(
                 certificateDAO.addCertificate(certificateMapper.toModel(certificateDTO)));
         addCertificateTags(certificateDTO.getTags(), addedCertificateDTO.getId());
         return addedCertificateDTO;
-    }
-
-    private void prepareCertificateBeforeAddingToDatabase(GiftCertificateDTO certificateDTO) {
-        validator.validateNonNull(certificateDTO, GiftCertificateDTO.class.getName());
-        certificateDTO.setCreateDate(new Date());
-        certificateDTO.setLastUpdateDate(new Date());
-        validator.validateCertificate(certificateDTO);
     }
 
     private void addCertificateTags(Set<TagDTO> tags, int certificateId) {
@@ -75,20 +79,26 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void removeCertificate(int certificateId) {
+        validator.checkIdIsPositive(certificateId);
+        getCertificateIfExists(certificateId);
         certificateDAO.removeCertificate(certificateId);
     }
 
     @Override
     public void updateCertificate(int id, GiftCertificateDTO certificateDTO) {
+        validator.checkIdIsPositive(id);
         if (!isCertificateExistent(id)) {
-            addCertificate(certificateDTO);
+            addNewCertificateToDatabase(certificateDTO);
         } else {
-            validator.validateNonNull(certificateDTO, GiftCertificateDTO.class.getName());
-            certificateDTO.setLastUpdateDate(new Date());
-            certificateDTO.setId(id);
-            validator.validateCertificate(certificateDTO);
+            prepareCertificateBeforeUpdatingInDatabase(id, certificateDTO);
             certificateDAO.updateCertificate(certificateMapper.toModel(certificateDTO));
         }
+    }
+
+    private void prepareCertificateBeforeUpdatingInDatabase(int id, GiftCertificateDTO certificateDTO) {
+        certificateDTO.setLastUpdateDate(new Date());
+        certificateDTO.setId(id);
+        validator.validateCertificate(certificateDTO);
     }
 
     private boolean isCertificateExistent(int id) {
@@ -107,15 +117,23 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificateDTO getCertificateById(int id) {
+        validator.checkIdIsPositive(id);
+        return certificateMapper.toDTO(getCertificateIfExists(id));
+    }
+
+    private GiftCertificate getCertificateIfExists(int id) {
         GiftCertificate certificate = certificateDAO.getCertificateById(id);
         if (certificate == null) {
-            throw new EntityNotFoundException("Gift certificate with id " + id + " does not exist");
+            throw new EntityNotFoundException(
+                    ExceptionServiceMessage.NON_EXISTING_CERTIFICATE_ID.getErrorCode(), String.valueOf(id));
         }
-        return certificateMapper.toDTO(certificate);
+        return certificate;
     }
 
     @Override
     public void addTagToCertificate(int certificateId, TagDTO tag) {
+        validator.checkIdIsPositive(certificateId);
+        getCertificateIfExists(certificateId);
         addTagToCertificateIfExists(certificateId, tag);
     }
 

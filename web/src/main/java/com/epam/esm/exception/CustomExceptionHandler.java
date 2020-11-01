@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Locale;
 
@@ -22,33 +23,49 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ValidatorException.class)
     public ResponseEntity<ExceptionResponse> handleValidatorException(ValidatorException e, Locale locale) {
-        String errorMessage = messageSource.getMessage(
-                "error.validation", new Object[]{}, locale);
-        ExceptionResponse response = new ExceptionResponse(400, errorMessage + " " + e.getMessage());
+        System.out.println(e.getMessage());
+        String localizedMessage = messageSource.getMessage(
+                e.getMessage(), new Object[]{}, locale);
+        ExceptionResponse response = new ExceptionResponse(e.getMessage(),
+                buildErrorMessage(localizedMessage, e.getParameter()));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleEntityNotFoundException(EntityNotFoundException e, Locale locale) {
+        String localizedMessage = messageSource.getMessage(
+                e.getMessage(), new Object[]{}, locale);
+        ExceptionResponse response = new ExceptionResponse(e.getMessage(), buildErrorMessage(localizedMessage, e.getId()));
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DAOException.class)
     public ResponseEntity<ExceptionResponse> handleDAOException(DAOException e, Locale locale) {
-        String errorMessage = messageSource.getMessage(
-                "error.not_found", new Object[]{}, locale);
-        ExceptionResponse response = new ExceptionResponse(500, errorMessage + " " + e.getMessage());
+        String localizedMessage = messageSource.getMessage(
+                e.getMessage(), new Object[]{}, locale);
+        ExceptionResponse response = new ExceptionResponse(e.getMessage(), localizedMessage);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<ExceptionResponse> handleMediaTypeException(HttpMediaTypeNotSupportedException e, Locale locale) {
         String errorMessage = messageSource.getMessage(
-                "error.not_found", new Object[]{}, locale);
-        ExceptionResponse response = new ExceptionResponse(415, errorMessage + " " + e.getMessage());
+                "50101", new Object[]{}, locale);
+        ExceptionResponse response = new ExceptionResponse("50101", errorMessage );
         return new ResponseEntity<>(response, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ExceptionResponse> handleEntityNotFoundException(EntityNotFoundException e, Locale locale) {
+    @ExceptionHandler(HttpClientErrorException.BadRequest.class)
+    public ResponseEntity<ExceptionResponse> handleBadRequestException(HttpClientErrorException.BadRequest e, Locale locale) {
         String errorMessage = messageSource.getMessage(
-                "error.not_found", new Object[]{}, locale);
-        ExceptionResponse response = new ExceptionResponse(404, errorMessage + " " + e.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+                "50102", new Object[]{}, locale);
+        ExceptionResponse response = new ExceptionResponse("50102", errorMessage);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+
+
+    private String buildErrorMessage(String localizedMessage, String parameter) {
+        return localizedMessage + " " + parameter;
     }
 }

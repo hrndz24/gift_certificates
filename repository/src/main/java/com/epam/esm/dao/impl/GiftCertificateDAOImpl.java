@@ -3,6 +3,7 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.ColumnLabel;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.exception.DAOException;
+import com.epam.esm.exception.ExceptionMessage;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         try {
             certificate.setId(simpleJdbcInsert.executeAndReturnKey(parameters).intValue());
         } catch (DataAccessException e) {
-            throw new DAOException("Failed to add certificate to the database", e);
+            throw new DAOException(ExceptionMessage.FAILED_ADD_CERTIFICATE.getErrorCode(), e);
         }
         return certificate;
     }
@@ -86,7 +87,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         try {
             jdbcTemplate.update(DELETE_GIFT_CERTIFICATE, certificateId);
         } catch (DataAccessException e) {
-            throw new DAOException("Failed to remove certificate from the database", e);
+            throw new DAOException(ExceptionMessage.FAILED_REMOVE_CERTIFICATE.getErrorCode(), e);
         }
     }
 
@@ -98,7 +99,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
                     certificate.getLastUpdateDate(), certificate.getDuration(),
                     certificate.getId());
         } catch (DataAccessException e) {
-            throw new DAOException("Failed to update certificate in the database", e);
+            throw new DAOException(ExceptionMessage.FAILED_UPDATE_CERTIFICATE.getErrorCode(), e);
         }
     }
 
@@ -107,7 +108,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         try {
             return jdbcTemplate.query(GET_CERTIFICATES + queryCondition, giftCertificateResultSetExtractor);
         } catch (DataAccessException e) {
-            throw new DAOException("Failed to get certificates from the database", e);
+            throw new DAOException(ExceptionMessage.FAILED_GET_CERTIFICATES.getErrorCode(), e);
         }
     }
 
@@ -117,7 +118,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             return Objects.requireNonNull(jdbcTemplate.query(
                     GET_CERTIFICATE_BY_ID, giftCertificateResultSetExtractor, id)).stream().findFirst().orElse(null);
         } catch (DataAccessException e) {
-            throw new DAOException("Failed to get certificate by id from the database", e);
+            throw new DAOException(ExceptionMessage.FAILED_GET_CERTIFICATE.getErrorCode(), e);
         }
     }
 
@@ -126,7 +127,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         try {
             jdbcTemplate.update(ADD_TAG_TO_CERTIFICATE, certificateId, tagId);
         } catch (DataAccessException e) {
-            throw new DAOException("Failed to add tag to certificate in the database", e);
+            throw new DAOException(ExceptionMessage.FAILED_ADD_TAG_TO_CERTIFICATE.getErrorCode(), e);
         }
     }
 
@@ -135,7 +136,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         try {
             jdbcTemplate.update(REMOVE_TAG_FROM_CERTIFICATE, certificateId, tagId);
         } catch (DataAccessException e) {
-            throw new DAOException("Failed to remove tag from certificate in the database", e);
+            throw new DAOException(ExceptionMessage.FAILED_REMOVE_TAG_FROM_CERTIFICATE.getErrorCode(), e);
         }
     }
 

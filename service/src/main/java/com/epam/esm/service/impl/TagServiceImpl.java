@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
+import com.epam.esm.exception.ExceptionServiceMessage;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
@@ -47,9 +48,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDTO getTagById(int id) {
+        validator.checkIdIsPositive(id);
         Tag tag = tagDAO.getTagById(id);
         if (tag == null) {
-            throw new EntityNotFoundException("Tag with id = " + id + " does not exist");
+            throw new EntityNotFoundException(
+                    ExceptionServiceMessage.NON_EXISTING_TAG_ID.getErrorCode(), String.valueOf(id));
         }
         return mapper.toDTO(tag);
     }
