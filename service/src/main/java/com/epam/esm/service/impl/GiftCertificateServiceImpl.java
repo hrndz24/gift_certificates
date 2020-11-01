@@ -81,13 +81,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public void updateCertificate(int id, GiftCertificateDTO certificateDTO) {
         if (!isCertificateExistent(id)) {
-            throw new EntityNotFoundException("Certificate with id " + id + " does not exist");
+            addCertificate(certificateDTO);
+        } else {
+            validator.validateNonNull(certificateDTO, GiftCertificateDTO.class.getName());
+            certificateDTO.setLastUpdateDate(new Date());
+            certificateDTO.setId(id);
+            validator.validateCertificate(certificateDTO);
+            certificateDAO.updateCertificate(certificateMapper.toModel(certificateDTO));
         }
-        validator.validateNonNull(certificateDTO, GiftCertificateDTO.class.getName());
-        certificateDTO.setLastUpdateDate(new Date());
-        certificateDTO.setId(id);
-        validator.validateCertificate(certificateDTO);
-        certificateDAO.updateCertificate(certificateMapper.toModel(certificateDTO));
     }
 
     private boolean isCertificateExistent(int id) {

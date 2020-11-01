@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -33,6 +34,14 @@ public class CustomExceptionHandler {
                 "error.not_found", new Object[]{}, locale);
         ExceptionResponse response = new ExceptionResponse(500, errorMessage + " " + e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<ExceptionResponse> handleMediaTypeException(HttpMediaTypeNotSupportedException e, Locale locale) {
+        String errorMessage = messageSource.getMessage(
+                "error.not_found", new Object[]{}, locale);
+        ExceptionResponse response = new ExceptionResponse(415, errorMessage + " " + e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

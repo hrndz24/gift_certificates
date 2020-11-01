@@ -9,8 +9,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller used to manipulate CRD operations on
+ * {@code Tag} data
+ */
 @RestController
-@RequestMapping(value = "/api/v1/tags", produces = "application/json")
+@RequestMapping(value = "/api/v1/tags", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
 
     private TagService tagService;
@@ -21,7 +25,7 @@ public class TagController {
     }
 
     /**
-     * This methods returns list of {@code TagDTO}
+     * Returns list of {@code TagDTO}
      * that represent all tags in the database.
      *
      * @return list of TagDTOs corresponding to tags in the database
@@ -32,21 +36,34 @@ public class TagController {
     }
 
     /**
+     * Returns {@code TagDTO} requested by id.
+     * If no resource found {@code HttpStatus.NOT_FOUND} is returned.
      *
-     * @param id
-     * @return
+     * @param id id of the requested tag
+     * @return TagDTO with the requested id
      */
     @GetMapping("{id}")
     public TagDTO getTagById(@PathVariable("id") int id) {
         return tagService.getTagById(id);
     }
 
+    /**
+     * Creates a new Tag in the database.
+     *
+     * @param tag tag to be created
+     * @return TagDTO corresponding to Tag that was created
+     */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public TagDTO createTag(@RequestBody TagDTO tag) {
         return tagService.addTag(tag);
     }
 
+    /**
+     * Deletes tag with the specified id.
+     *
+     * @param id id of the tag to be deleted
+     */
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteTag(@PathVariable("id") int id) {
