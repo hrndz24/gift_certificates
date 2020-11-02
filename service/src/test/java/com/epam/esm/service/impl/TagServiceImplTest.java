@@ -10,8 +10,9 @@ import com.epam.esm.validation.Validator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,17 +24,18 @@ import static org.mockito.Mockito.*;
 
 class TagServiceImplTest {
 
+    @InjectMocks
     private TagServiceImpl tagService;
+    @Mock
     private TagDAO tagDAO;
+    @Mock
     private Validator validator;
+    @Mock
     private TagMapper mapper;
 
     @BeforeEach
     void setUp() {
-        tagDAO = Mockito.mock(TagDAO.class);
-        validator = Mockito.mock(Validator.class);
-        mapper = Mockito.mock(TagMapper.class);
-        tagService = new TagServiceImpl(tagDAO, validator, mapper);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -61,7 +63,7 @@ class TagServiceImplTest {
         TagDTO tagDTOToAdd = new TagDTO();
         tagDTOToAdd.setName(null);
         doThrow(ValidatorException.class).when(validator).validateTag(tagDTOToAdd);
-        assertThrows(ValidatorException.class, ()->tagService.addTag(tagDTOToAdd));
+        assertThrows(ValidatorException.class, () -> tagService.addTag(tagDTOToAdd));
     }
 
     @Test

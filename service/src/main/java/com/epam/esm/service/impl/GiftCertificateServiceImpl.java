@@ -14,6 +14,7 @@ import com.epam.esm.utils.QueryGenerator;
 import com.epam.esm.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -43,6 +44,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public GiftCertificateDTO addCertificate(GiftCertificateDTO certificateDTO) {
         return addNewCertificateToDatabase(certificateDTO);
     }
@@ -85,6 +87,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public void updateCertificate(int id, GiftCertificateDTO certificateDTO) {
         validator.checkIdIsPositive(id);
         if (!isCertificateExistent(id)) {

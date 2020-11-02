@@ -87,7 +87,7 @@ public class GiftCertificateController {
      * @return GiftCertificateDTO with the requested id
      */
     @GetMapping("{id}")
-    public GiftCertificateDTO getCertificate(@PathVariable("id") int id) {
+    public GiftCertificateDTO getCertificateById(@PathVariable("id") int id) {
         return certificateService.getCertificateById(id);
     }
 

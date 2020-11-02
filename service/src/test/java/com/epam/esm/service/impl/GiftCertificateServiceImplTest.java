@@ -14,30 +14,33 @@ import com.epam.esm.utils.QueryGenerator;
 import com.epam.esm.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class GiftCertificateServiceImplTest {
 
+    @InjectMocks
     private GiftCertificateServiceImpl certificateService;
+    @Mock
     private GiftCertificateDAO certificateDAO;
+    @Mock
     private TagDAO tagDAO;
+    @Mock
     private Validator validator;
+    @Mock
     private QueryGenerator queryGenerator;
+    @Mock
     private GiftCertificateMapper certificateMapper;
+    @Mock
     private TagMapper tagMapper;
 
     @BeforeEach
     void setUp() {
-        certificateDAO = mock(GiftCertificateDAO.class);
-        tagDAO = mock(TagDAO.class);
-        validator = mock(Validator.class);
-        queryGenerator = mock(QueryGenerator.class);
-        certificateMapper = mock(GiftCertificateMapper.class);
-        tagMapper = mock(TagMapper.class);
-        certificateService = new GiftCertificateServiceImpl(certificateDAO,
-                tagDAO, validator, queryGenerator, certificateMapper, tagMapper);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -66,6 +69,7 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void removeCertificate() {
+        when(certificateDAO.getCertificateById(1)).thenReturn(new GiftCertificate());
         doNothing().when(certificateDAO).removeCertificate(1);
         certificateService.removeCertificate(1);
     }
