@@ -18,9 +18,9 @@ public class QueryGenerator {
             "WHERE LOWER(description) LIKE LOWER('?')";
 
     private static final String GET_CERTIFICATES_BY_TAG_NAME =
-            "JOIN (SELECT certificate_tags.certificate_id FROM certificate_tags" +
-                    " WHERE certificate_tags.tag_id =\n" +
-                    "(SELECT id from tags WHERE LOWER(tags.name) LIKE LOWER('?'))) AS cct " +
+            "JOIN (SELECT certificate_has_tag.certificate_id FROM certificate_has_tag" +
+                    " WHERE certificate_has_tag.tag_id =\n" +
+                    "(SELECT id from tag WHERE LOWER(tag.name) LIKE LOWER('?'))) AS cct " +
                     "ON gc.id = cct.certificate_id";
 
     private static final String GET_CERTIFICATES_SORTED_BY = " ORDER BY ";

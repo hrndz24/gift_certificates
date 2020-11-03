@@ -26,29 +26,29 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             GiftCertificateResultSetExtractor.INSTANCE;
 
     private static final String DELETE_GIFT_CERTIFICATE =
-            "DELETE FROM gift_certificates WHERE id = ?";
+            "DELETE FROM gift_certificate WHERE id = ?";
     private static final String UPDATE_GIFT_CERTIFICATE =
-            "UPDATE gift_certificates SET name = ?, description = ?, price = ?," +
+            "UPDATE gift_certificate SET name = ?, description = ?, price = ?," +
                     " last_update_date = ?, duration = ? WHERE id = ?";
     private static final String ADD_TAG_TO_CERTIFICATE =
-            "INSERT INTO certificate_tags(certificate_id, tag_id) VALUES (?, ?)";
+            "INSERT INTO certificate_has_tag(certificate_id, tag_id) VALUES (?, ?)";
     private static final String REMOVE_TAG_FROM_CERTIFICATE =
-            "DELETE FROM certificate_tags WHERE certificate_id = ? AND tag_id = ?";
+            "DELETE FROM certificate_has_tag WHERE certificate_id = ? AND tag_id = ?";
 
     private static final String ALL_FIELDS =
             "gc.id id, gc.name name, description, price, create_date, " +
-                    "last_update_date, duration, tag_id, tags.name as tag_name";
+                    "last_update_date, duration, tag_id, tag.name as tag_name";
     private static final String JOIN_TAGS =
-            " FROM gift_certificates gc LEFT JOIN certificate_tags ct " +
+            " FROM gift_certificate gc LEFT JOIN certificate_has_tag ct " +
                     "ON gc.id = ct.certificate_id " +
-                    "LEFT JOIN tags ON ct.tag_id = tags.id ";
+                    "LEFT JOIN tag ON ct.tag_id = tag.id ";
 
     private static final String GET_CERTIFICATES =
             "SELECT " + ALL_FIELDS + JOIN_TAGS;
     private static final String GET_CERTIFICATE_BY_ID =
             "SELECT " + ALL_FIELDS + JOIN_TAGS + " WHERE gc.id = ?";
 
-    private static final String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificates";
+    private static final String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
 
     @Autowired
     public GiftCertificateDAOImpl(JdbcTemplate jdbcTemplate) {

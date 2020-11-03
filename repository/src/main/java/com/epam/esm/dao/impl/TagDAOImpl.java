@@ -25,10 +25,10 @@ public class TagDAOImpl implements TagDAO {
 
     private TagRowMapper tagRowMapper = TagRowMapper.INSTANCE;
 
-    private static final String DELETE_TAG = "DELETE FROM tags WHERE id = ?";
-    private static final String GET_TAGS_ALL = "SELECT id, name FROM tags ORDER BY id";
-    private static final String GET_TAG_BY_ID = "SELECT id, name FROM tags WHERE id = ?";
-    private static final String TAG_TABLE_NAME = "tags";
+    private static final String DELETE_TAG = "DELETE FROM tag WHERE id = ?";
+    private static final String GET_TAGS_ALL = "SELECT id, name FROM tag ORDER BY id";
+    private static final String GET_TAG_BY_ID = "SELECT id, name FROM tag WHERE id = ?";
+    private static final String TAG_TABLE_NAME = "tag";
 
     @Autowired
     public TagDAOImpl(JdbcTemplate jdbcTemplate) {
