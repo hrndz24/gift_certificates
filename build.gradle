@@ -20,7 +20,6 @@ allprojects {
 
         testImplementation(platform('org.junit:junit-bom:5.7.0'))
         testImplementation('org.junit.jupiter:junit-jupiter')
-        testImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
         testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.6.0'
         testImplementation group: 'org.springframework', name: 'spring-test', version: '5.2.9.RELEASE'
         testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
