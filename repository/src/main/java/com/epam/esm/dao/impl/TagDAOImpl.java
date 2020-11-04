@@ -5,6 +5,7 @@ import com.epam.esm.dao.TagDAO;
 import com.epam.esm.exception.DAOException;
 import com.epam.esm.exception.ExceptionMessage;
 import com.epam.esm.model.Tag;
+import com.epam.esm.utils.EntityRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,8 +27,8 @@ public class TagDAOImpl implements TagDAO {
     private TagRowMapper tagRowMapper = TagRowMapper.INSTANCE;
 
     private static final String DELETE_TAG = "DELETE FROM tag WHERE id = ?";
-    private static final String GET_TAGS_ALL = "SELECT id, name FROM tag ORDER BY id";
-    private static final String GET_TAG_BY_ID = "SELECT id, name FROM tag WHERE id = ?";
+    private static final String GET_TAGS_ALL = "SELECT id as tag_id, name as tag_name FROM tag ORDER BY id";
+    private static final String GET_TAG_BY_ID = "SELECT id as tag_id, name as tag_name FROM tag WHERE id = ?";
     private static final String TAG_TABLE_NAME = "tag";
 
     @Autowired
@@ -84,14 +85,17 @@ public class TagDAOImpl implements TagDAO {
     }
 
     private enum TagRowMapper implements RowMapper<Tag> {
-        INSTANCE;
+        INSTANCE(new EntityRowMapper());
+
+        private EntityRowMapper entityRowMapper;
+
+        TagRowMapper(EntityRowMapper entityRowMapper) {
+            this.entityRowMapper = entityRowMapper;
+        }
 
         @Override
         public Tag mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Tag tag = new Tag();
-            tag.setId(rs.getInt(ColumnLabel.ID.getColumnName()));
-            tag.setName(rs.getString(ColumnLabel.NAME.getColumnName()));
-            return tag;
+            return entityRowMapper.mapTagFields(rs);
         }
     }
 }

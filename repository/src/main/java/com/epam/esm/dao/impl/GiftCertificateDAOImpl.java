@@ -6,6 +6,7 @@ import com.epam.esm.exception.DAOException;
 import com.epam.esm.exception.ExceptionMessage;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
+import com.epam.esm.utils.EntityRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -119,7 +120,13 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     private enum GiftCertificateResultSetExtractor implements ResultSetExtractor<List<GiftCertificate>> {
-        INSTANCE;
+        INSTANCE(new EntityRowMapper());
+
+        private EntityRowMapper entityRowMapper;
+
+        GiftCertificateResultSetExtractor(EntityRowMapper entityRowMapper) {
+            this.entityRowMapper = entityRowMapper;
+        }
 
         @Override
         public List<GiftCertificate> extractData(ResultSet rs) throws SQLException, DataAccessException {
@@ -133,7 +140,10 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
                     certificates.add(currentCertificate);
                     currentCertificate = mapCertificate(rs);
                 }
-                currentCertificate.addTag(mapTag(rs));
+                int tagId = rs.getInt(ColumnLabel.TAG_ID.getColumnName());
+                if (tagId != 0) {
+                    currentCertificate.addTag(mapTag(rs));
+                }
             }
             if (currentCertificate != null) {
                 certificates.add(currentCertificate);
@@ -141,23 +151,12 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             return certificates;
         }
 
-        GiftCertificate mapCertificate(ResultSet rs) throws SQLException {
-            GiftCertificate giftCertificate = new GiftCertificate();
-            giftCertificate.setId(rs.getInt(ColumnLabel.ID.getColumnName()));
-            giftCertificate.setName(rs.getString(ColumnLabel.CERTIFICATE_NAME.getColumnName()));
-            giftCertificate.setDescription(rs.getString(ColumnLabel.CERTIFICATE_DESCRIPTION.getColumnName()));
-            giftCertificate.setPrice(rs.getBigDecimal(ColumnLabel.CERTIFICATE_PRICE.getColumnName()));
-            giftCertificate.setCreateDate(rs.getTimestamp(ColumnLabel.CERTIFICATE_CREATE_DATE.getColumnName()));
-            giftCertificate.setLastUpdateDate(rs.getTimestamp(ColumnLabel.CERTIFICATE_LAST_UPDATE_DATE.getColumnName()));
-            giftCertificate.setDuration(rs.getInt(ColumnLabel.CERTIFICATE_DURATION.getColumnName()));
-            return giftCertificate;
+        private GiftCertificate mapCertificate(ResultSet rs) throws SQLException {
+            return entityRowMapper.mapCertificateFields(rs);
         }
 
-        Tag mapTag(ResultSet rs) throws SQLException {
-            Tag tag = new Tag();
-            tag.setId(rs.getInt(ColumnLabel.TAG_ID.getColumnName()));
-            tag.setName(rs.getString(ColumnLabel.TAG_NAME.getColumnName()));
-            return tag;
+        private Tag mapTag(ResultSet rs) throws SQLException {
+            return entityRowMapper.mapTagFields(rs);
         }
     }
 }
