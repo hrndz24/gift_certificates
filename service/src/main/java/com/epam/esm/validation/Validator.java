@@ -5,6 +5,7 @@ import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.ExceptionServiceMessage;
 import com.epam.esm.exception.ValidatorException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -61,10 +62,7 @@ public class Validator {
     }
 
     private void validateStringField(String string, String field) {
-        if (string == null) {
-            throw new ValidatorException(ExceptionServiceMessage.NULL.getErrorCode(), field);
-        }
-        if (string.isEmpty()) {
+        if (StringUtils.isEmpty(string)) {
             throw new ValidatorException(ExceptionServiceMessage.EMPTY.getErrorCode(), field);
         }
     }
