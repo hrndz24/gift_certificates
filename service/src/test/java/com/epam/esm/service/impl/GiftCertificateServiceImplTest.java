@@ -9,7 +9,6 @@ import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.GiftCertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.GiftCertificate;
-import com.epam.esm.model.Tag;
 import com.epam.esm.utils.QueryGenerator;
 import com.epam.esm.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +16,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.modelmapper.ModelMapper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,14 +33,14 @@ class GiftCertificateServiceImplTest {
     private GiftCertificateDAO certificateDAO;
     @Mock
     private TagDAO tagDAO;
-    @Mock
-    private Validator validator;
-    @Mock
-    private QueryGenerator queryGenerator;
-    @Mock
-    private GiftCertificateMapper certificateMapper;
-    @Mock
-    private TagMapper tagMapper;
+    @Spy
+    private Validator validator = new Validator();
+    @Spy
+    private QueryGenerator queryGenerator = new QueryGenerator();
+    @Spy
+    private GiftCertificateMapper certificateMapper = new GiftCertificateMapper(new ModelMapper());
+    @Spy
+    private TagMapper tagMapper = new TagMapper(new ModelMapper());
 
     @BeforeEach
     void setUp() {
@@ -44,42 +48,35 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void addCertificate() {
-        GiftCertificate certificateToAdd = new GiftCertificate();
+    void addCertificateWithValidParamsShouldAddCertificate() {
         GiftCertificate certificateReturned = new GiftCertificate();
         certificateReturned.setId(24);
-        when(certificateDAO.addCertificate(certificateToAdd)).thenReturn(certificateReturned);
+        when(certificateDAO.addCertificate(any())).thenReturn(certificateReturned);
         GiftCertificateDTO certificateDTOToAdd = new GiftCertificateDTO();
         doNothing().when(validator).validateCertificate(certificateDTOToAdd);
-        GiftCertificateDTO certificateDTOReturned = new GiftCertificateDTO();
-        certificateDTOReturned.setId(24);
-        when(certificateMapper.toModel(certificateDTOToAdd)).thenReturn(certificateToAdd);
-        when(certificateMapper.toDTO(certificateReturned)).thenReturn(certificateDTOReturned);
         assertEquals(24, certificateService.addCertificate(certificateDTOToAdd).getId());
         assertNotNull(certificateDTOToAdd.getCreateDate());
         assertNotNull(certificateDTOToAdd.getLastUpdateDate());
     }
 
     @Test
-    void addCertificate_InvalidData() {
+    void addCertificateWithInvalidDataShouldThrowException() {
         GiftCertificateDTO certificateDTOToAdd = new GiftCertificateDTO();
-        doThrow(ValidatorException.class).when(validator).validateCertificate(certificateDTOToAdd);
         assertThrows(ValidatorException.class, () -> certificateService.addCertificate(certificateDTOToAdd));
     }
 
     @Test
-    void removeCertificate() {
+    void removeCertificateShouldRemoveCertificate() {
         when(certificateDAO.getCertificateById(1)).thenReturn(new GiftCertificate());
         doNothing().when(certificateDAO).removeCertificate(1);
         certificateService.removeCertificate(1);
     }
 
     @Test
-    void updateCertificate() {
+    void updateCertificateShouldUpdateCertificate() {
         GiftCertificate certificateToUpdate = new GiftCertificate();
         GiftCertificateDTO certificateDTOToUpdate = new GiftCertificateDTO();
         doNothing().when(validator).validateCertificate(certificateDTOToUpdate);
-        when(certificateMapper.toModel(certificateDTOToUpdate)).thenReturn(certificateToUpdate);
         doNothing().when(certificateDAO).updateCertificate(certificateToUpdate);
         when(certificateDAO.getCertificateById(2)).thenReturn(new GiftCertificate());
         certificateService.updateCertificate(2, certificateDTOToUpdate);
@@ -88,35 +85,41 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void getCertificates() {
+    void getCertificatesShouldReturnListOfThreeCertificates() {
+        List<GiftCertificate> certificates = new ArrayList<>();
+        certificates.add(new GiftCertificate());
+        certificates.add(new GiftCertificate());
+        certificates.add(new GiftCertificate());
+        String queryConditionToGetAllTags = "";
+        when(certificateDAO.getCertificates(queryConditionToGetAllTags)).thenReturn(certificates);
+        assertEquals(3, certificateService.getCertificates(anyMap()).size());
     }
 
     @Test
-    void getCertificateById() {
+    void getCertificateByIdWithExistingIdShouldReturnCertificate() {
         GiftCertificate certificateReturned = new GiftCertificate();
         certificateReturned.setId(2);
         when(certificateDAO.getCertificateById(2)).thenReturn(certificateReturned);
         GiftCertificateDTO certificateDTOReturned = new GiftCertificateDTO();
         certificateDTOReturned.setId(2);
-        certificateDTOReturned.setName("certificate");
-        when(certificateMapper.toDTO(certificateReturned)).thenReturn(certificateDTOReturned);
         assertEquals(certificateDTOReturned, certificateService.getCertificateById(2));
     }
 
     @Test
-    void getCertificateById_NonExistingId() {
+    void getCertificateByIdWithNonExistingIdShouldThrowException() {
         when(certificateDAO.getCertificateById(24)).thenReturn(null);
         assertThrows(EntityNotFoundException.class, () -> certificateService.getCertificateById(24));
     }
 
     @Test
-    void addTagToCertificate() {
+    void addTagToCertificateWithNonExistingCertificate() {
         TagDTO tag = new TagDTO();
         tag.setId(1);
-        when(tagDAO.getTagById(1)).thenReturn(new Tag());
-        when(certificateDAO.getCertificateById(2)).thenReturn(new GiftCertificate());
-        doNothing().when(certificateDAO).addTagToCertificate(2, 1);
-        certificateService.addTagToCertificate(2, tag);
+        when(tagDAO.getTagById(1)).thenReturn(any());
+        when(certificateDAO.getCertificateById(2)).thenReturn(null);
+        assertThrows(EntityNotFoundException.class,
+                () -> certificateService.addTagToCertificate(2, tag));
+
     }
 
     @Test

@@ -38,7 +38,7 @@ class TagDAOImplTest {
     }
 
     @Test
-    void addTag_NewTag() {
+    void addTagWithNewTagShouldAddTag() {
         Tag newTag = new Tag();
         newTag.setName("beauty");
         tagDAO.addTag(newTag);
@@ -47,33 +47,33 @@ class TagDAOImplTest {
     }
 
     @Test
-    void addTag_TagWithExistentId() {
+    void addTagWithExistentIdShouldThrowException() {
         assertThrows(DAOException.class, () -> tagDAO.addTag(existentTag));
     }
 
     @Test
-    void removeTag_WithoutAssignedCertificate() {
+    void removeTagWithoutAssignedCertificateShouldRemoveTag() {
         tagDAO.removeTag(3);
         assertEquals(2, tagDAO.getTags().size());
     }
 
     @Test
-    void removeTag_WithAssignedCertificate() {
+    void removeTagWithAssignedCertificateShouldThrowException() {
         assertThrows(DAOException.class, () -> tagDAO.removeTag(1));
     }
 
     @Test
-    void getTags() {
+    void getTagsShouldReturnListOfThreeTags() {
         assertEquals(3, tagDAO.getTags().size());
     }
 
     @Test
-    void getTagById_ExistentId() {
+    void getTagByIdWithExistentIdShouldThrowException() {
         assertEquals(existentTag, tagDAO.getTagById(1));
     }
 
     @Test
-    void getTagById_NonExistentId() {
+    void getTagByIdWithNonExistentIdShouldReturnNull() {
         assertNull(tagDAO.getTagById(4));
     }
 

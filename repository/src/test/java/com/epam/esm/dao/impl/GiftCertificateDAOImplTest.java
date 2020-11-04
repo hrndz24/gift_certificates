@@ -13,6 +13,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,6 +26,8 @@ class GiftCertificateDAOImplTest {
     private GiftCertificateDAOImpl giftCertificateDAO;
 
     private GiftCertificate existentCertificate;
+
+    private String queryConditionToGetAllTags = "";
 
     @BeforeEach
     void setUp() throws ParseException {
@@ -43,10 +46,10 @@ class GiftCertificateDAOImplTest {
         existentCertificate.setName("Disney Land");
         existentCertificate.setDescription("Needs no description cuz it is Disney Land");
         existentCertificate.setPrice(new BigDecimal("12.00"));
-        existentCertificate.setCreateDate(new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).parse("2020-10-27 21:17:24"));
-        existentCertificate.setLastUpdateDate(new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss", Locale.ENGLISH).parse("2020-10-27 21:17:24"));
+        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH)
+                .parse("2020-10-27 21:17:24");
+        existentCertificate.setCreateDate(date);
+        existentCertificate.setLastUpdateDate(date);
         existentCertificate.setDuration(120);
         Tag tag = new Tag();
         tag.setId(1);
@@ -55,7 +58,7 @@ class GiftCertificateDAOImplTest {
     }
 
     @Test
-    void addGiftCertificate() {
+    void addGiftCertificateWithNewCertificateShouldAddCertificate() {
         GiftCertificate newCertificate = new GiftCertificate();
         newCertificate.setName("SPA");
         newCertificate.setDescription("Beauty for everyone");
@@ -63,17 +66,17 @@ class GiftCertificateDAOImplTest {
         newCertificate.setDuration(10);
         giftCertificateDAO.addCertificate(newCertificate);
         assertNotEquals(0, newCertificate.getId());
-        assertEquals(4, giftCertificateDAO.getCertificates("").size());
+        assertEquals(4, giftCertificateDAO.getCertificates(queryConditionToGetAllTags).size());
     }
 
     @Test
-    void removeGiftCertificate() {
+    void removeGiftCertificateShouldRemoveCertificate() {
         giftCertificateDAO.removeCertificate(1);
-        assertEquals(2, giftCertificateDAO.getCertificates("").size());
+        assertEquals(2, giftCertificateDAO.getCertificates(queryConditionToGetAllTags).size());
     }
 
     @Test
-    void updateGiftCertificate() {
+    void updateGiftCertificateShouldUpdateCertificate() {
         GiftCertificate certificate = giftCertificateDAO.getCertificateById(1);
         certificate.setName("Not Disney Land anymore");
         giftCertificateDAO.updateCertificate(certificate);
@@ -81,24 +84,24 @@ class GiftCertificateDAOImplTest {
     }
 
     @Test
-    void addTagToCertificate() {
+    void addTagToCertificateShouldAddTag() {
         giftCertificateDAO.addTagToCertificate(1, 2);
         assertEquals(2, giftCertificateDAO.getCertificateById(1).getTags().size());
     }
 
     @Test
-    void removeTagFromCertificate() {
+    void removeTagFromCertificateShouldRemoveTag() {
         giftCertificateDAO.removeTagFromCertificate(2, 2);
         assertEquals(1, giftCertificateDAO.getCertificateById(2).getTags().size());
     }
 
     @Test
-    void getGiftCertificates() {
-        assertEquals(3, giftCertificateDAO.getCertificates("").size());
+    void getGiftCertificatesShouldReturnListOfThreeCertificates() {
+        assertEquals(3, giftCertificateDAO.getCertificates(queryConditionToGetAllTags).size());
     }
 
     @Test
-    void getGiftCertificateById() {
+    void getGiftCertificateByIdShouldReturnCertificate() {
         assertEquals(existentCertificate, giftCertificateDAO.getCertificateById(1));
     }
 

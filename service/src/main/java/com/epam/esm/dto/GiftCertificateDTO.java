@@ -95,12 +95,12 @@ public class GiftCertificateDTO {
         GiftCertificateDTO that = (GiftCertificateDTO) o;
         return id == that.id &&
                 duration == that.duration &&
-                name.equals(that.name) &&
-                description.equals(that.description) &&
-                price.equals(that.price) &&
-                createDate.equals(that.createDate) &&
-                lastUpdateDate.equals(that.lastUpdateDate) &&
-                tags.equals(that.tags);
+                Objects.equals(name, that.name) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(price, that.price) &&
+                Objects.equals(createDate, that.createDate) &&
+                Objects.equals(lastUpdateDate, that.lastUpdateDate) &&
+                Objects.equals(tags, that.tags);
     }
 
     @Override
