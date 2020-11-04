@@ -1,5 +1,6 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.dao.CertificateTagDAO;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
@@ -23,6 +24,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private GiftCertificateDAO certificateDAO;
     private TagDAO tagDAO;
+    private CertificateTagDAO certificateTagDAO;
     private Validator validator;
     private QueryGenerator queryGenerator;
     private GiftCertificateMapper certificateMapper;
@@ -31,12 +33,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Autowired
     public GiftCertificateServiceImpl(GiftCertificateDAO certificateDAO,
                                       TagDAO tagDAO,
+                                      CertificateTagDAO certificateTagDAO,
                                       Validator validator,
                                       QueryGenerator queryGenerator,
                                       GiftCertificateMapper certificateMapper,
                                       TagMapper tagMapper) {
         this.certificateDAO = certificateDAO;
         this.tagDAO = tagDAO;
+        this.certificateTagDAO = certificateTagDAO;
         this.validator = validator;
         this.queryGenerator = queryGenerator;
         this.certificateMapper = certificateMapper;
@@ -72,7 +76,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (!isTagExistent(tag)) {
             tagId = tagMapper.toDTO(tagDAO.addTag(tagMapper.toModel(tag))).getId();
         }
-        certificateDAO.addTagToCertificate(certificateId, tagId);
+        certificateTagDAO.addTagToCertificate(certificateId, tagId);
     }
 
     private boolean isTagExistent(TagDTO tagDTO) {
@@ -142,6 +146,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void removeTagFromCertificate(int certificateId, int tagId) {
-        certificateDAO.removeTagFromCertificate(certificateId, tagId);
+        certificateTagDAO.removeTagFromCertificate(certificateId, tagId);
     }
 }

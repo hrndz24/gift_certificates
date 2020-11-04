@@ -30,10 +30,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     private static final String UPDATE_GIFT_CERTIFICATE =
             "UPDATE gift_certificate SET name = ?, description = ?, price = ?," +
                     " last_update_date = ?, duration = ? WHERE id = ?";
-    private static final String ADD_TAG_TO_CERTIFICATE =
-            "INSERT INTO certificate_has_tag(certificate_id, tag_id) VALUES (?, ?)";
-    private static final String REMOVE_TAG_FROM_CERTIFICATE =
-            "DELETE FROM certificate_has_tag WHERE certificate_id = ? AND tag_id = ?";
 
     private static final String ALL_FIELDS =
             "gc.id id, gc.name name, description, price, create_date, " +
@@ -119,24 +115,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
                     GET_CERTIFICATE_BY_ID, giftCertificateResultSetExtractor, id)).stream().findFirst().orElse(null);
         } catch (DataAccessException e) {
             throw new DAOException(ExceptionMessage.FAILED_GET_CERTIFICATE.getErrorCode(), e);
-        }
-    }
-
-    @Override
-    public void addTagToCertificate(int certificateId, int tagId) {
-        try {
-            jdbcTemplate.update(ADD_TAG_TO_CERTIFICATE, certificateId, tagId);
-        } catch (DataAccessException e) {
-            throw new DAOException(ExceptionMessage.FAILED_ADD_TAG_TO_CERTIFICATE.getErrorCode(), e);
-        }
-    }
-
-    @Override
-    public void removeTagFromCertificate(int certificateId, int tagId) {
-        try {
-            jdbcTemplate.update(REMOVE_TAG_FROM_CERTIFICATE, certificateId, tagId);
-        } catch (DataAccessException e) {
-            throw new DAOException(ExceptionMessage.FAILED_REMOVE_TAG_FROM_CERTIFICATE.getErrorCode(), e);
         }
     }
 

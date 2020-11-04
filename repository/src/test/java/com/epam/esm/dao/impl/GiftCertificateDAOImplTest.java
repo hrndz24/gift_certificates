@@ -84,18 +84,6 @@ class GiftCertificateDAOImplTest {
     }
 
     @Test
-    void addTagToCertificateShouldAddTag() {
-        giftCertificateDAO.addTagToCertificate(1, 2);
-        assertEquals(2, giftCertificateDAO.getCertificateById(1).getTags().size());
-    }
-
-    @Test
-    void removeTagFromCertificateShouldRemoveTag() {
-        giftCertificateDAO.removeTagFromCertificate(2, 2);
-        assertEquals(1, giftCertificateDAO.getCertificateById(2).getTags().size());
-    }
-
-    @Test
     void getGiftCertificatesShouldReturnListOfThreeCertificates() {
         assertEquals(3, giftCertificateDAO.getCertificates(queryConditionToGetAllTags).size());
     }

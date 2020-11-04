@@ -1,5 +1,6 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.dao.CertificateTagDAO;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
@@ -31,6 +32,8 @@ class GiftCertificateServiceImplTest {
     private GiftCertificateServiceImpl certificateService;
     @Mock
     private GiftCertificateDAO certificateDAO;
+    @Mock
+    private CertificateTagDAO certificateTagDAO;
     @Mock
     private TagDAO tagDAO;
     @Spy
@@ -124,7 +127,7 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void removeTagFromCertificate() {
-        doNothing().when(certificateDAO).removeTagFromCertificate(3, 2);
+        doNothing().when(certificateTagDAO).removeTagFromCertificate(3, 2);
         certificateService.removeTagFromCertificate(3, 2);
     }
 }
