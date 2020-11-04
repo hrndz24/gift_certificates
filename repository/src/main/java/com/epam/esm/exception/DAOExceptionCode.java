@@ -1,6 +1,6 @@
 package com.epam.esm.exception;
 
-public enum ExceptionMessage {
+public enum DAOExceptionCode {
     FAILED_ADD_TAG("30101"), FAILED_REMOVE_TAG("30102"),
     FAILED_GET_TAG("30103"), FAILED_GET_TAGS("30104"),
 
@@ -11,7 +11,7 @@ public enum ExceptionMessage {
 
     private String errorCode;
 
-    ExceptionMessage(String errorCode) {
+    DAOExceptionCode(String errorCode) {
         this.errorCode = errorCode;
     }
 

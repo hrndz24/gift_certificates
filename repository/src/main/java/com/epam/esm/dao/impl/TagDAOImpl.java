@@ -3,7 +3,7 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.ColumnLabel;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.exception.DAOException;
-import com.epam.esm.exception.ExceptionMessage;
+import com.epam.esm.exception.DAOExceptionCode;
 import com.epam.esm.model.Tag;
 import com.epam.esm.utils.EntityRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class TagDAOImpl implements TagDAO {
         try {
             tag.setId(simpleJdbcInsert.executeAndReturnKey(parameters).intValue());
         } catch (DataAccessException e) {
-            throw new DAOException(ExceptionMessage.FAILED_ADD_TAG.getErrorCode(), e);
+            throw new DAOException(DAOExceptionCode.FAILED_ADD_TAG.getErrorCode(), e);
         }
         return tag;
     }
@@ -62,7 +62,7 @@ public class TagDAOImpl implements TagDAO {
         try {
             jdbcTemplate.update(DELETE_TAG, tagId);
         } catch (DataAccessException e) {
-            throw new DAOException(ExceptionMessage.FAILED_REMOVE_TAG.getErrorCode(), e);
+            throw new DAOException(DAOExceptionCode.FAILED_REMOVE_TAG.getErrorCode(), e);
         }
     }
 
@@ -71,7 +71,7 @@ public class TagDAOImpl implements TagDAO {
         try {
             return jdbcTemplate.query(GET_TAGS_ALL, tagRowMapper);
         } catch (DataAccessException e) {
-            throw new DAOException(ExceptionMessage.FAILED_GET_TAGS.getErrorCode(), e);
+            throw new DAOException(DAOExceptionCode.FAILED_GET_TAGS.getErrorCode(), e);
         }
     }
 
@@ -80,7 +80,7 @@ public class TagDAOImpl implements TagDAO {
         try {
             return jdbcTemplate.query(GET_TAG_BY_ID, tagRowMapper, id).stream().findFirst().orElse(null);
         } catch (DataAccessException e) {
-            throw new DAOException(ExceptionMessage.FAILED_GET_TAG.getErrorCode(), e);
+            throw new DAOException(DAOExceptionCode.FAILED_GET_TAG.getErrorCode(), e);
         }
     }
 

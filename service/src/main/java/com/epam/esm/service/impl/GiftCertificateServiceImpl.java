@@ -6,7 +6,7 @@ import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
-import com.epam.esm.exception.ExceptionServiceMessage;
+import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.mapper.GiftCertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.GiftCertificate;
@@ -132,7 +132,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         GiftCertificate certificate = certificateDAO.getCertificateById(id);
         if (certificate == null) {
             throw new EntityNotFoundException(
-                    ExceptionServiceMessage.NON_EXISTING_CERTIFICATE_ID.getErrorCode(), String.valueOf(id));
+                    ServiceExceptionCode.NON_EXISTING_CERTIFICATE_ID.getErrorCode(), String.valueOf(id));
         }
         return certificate;
     }

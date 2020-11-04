@@ -2,7 +2,7 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.CertificateTagDAO;
 import com.epam.esm.exception.DAOException;
-import com.epam.esm.exception.ExceptionMessage;
+import com.epam.esm.exception.DAOExceptionCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,7 +28,7 @@ public class CertificateTagDAOImpl implements CertificateTagDAO {
         try {
             jdbcTemplate.update(ADD_TAG_TO_CERTIFICATE, certificateId, tagId);
         } catch (DataAccessException e) {
-            throw new DAOException(ExceptionMessage.FAILED_ADD_TAG_TO_CERTIFICATE.getErrorCode(), e);
+            throw new DAOException(DAOExceptionCode.FAILED_ADD_TAG_TO_CERTIFICATE.getErrorCode(), e);
         }
     }
 
@@ -37,7 +37,7 @@ public class CertificateTagDAOImpl implements CertificateTagDAO {
         try {
             jdbcTemplate.update(REMOVE_TAG_FROM_CERTIFICATE, certificateId, tagId);
         } catch (DataAccessException e) {
-            throw new DAOException(ExceptionMessage.FAILED_REMOVE_TAG_FROM_CERTIFICATE.getErrorCode(), e);
+            throw new DAOException(DAOExceptionCode.FAILED_REMOVE_TAG_FROM_CERTIFICATE.getErrorCode(), e);
         }
     }
 }
