@@ -48,7 +48,7 @@ public class GiftCertificateController {
      * @param id id of the certificate to update
      * @param certificate updated certificate information
      */
-    @PutMapping(value = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public void updateCertificate(@PathVariable int id, @RequestBody GiftCertificateDTO certificate) {
         certificateService.updateCertificate(id, certificate);
@@ -59,7 +59,7 @@ public class GiftCertificateController {
      *
      * @param id id of the certificate to be deleted
      */
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteCertificate(@PathVariable("id") int id) {
         certificateService.removeCertificate(id);
@@ -86,7 +86,7 @@ public class GiftCertificateController {
      * @param id id of the requested certificate
      * @return GiftCertificateDTO with the requested id
      */
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public GiftCertificateDTO getCertificateById(@PathVariable("id") int id) {
         return certificateService.getCertificateById(id);
     }
@@ -113,7 +113,7 @@ public class GiftCertificateController {
      * @param certificateId id of the certificate to remove tag from
      * @param tagId id of the tag to be removed
      */
-    @DeleteMapping("{certificateId}/tags/{tagId}")
+    @DeleteMapping("/{certificateId}/tags/{tagId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteTagFromCertificate(@PathVariable("certificateId") int certificateId,
                                          @PathVariable("tagId") int tagId) {

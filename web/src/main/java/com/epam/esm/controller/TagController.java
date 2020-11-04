@@ -42,7 +42,7 @@ public class TagController {
      * @param id id of the requested tag
      * @return TagDTO with the requested id
      */
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public TagDTO getTagById(@PathVariable("id") int id) {
         return tagService.getTagById(id);
     }
@@ -64,7 +64,7 @@ public class TagController {
      *
      * @param id id of the tag to be deleted
      */
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteTag(@PathVariable("id") int id) {
         tagService.removeTag(id);
