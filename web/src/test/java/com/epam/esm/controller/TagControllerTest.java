@@ -85,6 +85,6 @@ class TagControllerTest {
         int id = 1;
         willDoNothing().given(service).removeTag(id);
         mockMvc.perform(delete(tagsURL + "/{id}", id))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 }

@@ -98,7 +98,7 @@ class GiftCertificateControllerTest {
         int id = 1;
         willDoNothing().given(service).removeCertificate(id);
         mockMvc.perform(delete(certificatesURL + "/{id}", id))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -176,6 +176,6 @@ class GiftCertificateControllerTest {
         int tagId = 1;
         willDoNothing().given(service).removeTagFromCertificate(certificateId, tagId);
         mockMvc.perform(delete(certificatesURL + "/{certificateId}/tags/{tagId}", certificateId, tagId))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 }
