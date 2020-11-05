@@ -60,7 +60,7 @@ public class GiftCertificateController {
      * @param id id of the certificate to be deleted
      */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCertificate(@PathVariable("id") int id) {
         certificateService.removeCertificate(id);
     }
@@ -114,7 +114,7 @@ public class GiftCertificateController {
      * @param tagId id of the tag to be removed
      */
     @DeleteMapping("/{certificateId}/tags/{tagId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTagFromCertificate(@PathVariable("certificateId") int certificateId,
                                          @PathVariable("tagId") int tagId) {
         certificateService.removeTagFromCertificate(certificateId, tagId);

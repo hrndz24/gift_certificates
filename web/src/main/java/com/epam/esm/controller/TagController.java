@@ -65,7 +65,7 @@ public class TagController {
      * @param id id of the tag to be deleted
      */
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTag(@PathVariable("id") int id) {
         tagService.removeTag(id);
     }

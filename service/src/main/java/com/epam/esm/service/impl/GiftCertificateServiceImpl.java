@@ -53,18 +53,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return addNewCertificateToDatabase(certificateDTO);
     }
 
-    private void prepareCertificateBeforeAddingToDatabase(GiftCertificateDTO certificateDTO) {
-        certificateDTO.setCreateDate(new Date());
-        certificateDTO.setLastUpdateDate(new Date());
-        validator.validateCertificate(certificateDTO);
-    }
-
     private GiftCertificateDTO addNewCertificateToDatabase(GiftCertificateDTO certificateDTO) {
         prepareCertificateBeforeAddingToDatabase(certificateDTO);
         GiftCertificateDTO addedCertificateDTO = certificateMapper.toDTO(
                 certificateDAO.addCertificate(certificateMapper.toModel(certificateDTO)));
         addCertificateTags(certificateDTO.getTags(), addedCertificateDTO.getId());
         return addedCertificateDTO;
+    }
+
+    private void prepareCertificateBeforeAddingToDatabase(GiftCertificateDTO certificateDTO) {
+        certificateDTO.setCreateDate(new Date());
+        certificateDTO.setLastUpdateDate(new Date());
+        validator.validateCertificate(certificateDTO);
     }
 
     private void addCertificateTags(Set<TagDTO> tags, int certificateId) {
