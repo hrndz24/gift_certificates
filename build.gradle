@@ -9,19 +9,19 @@ allprojects {
     }
 
     dependencies{
-        implementation group: 'org.springframework', name: 'spring-context', version: '5.2.9.RELEASE'
-        implementation group: 'org.springframework', name: 'spring-core', version: '5.2.9.RELEASE'
-        implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.2.9.RELEASE'
-        implementation group: 'org.springframework', name: 'spring-webmvc', version: '5.2.9.RELEASE'
+        implementation group: 'org.springframework', name: 'spring-context', version: findProperty("spring.version")
+        implementation group: 'org.springframework', name: 'spring-core', version: findProperty("spring.version")
+        implementation group: 'org.springframework', name: 'spring-jdbc', version: findProperty("spring.version")
+        implementation group: 'org.springframework', name: 'spring-webmvc', version: findProperty("spring.version")
 
         implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
-        implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.3'
-        implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.3'
+        implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: findProperty("jackson.version")
+        implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: findProperty("jackson.version")
 
         testImplementation(platform('org.junit:junit-bom:5.7.0'))
         testImplementation('org.junit.jupiter:junit-jupiter')
         testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.6.0'
-        testImplementation group: 'org.springframework', name: 'spring-test', version: '5.2.9.RELEASE'
+        testImplementation group: 'org.springframework', name: 'spring-test', version: findProperty("spring.version")
         testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
         testImplementation 'com.jayway.jsonpath:json-path:2.2.0'
     }

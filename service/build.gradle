@@ -2,7 +2,4 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     implementation project(":repository")
-
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.3'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.3'
 }
