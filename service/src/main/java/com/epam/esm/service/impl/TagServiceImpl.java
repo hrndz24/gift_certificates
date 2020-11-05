@@ -1,9 +1,11 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.dao.CertificateTagDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ServiceExceptionCode;
+import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
@@ -18,12 +20,14 @@ import java.util.List;
 public class TagServiceImpl implements TagService {
 
     private TagDAO tagDAO;
+    private CertificateTagDAO certificateTagDAO;
     private Validator validator;
     private TagMapper mapper;
 
     @Autowired
-    public TagServiceImpl(TagDAO tagDAO, Validator validator, TagMapper mapper) {
+    public TagServiceImpl(TagDAO tagDAO,CertificateTagDAO certificateTagDAO, Validator validator, TagMapper mapper) {
         this.tagDAO = tagDAO;
+        this.certificateTagDAO = certificateTagDAO;
         this.validator = validator;
         this.mapper = mapper;
     }
@@ -36,7 +40,15 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void removeTag(int tagId) {
+        checkTagIsNotAssignedToAnyCertificate(tagId);
         tagDAO.removeTag(tagId);
+    }
+
+    private void checkTagIsNotAssignedToAnyCertificate(int tagId) {
+        if (certificateTagDAO.isTagAssignedToAnyCertificate(tagId)) {
+            throw new ValidatorException(
+                    ServiceExceptionCode.CANNOT_DELETE_TAG_WHICH_IS_USED.getErrorCode(), String.valueOf(tagId));
+        }
     }
 
     @Override

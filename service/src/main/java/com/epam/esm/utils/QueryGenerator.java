@@ -29,8 +29,8 @@ public class QueryGenerator {
 
     private static final String NAME_ASC = "gc.name";
     private static final String NAME_DESC = "gc.name DESC";
-    private static final String DATE_ASC = "date";
-    private static final String DATE_DESC = "date DESC";
+    private static final String DATE_ASC = "create_date";
+    private static final String DATE_DESC = "create_date DESC";
 
     private StringBuilder queryBuilder;
 
@@ -60,14 +60,17 @@ public class QueryGenerator {
 
     private void appendQueryCondition(Map<String, String> params) {
         params.keySet().forEach(s -> {
-            String queryCondition = queries.get(s);
-            queryCondition = queryCondition.replaceAll("\\?", "%" + params.get(s) + "%");
-            queryBuilder.append(queryCondition);
+            if (!ORDER_BY_PARAM_NAME.equals(s)) {
+                String queryCondition = queries.get(s);
+                queryCondition = queryCondition.replaceAll("\\?", "%" + params.get(s) + "%");
+                queryBuilder.append(queryCondition);
+            }
         });
     }
 
     private void appendSortConditionIfExists(Map<String, String> params) {
         if (params.containsKey(ORDER_BY_PARAM_NAME)) {
+            queryBuilder.append(queries.get(ORDER_BY_PARAM_NAME));
             queryBuilder.append(orderByQueries.get(params.get(ORDER_BY_PARAM_NAME)));
         }
     }

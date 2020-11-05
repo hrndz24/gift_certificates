@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.Locale;
 
@@ -23,7 +25,6 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(ValidatorException.class)
     public ResponseEntity<ExceptionResponse> handleValidatorException(ValidatorException e, Locale locale) {
-        System.out.println(e.getMessage());
         String localizedMessage = messageSource.getMessage(
                 e.getMessage(), new Object[]{}, locale);
         ExceptionResponse response = new ExceptionResponse(e.getMessage(),
@@ -51,7 +52,7 @@ public class CustomExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleMediaTypeException(HttpMediaTypeNotSupportedException e, Locale locale) {
         String errorMessage = messageSource.getMessage(
                 "50101", new Object[]{}, locale);
-        ExceptionResponse response = new ExceptionResponse("50101", errorMessage );
+        ExceptionResponse response = new ExceptionResponse("50101", errorMessage);
         return new ResponseEntity<>(response, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
@@ -63,7 +64,21 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ExceptionResponse> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e, Locale locale) {
+        String errorMessage = messageSource.getMessage(
+                "50103", new Object[]{}, locale);
+        ExceptionResponse response = new ExceptionResponse("50103", errorMessage);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ExceptionResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, Locale locale) {
+        String errorMessage = messageSource.getMessage(
+                "50104", new Object[]{}, locale);
+        ExceptionResponse response = new ExceptionResponse("50104", errorMessage);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
     private String buildErrorMessage(String localizedMessage, String parameter) {
         return localizedMessage + " " + parameter;

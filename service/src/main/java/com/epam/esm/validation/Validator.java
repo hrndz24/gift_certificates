@@ -51,41 +51,46 @@ public class Validator {
     public void checkIdIsPositive(int id) {
         if (id <= 0) {
             throw new ValidatorException(
-                    ServiceExceptionCode.NEGATIVE.getErrorCode(), "id = " + id);
+                    ServiceExceptionCode.SHOULD_BE_POSITIVE.getErrorCode(), "id = " + id);
         }
     }
 
     private void validateNonNull(Object object, String className) {
         if (object == null) {
-            throw new ValidatorException(ServiceExceptionCode.NULL.getErrorCode(), className);
+            throw new ValidatorException(ServiceExceptionCode.CANNOT_BE_NULL.getErrorCode(), className);
         }
     }
 
     private void validateStringField(String string, String field) {
         if (StringUtils.isEmpty(string)) {
-            throw new ValidatorException(ServiceExceptionCode.EMPTY.getErrorCode(), field);
+            throw new ValidatorException(ServiceExceptionCode.CANNOT_BE_EMPTY.getErrorCode(), field);
         }
     }
 
     private void validatePrice(BigDecimal price) {
         if (price == null) {
-            throw new ValidatorException(ServiceExceptionCode.NULL.getErrorCode(), "price");
+            throw new ValidatorException(ServiceExceptionCode.CANNOT_BE_NULL.getErrorCode(), "price");
         }
-        if (price.doubleValue() <= 0) {
-            throw new ValidatorException(ServiceExceptionCode.NEGATIVE.getErrorCode(), "price = " + price);
+        if (price.doubleValue() < 0) {
+            throw new ValidatorException(ServiceExceptionCode.SHOULD_BE_POSITIVE.getErrorCode(), "price = " + price);
         }
     }
 
     private void validateDuration(int duration) {
         if (duration <= 0) {
-            throw new ValidatorException(ServiceExceptionCode.NEGATIVE.getErrorCode(), "duration = " + duration);
+            throw new ValidatorException(ServiceExceptionCode.SHOULD_BE_POSITIVE.getErrorCode(), "duration = " + duration);
         }
     }
 
     public void validateParams(Map<String, String> params) {
         validateNonNull(params, params.getClass().getName());
+        trimAndLowerCase(params);
         checkAllParametersExist(params);
         checkParamsHaveOrderBy(params);
+    }
+
+    private void trimAndLowerCase(Map<String, String> params) {
+        params.replaceAll((k, v) -> v.toLowerCase().trim());
     }
 
     private void checkAllParametersExist(Map<String, String> params) {

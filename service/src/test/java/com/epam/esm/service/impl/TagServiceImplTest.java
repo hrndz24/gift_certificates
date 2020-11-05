@@ -1,5 +1,6 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.dao.CertificateTagDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
@@ -31,6 +32,8 @@ class TagServiceImplTest {
     private TagServiceImpl tagService;
     @Mock
     private TagDAO tagDAO;
+    @Mock
+    private CertificateTagDAO certificateTagDAO;
     @Spy
     private Validator validator = new Validator();
     @Spy
@@ -67,7 +70,8 @@ class TagServiceImplTest {
     @Test
     void removeTagShouldRemoveTag() {
         doNothing().when(tagDAO).removeTag(anyInt());
-        tagService.removeTag(anyInt());
+        when(certificateTagDAO.isTagAssignedToAnyCertificate(4)).thenReturn(false);
+        tagService.removeTag(4);
     }
 
     @Test
