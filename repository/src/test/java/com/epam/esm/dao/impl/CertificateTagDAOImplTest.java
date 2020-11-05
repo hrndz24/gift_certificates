@@ -8,7 +8,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CertificateTagDAOImplTest {
 
@@ -38,6 +38,16 @@ class CertificateTagDAOImplTest {
     void removeTagFromCertificateShouldRemoveTag() {
         certificateTagDAO.removeTagFromCertificate(2, 2);
         assertEquals(1, giftCertificateDAO.getCertificateById(2).getTags().size());
+    }
+
+    @Test
+    void isTagAssignedToAnyCertificateWithAssignedTagShouldReturnTrue() {
+        assertTrue(certificateTagDAO.isTagAssignedToAnyCertificate(1));
+    }
+
+    @Test
+    void isTagAssignedToAnyCertificateWithNotAssignedTagShouldReturnFalse() {
+        assertFalse(certificateTagDAO.isTagAssignedToAnyCertificate(3));
     }
 
     @AfterEach
