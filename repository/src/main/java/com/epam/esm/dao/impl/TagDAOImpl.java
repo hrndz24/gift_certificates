@@ -23,12 +23,8 @@ import java.util.Map;
 public class TagDAOImpl implements TagDAO {
 
     private JdbcTemplate jdbcTemplate;
-
     private TagRowMapper tagRowMapper = TagRowMapper.INSTANCE;
 
-    private static final String DELETE_TAG = "DELETE FROM tag WHERE id = ?";
-    private static final String GET_TAGS_ALL = "SELECT id as tag_id, name as tag_name FROM tag ORDER BY id";
-    private static final String GET_TAG_BY_ID = "SELECT id as tag_id, name as tag_name FROM tag WHERE id = ?";
     private static final String TAG_TABLE_NAME = "tag";
 
     @Autowired
@@ -60,7 +56,7 @@ public class TagDAOImpl implements TagDAO {
     @Override
     public void removeTag(int tagId) {
         try {
-            jdbcTemplate.update(DELETE_TAG, tagId);
+            jdbcTemplate.update(SQLQuery.DELETE_TAG.getQuery(), tagId);
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_REMOVE_TAG.getErrorCode(), e);
         }
@@ -69,7 +65,7 @@ public class TagDAOImpl implements TagDAO {
     @Override
     public List<Tag> getTags() {
         try {
-            return jdbcTemplate.query(GET_TAGS_ALL, tagRowMapper);
+            return jdbcTemplate.query(SQLQuery.GET_ALL_TAGS.getQuery(), tagRowMapper);
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_TAGS.getErrorCode(), e);
         }
@@ -78,7 +74,7 @@ public class TagDAOImpl implements TagDAO {
     @Override
     public Tag getTagById(int id) {
         try {
-            return jdbcTemplate.query(GET_TAG_BY_ID, tagRowMapper, id).stream().findFirst().orElse(null);
+            return jdbcTemplate.query(SQLQuery.GET_TAG_BY_ID.getQuery(), tagRowMapper, id).stream().findFirst().orElse(null);
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_TAG.getErrorCode(), e);
         }

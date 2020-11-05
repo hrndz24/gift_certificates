@@ -8,17 +8,12 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 public class CertificateTagDAOImpl implements CertificateTagDAO {
 
     private JdbcTemplate jdbcTemplate;
-
-    private static final String ADD_TAG_TO_CERTIFICATE =
-            "INSERT INTO certificate_has_tag(certificate_id, tag_id) VALUES (?, ?)";
-    private static final String REMOVE_TAG_FROM_CERTIFICATE =
-            "DELETE FROM certificate_has_tag WHERE certificate_id = ? AND tag_id = ?";
-    private static final String IS_TAG_ASSIGNED =
-            "SELECT COUNT(*) FROM certificate_has_tag WHERE tag_id = ?";
 
     @Autowired
     public CertificateTagDAOImpl(JdbcTemplate jdbcTemplate) {
@@ -28,7 +23,7 @@ public class CertificateTagDAOImpl implements CertificateTagDAO {
     @Override
     public void addTagToCertificate(int certificateId, int tagId) {
         try {
-            jdbcTemplate.update(ADD_TAG_TO_CERTIFICATE, certificateId, tagId);
+            jdbcTemplate.update(SQLQuery.ADD_TAG_TO_CERTIFICATE.getQuery(), certificateId, tagId);
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_ADD_TAG_TO_CERTIFICATE.getErrorCode(), e);
         }
@@ -37,7 +32,7 @@ public class CertificateTagDAOImpl implements CertificateTagDAO {
     @Override
     public void removeTagFromCertificate(int certificateId, int tagId) {
         try {
-            jdbcTemplate.update(REMOVE_TAG_FROM_CERTIFICATE, certificateId, tagId);
+            jdbcTemplate.update(SQLQuery.REMOVE_TAG_FROM_CERTIFICATE.getQuery(), certificateId, tagId);
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_REMOVE_TAG_FROM_CERTIFICATE.getErrorCode(), e);
         }
@@ -45,7 +40,12 @@ public class CertificateTagDAOImpl implements CertificateTagDAO {
 
     @Override
     public boolean isTagAssignedToAnyCertificate(int tagId) {
-        int tagAssignmentsCount = jdbcTemplate.queryForObject(IS_TAG_ASSIGNED, new Object[]{tagId}, Integer.class);
-        return tagAssignmentsCount > 0;
+        try {
+            int tagAssignmentsCount = Objects.requireNonNull(
+                    jdbcTemplate.queryForObject(SQLQuery.IS_TAG_ASSIGNED.getQuery(), new Object[]{tagId}, Integer.class));
+            return tagAssignmentsCount > 0;
+        } catch (DataAccessException e) {
+            throw new DAOException(DAOExceptionCode.ERROR_DURING_FINDING_ASSIGNED_TAGS.getErrorCode(), e);
+        }
     }
 }

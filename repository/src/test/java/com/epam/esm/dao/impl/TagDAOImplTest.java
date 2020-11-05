@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TagDAOImplTest {
 
-    private EmbeddedDatabase embeddedDatabase;
+    private static EmbeddedDatabase embeddedDatabase;
 
     private TagDAOImpl tagDAO;
 

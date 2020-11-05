@@ -26,25 +26,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     private GiftCertificateResultSetExtractor giftCertificateResultSetExtractor =
             GiftCertificateResultSetExtractor.INSTANCE;
 
-    private static final String DELETE_GIFT_CERTIFICATE =
-            "DELETE FROM gift_certificate WHERE id = ?";
-    private static final String UPDATE_GIFT_CERTIFICATE =
-            "UPDATE gift_certificate SET name = ?, description = ?, price = ?," +
-                    " last_update_date = ?, duration = ? WHERE id = ?";
-
-    private static final String ALL_FIELDS =
-            "gc.id id, gc.name name, description, price, create_date, " +
-                    "last_update_date, duration, tag_id, tag.name as tag_name";
-    private static final String JOIN_TAGS =
-            " FROM gift_certificate gc LEFT JOIN certificate_has_tag ct " +
-                    "ON gc.id = ct.certificate_id " +
-                    "LEFT JOIN tag ON ct.tag_id = tag.id ";
-
-    private static final String GET_CERTIFICATES =
-            "SELECT " + ALL_FIELDS + JOIN_TAGS;
-    private static final String GET_CERTIFICATE_BY_ID =
-            "SELECT " + ALL_FIELDS + JOIN_TAGS + " WHERE gc.id = ?";
-
     private static final String GIFT_CERTIFICATE_TABLE_NAME = "gift_certificate";
 
     @Autowired
@@ -82,7 +63,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Override
     public void removeCertificate(int certificateId) {
         try {
-            jdbcTemplate.update(DELETE_GIFT_CERTIFICATE, certificateId);
+            jdbcTemplate.update(SQLQuery.DELETE_GIFT_CERTIFICATE.getQuery(), certificateId);
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_REMOVE_CERTIFICATE.getErrorCode(), e);
         }
@@ -91,7 +72,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Override
     public void updateCertificate(GiftCertificate certificate) {
         try {
-            jdbcTemplate.update(UPDATE_GIFT_CERTIFICATE, certificate.getName(),
+            jdbcTemplate.update(SQLQuery.UPDATE_GIFT_CERTIFICATE.getQuery(), certificate.getName(),
                     certificate.getDescription(), certificate.getPrice(),
                     certificate.getLastUpdateDate(), certificate.getDuration(),
                     certificate.getId());
@@ -103,7 +84,8 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Override
     public List<GiftCertificate> getCertificates(String queryCondition) {
         try {
-            return jdbcTemplate.query(GET_CERTIFICATES + queryCondition, giftCertificateResultSetExtractor);
+            return jdbcTemplate.query(SQLQuery.GET_CERTIFICATES.getQuery() + queryCondition,
+                    giftCertificateResultSetExtractor);
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_CERTIFICATES.getErrorCode(), e);
         }
@@ -112,8 +94,8 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Override
     public GiftCertificate getCertificateById(int id) {
         try {
-            return Objects.requireNonNull(jdbcTemplate.query(
-                    GET_CERTIFICATE_BY_ID, giftCertificateResultSetExtractor, id)).stream().findFirst().orElse(null);
+            return Objects.requireNonNull(jdbcTemplate.query(SQLQuery.GET_CERTIFICATE_BY_ID.getQuery(),
+                    giftCertificateResultSetExtractor, id)).stream().findFirst().orElse(null);
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_CERTIFICATE.getErrorCode(), e);
         }

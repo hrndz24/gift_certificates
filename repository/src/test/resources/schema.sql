@@ -1,10 +1,10 @@
-CREATE TABLE tag
+CREATE TABLE  tag
 (
     id   INT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(50) UNIQUE
 );
 
-CREATE TABLE gift_certificate
+CREATE TABLE  gift_certificate
 (
     id               INT PRIMARY KEY AUTO_INCREMENT,
     name             VARCHAR(100),
