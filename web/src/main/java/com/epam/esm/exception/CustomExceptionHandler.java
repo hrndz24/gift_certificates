@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
@@ -45,7 +46,7 @@ public class CustomExceptionHandler {
         String localizedMessage = messageSource.getMessage(
                 e.getMessage(), new Object[]{}, locale);
         ExceptionResponse response = new ExceptionResponse(e.getMessage(), localizedMessage);
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
@@ -80,7 +81,15 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ExceptionResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e, Locale locale) {
+        String errorMessage = messageSource.getMessage(
+                "50105", new Object[]{}, locale);
+        ExceptionResponse response = new ExceptionResponse("50105", errorMessage);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     private String buildErrorMessage(String localizedMessage, String parameter) {
-        return localizedMessage + " " + parameter;
+        return parameter == null ? localizedMessage : localizedMessage + " " + parameter;
     }
 }

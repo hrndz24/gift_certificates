@@ -78,7 +78,12 @@ public class Validator {
 
     private void validateDuration(int duration) {
         if (duration <= 0) {
-            throw new ValidatorException(ServiceExceptionCode.SHOULD_BE_POSITIVE.getErrorCode(), "duration = " + duration);
+            throw new ValidatorException(
+                    ServiceExceptionCode.SHOULD_BE_POSITIVE.getErrorCode(), "duration = " + duration);
+        }
+        if (duration > 365) {
+            throw new ValidatorException(
+                    ServiceExceptionCode.DURATION_CANNOT_BE_MORE_THAN_YEAR.getErrorCode(), "duration = " + duration);
         }
     }
 

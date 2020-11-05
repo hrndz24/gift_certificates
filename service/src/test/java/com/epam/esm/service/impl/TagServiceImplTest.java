@@ -22,6 +22,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -69,9 +70,10 @@ class TagServiceImplTest {
 
     @Test
     void removeTagShouldRemoveTag() {
-        doNothing().when(tagDAO).removeTag(anyInt());
-        when(certificateTagDAO.isTagAssignedToAnyCertificate(4)).thenReturn(false);
-        tagService.removeTag(4);
+        doNothing().when(tagDAO).removeTag(3);
+        when(tagDAO.getTagById(3)).thenReturn(new Tag());
+        when(certificateTagDAO.isTagAssignedToAnyCertificate(3)).thenReturn(false);
+        tagService.removeTag(3);
     }
 
     @Test

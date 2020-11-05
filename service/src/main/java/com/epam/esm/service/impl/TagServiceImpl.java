@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.CertificateTagDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.exception.DAOException;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.exception.ValidatorException;
@@ -25,7 +26,10 @@ public class TagServiceImpl implements TagService {
     private TagMapper mapper;
 
     @Autowired
-    public TagServiceImpl(TagDAO tagDAO,CertificateTagDAO certificateTagDAO, Validator validator, TagMapper mapper) {
+    public TagServiceImpl(TagDAO tagDAO,
+                          CertificateTagDAO certificateTagDAO,
+                          Validator validator,
+                          TagMapper mapper) {
         this.tagDAO = tagDAO;
         this.certificateTagDAO = certificateTagDAO;
         this.validator = validator;
@@ -35,19 +39,40 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagDTO addTag(TagDTO tagDTO) {
         validator.validateTag(tagDTO);
-        return mapper.toDTO(tagDAO.addTag(mapper.toModel(tagDTO)));
+        Tag tag = addTagIfItDoesNotExist(mapper.toModel(tagDTO));
+        return mapper.toDTO(tag);
+    }
+
+    private Tag addTagIfItDoesNotExist(Tag tag) {
+        try {
+            return tagDAO.addTag(tag);
+        } catch (DAOException e) {
+            throw new ValidatorException(
+                    ServiceExceptionCode.CANNOT_ADD_EXISTING_TAG.getErrorCode());
+        }
     }
 
     @Override
     public void removeTag(int tagId) {
+        validator.checkIdIsPositive(tagId);
+        getTagIfExists(tagId);
         checkTagIsNotAssignedToAnyCertificate(tagId);
         tagDAO.removeTag(tagId);
+    }
+
+    private Tag getTagIfExists(int tagId) {
+        Tag tag = tagDAO.getTagById(tagId);
+        if (tag == null) {
+            throw new EntityNotFoundException(
+                    ServiceExceptionCode.NON_EXISTING_TAG_ID.getErrorCode(), String.valueOf(tagId));
+        }
+        return tag;
     }
 
     private void checkTagIsNotAssignedToAnyCertificate(int tagId) {
         if (certificateTagDAO.isTagAssignedToAnyCertificate(tagId)) {
             throw new ValidatorException(
-                    ServiceExceptionCode.CANNOT_DELETE_TAG_WHICH_IS_USED.getErrorCode(), String.valueOf(tagId));
+                    ServiceExceptionCode.CANNOT_DELETE_TAG_WHICH_IS_USED.getErrorCode());
         }
     }
 
@@ -61,11 +86,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagDTO getTagById(int id) {
         validator.checkIdIsPositive(id);
-        Tag tag = tagDAO.getTagById(id);
-        if (tag == null) {
-            throw new EntityNotFoundException(
-                    ServiceExceptionCode.NON_EXISTING_TAG_ID.getErrorCode(), String.valueOf(id));
-        }
+        Tag tag = getTagIfExists(id);
         return mapper.toDTO(tag);
     }
 }
