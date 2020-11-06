@@ -6,4 +6,8 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     implementation project(":service")
+    implementation project(":repository")
+
+    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+    providedCompile group: 'javax.servlet.jsp', name: 'javax.servlet.jsp-api', version: '2.3.3'
 }
