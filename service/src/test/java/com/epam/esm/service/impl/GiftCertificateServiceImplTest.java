@@ -10,6 +10,7 @@ import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.GiftCertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.model.Tag;
 import com.epam.esm.utils.QueryGenerator;
 import com.epam.esm.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
@@ -127,6 +128,9 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void removeTagFromCertificate() {
+        when(tagDAO.getTagById(2)).thenReturn(new Tag());
+        when(certificateDAO.getCertificateById(3)).thenReturn(new GiftCertificate());
+        when(certificateTagDAO.isTagAssignedToCertificate(3, 2)).thenReturn(true);
         doNothing().when(certificateTagDAO).removeTagFromCertificate(3, 2);
         certificateService.removeTagFromCertificate(3, 2);
     }

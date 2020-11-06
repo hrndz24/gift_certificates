@@ -50,6 +50,16 @@ class CertificateTagDAOImplTest {
         assertFalse(certificateTagDAO.isTagAssignedToAnyCertificate(3));
     }
 
+    @Test
+    void isTagAssignedToCertificateWithAssignedTagShouldReturnTrue() {
+        assertTrue(certificateTagDAO.isTagAssignedToCertificate(2, 1));
+    }
+
+    @Test
+    void isTagAssignedToCertificateWithNotAssignedTagShouldReturnFalse() {
+        assertFalse(certificateTagDAO.isTagAssignedToCertificate(3, 3));
+    }
+
     @AfterEach
     void tearDown() {
         embeddedDatabase.shutdown();

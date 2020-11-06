@@ -39,6 +39,18 @@ public class CertificateTagDAOImpl implements CertificateTagDAO {
     }
 
     @Override
+    public boolean isTagAssignedToCertificate(int certificateId, int tagId){
+        try {
+            int tagAssignmentsCount = Objects.requireNonNull(
+                    jdbcTemplate.queryForObject(SQLQuery.IS_TAG_ASSIGNED_TO_CERTIFICATE.getQuery(),
+                            new Object[]{tagId, certificateId}, Integer.class));
+            return tagAssignmentsCount > 0;
+        } catch (DataAccessException e) {
+            throw new DAOException(DAOExceptionCode.ERROR_DURING_FINDING_ASSIGNED_TAGS.getErrorCode(), e);
+        }
+    }
+
+    @Override
     public boolean isTagAssignedToAnyCertificate(int tagId) {
         try {
             int tagAssignmentsCount = Objects.requireNonNull(

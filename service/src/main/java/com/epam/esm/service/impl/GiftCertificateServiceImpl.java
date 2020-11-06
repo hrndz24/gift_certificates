@@ -7,6 +7,7 @@ import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ServiceExceptionCode;
+import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.GiftCertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.GiftCertificate;
@@ -14,12 +15,12 @@ import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.utils.QueryGenerator;
 import com.epam.esm.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-@Component
+@Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private GiftCertificateDAO certificateDAO;
@@ -73,14 +74,22 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private void addTagToCertificateIfExists(int certificateId, TagDTO tag) {
         int tagId = tag.getId();
-        if (!isTagExistent(tag)) {
+        if (!isTagExistent(tag.getId())) {
             tagId = tagMapper.toDTO(tagDAO.addTag(tagMapper.toModel(tag))).getId();
         }
+        checkTagIsNotAssignedToCertificate(certificateId, tagId);
         certificateTagDAO.addTagToCertificate(certificateId, tagId);
     }
 
-    private boolean isTagExistent(TagDTO tagDTO) {
-        return tagDAO.getTagById(tagDTO.getId()) != null;
+    private boolean isTagExistent(int tagId) {
+        return tagDAO.getTagById(tagId) != null;
+    }
+
+    private void checkTagIsNotAssignedToCertificate(int certificateId, int tagId) {
+        if (certificateTagDAO.isTagAssignedToCertificate(certificateId, tagId)) {
+            throw new ValidatorException(
+                    ServiceExceptionCode.TAG_IS_ALREADY_ASSIGNED_TO_CERTIFICATE.getErrorCode(), "tag id = " + tagId);
+        }
     }
 
     @Override
@@ -147,6 +156,24 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void removeTagFromCertificate(int certificateId, int tagId) {
+        validator.checkIdIsPositive(certificateId);
+        validator.checkIdIsPositive(tagId);
+        getCertificateIfExists(certificateId);
+        checkTagExists(tagId);
+        checkTagIsAssignedToCertificate(certificateId, tagId);
         certificateTagDAO.removeTagFromCertificate(certificateId, tagId);
+    }
+
+    private void checkTagExists(int tagId) {
+        if (!isTagExistent(tagId))
+            throw new EntityNotFoundException(
+                    ServiceExceptionCode.NON_EXISTING_TAG_ID.getErrorCode(), String.valueOf(tagId));
+    }
+
+    private void checkTagIsAssignedToCertificate(int certificateId, int tagId) {
+        if (!certificateTagDAO.isTagAssignedToCertificate(certificateId, tagId)) {
+            throw new ValidatorException(
+                    ServiceExceptionCode.TAG_IS_NOT_ASSIGNED_TO_CERTIFICATE.getErrorCode(), "tag id = " + tagId);
+        }
     }
 }

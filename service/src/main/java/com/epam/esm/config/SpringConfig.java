@@ -1,7 +1,5 @@
 package com.epam.esm.config;
 
-import com.epam.esm.mapper.GiftCertificateMapper;
-import com.epam.esm.mapper.TagMapper;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration.AccessLevel;
 import org.modelmapper.convention.MatchingStrategies;

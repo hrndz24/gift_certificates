@@ -74,6 +74,9 @@ public class Validator {
         if (price.doubleValue() < 0) {
             throw new ValidatorException(ServiceExceptionCode.SHOULD_BE_POSITIVE.getErrorCode(), "price = " + price);
         }
+        if (price.doubleValue() > 999999999.99) {
+            throw new ValidatorException(ServiceExceptionCode.PRICE_TOO_HIGH.getErrorCode(), "price = " + price);
+        }
     }
 
     private void validateDuration(int duration) {
@@ -81,7 +84,7 @@ public class Validator {
             throw new ValidatorException(
                     ServiceExceptionCode.SHOULD_BE_POSITIVE.getErrorCode(), "duration = " + duration);
         }
-        if (duration > 365) {
+        if (duration > 366) {
             throw new ValidatorException(
                     ServiceExceptionCode.DURATION_CANNOT_BE_MORE_THAN_YEAR.getErrorCode(), "duration = " + duration);
         }
