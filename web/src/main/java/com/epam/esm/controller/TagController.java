@@ -14,7 +14,7 @@ import java.util.List;
  * {@code Tag} data
  */
 @RestController
-@RequestMapping(value = "/api/v1/tags", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/tags", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TagController {
 
     private TagService tagService;

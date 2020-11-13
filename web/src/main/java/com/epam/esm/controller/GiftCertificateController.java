@@ -16,7 +16,7 @@ import java.util.Map;
  * {@code GiftCertificate} data
  */
 @RestController
-@RequestMapping(value = "/api/v1/certificates", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/certificates", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GiftCertificateController {
 
     private GiftCertificateService certificateService;

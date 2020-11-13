@@ -33,7 +33,7 @@ class GiftCertificateControllerTest {
 
     private MockMvc mockMvc;
 
-    private static final String certificatesURL = "/api/v1/certificates";
+    private static final String certificatesURL = "/api/certificates";
 
     @BeforeEach
     void setUp() {

@@ -30,7 +30,7 @@ class TagControllerTest {
 
     private MockMvc mockMvc;
 
-    private static final String tagsURL = "/api/v1/tags";
+    private static final String tagsURL = "/api/tags";
 
     @BeforeEach
     void setUp() {
