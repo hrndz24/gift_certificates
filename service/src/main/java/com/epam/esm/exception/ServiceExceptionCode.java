@@ -9,7 +9,8 @@ public enum ServiceExceptionCode {
     TAG_IS_NOT_ASSIGNED_TO_CERTIFICATE("10111"),
 
     NON_EXISTING_TAG_ID("20101"),
-    NON_EXISTING_CERTIFICATE_ID("20102");
+    NON_EXISTING_CERTIFICATE_ID("20102"),
+    NON_EXISTING_USER_ID("20103");
 
     private String errorCode;
 
