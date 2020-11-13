@@ -6,11 +6,11 @@ import com.epam.esm.exception.DAOExceptionCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.Objects;
 
-@Component
+@Repository
 public class CertificateTagDAOImpl implements CertificateTagDAO {
 
     private JdbcTemplate jdbcTemplate;
@@ -39,7 +39,7 @@ public class CertificateTagDAOImpl implements CertificateTagDAO {
     }
 
     @Override
-    public boolean isTagAssignedToCertificate(int certificateId, int tagId){
+    public boolean isTagAssignedToCertificate(int certificateId, int tagId) {
         try {
             int tagAssignmentsCount = Objects.requireNonNull(
                     jdbcTemplate.queryForObject(SQLQuery.IS_TAG_ASSIGNED_TO_CERTIFICATE.getQuery(),

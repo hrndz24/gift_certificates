@@ -3,6 +3,7 @@ package com.epam.esm.utils;
 import com.epam.esm.dao.ColumnLabel;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
+import com.epam.esm.model.User;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
@@ -28,5 +29,13 @@ public class EntityRowMapper {
         giftCertificate.setLastUpdateDate(rs.getTimestamp(ColumnLabel.CERTIFICATE_LAST_UPDATE_DATE.getColumnName()));
         giftCertificate.setDuration(rs.getInt(ColumnLabel.CERTIFICATE_DURATION.getColumnName()));
         return giftCertificate;
+    }
+
+    public User mapUserFields(ResultSet rs) throws SQLException {
+        User user = new User();
+        user.setId(rs.getInt(ColumnLabel.ID.getColumnName()));
+        user.setEmail(rs.getString(ColumnLabel.USER_EMAIL.getColumnName()));
+        user.setPassword(rs.getString(ColumnLabel.USER_PASSWORD.getColumnName()));
+        return user;
     }
 }

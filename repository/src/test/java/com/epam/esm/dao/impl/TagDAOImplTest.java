@@ -68,7 +68,7 @@ class TagDAOImplTest {
     }
 
     @Test
-    void getTagByIdWithExistentIdShouldThrowException() {
+    void getTagByIdWithExistentIdShouldReturnTag() {
         assertEquals(existentTag, tagDAO.getTagById(1));
     }
 
