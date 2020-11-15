@@ -144,38 +144,4 @@ class GiftCertificateControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Disney"));
     }
-
-    @Test
-    void addTagToCertificate() throws Exception {
-        GiftCertificateDTO certificateDTO = new GiftCertificateDTO();
-        certificateDTO.setId(1);
-        Set<TagDTO> tags = new HashSet<>();
-        TagDTO tag = new TagDTO();
-        tag.setId(1);
-        tag.setName("sport");
-        tags.add(tag);
-        certificateDTO.setTags(tags);
-        given(service.getCertificateById(1)).willReturn(certificateDTO);
-        willDoNothing().given(service).addTagToCertificate(1, tag);
-        String requestBody = "{" +
-                "\"id\": 1," +
-                "\"name\":\"sport\"" +
-                "}";
-        mockMvc.perform(
-                post(certificatesURL + "/{id}/tags", 1)
-                        .content(requestBody)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.tags.[0].id").value(1))
-                .andExpect(jsonPath("$.tags.[0].name").value("sport"));
-    }
-
-    @Test
-    void deleteTagFromCertificate() throws Exception {
-        int certificateId = 1;
-        int tagId = 1;
-        willDoNothing().given(service).removeTagFromCertificate(certificateId, tagId);
-        mockMvc.perform(delete(certificatesURL + "/{certificateId}/tags/{tagId}", certificateId, tagId))
-                .andExpect(status().isNoContent());
-    }
 }

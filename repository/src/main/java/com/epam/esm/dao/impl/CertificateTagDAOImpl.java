@@ -39,6 +39,15 @@ public class CertificateTagDAOImpl implements CertificateTagDAO {
     }
 
     @Override
+    public void removeAllTagsFromCertificate(int certificateId) {
+        try {
+            jdbcTemplate.update(SQLQuery.REMOVE_ALL_TAGS_FROM_CERTIFICATE.getQuery(), certificateId);
+        } catch (DataAccessException e) {
+            throw new DAOException(DAOExceptionCode.FAILED_REMOVE_TAG_FROM_CERTIFICATE.getErrorCode(), e);
+        }
+    }
+
+    @Override
     public boolean isTagAssignedToCertificate(int certificateId, int tagId) {
         try {
             int tagAssignmentsCount = Objects.requireNonNull(

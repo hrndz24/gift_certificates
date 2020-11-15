@@ -17,6 +17,7 @@ public enum SQLQuery {
 
     ADD_TAG_TO_CERTIFICATE("INSERT INTO certificate_has_tag(certificate_id, tag_id) VALUES (?, ?)"),
     REMOVE_TAG_FROM_CERTIFICATE("DELETE FROM certificate_has_tag WHERE certificate_id = ? AND tag_id = ?"),
+    REMOVE_ALL_TAGS_FROM_CERTIFICATE("DELETE FROM certificate_has_tag WHERE certificate_id = ?"),
     IS_TAG_ASSIGNED("SELECT COUNT(*) FROM certificate_has_tag WHERE tag_id = ?"),
     IS_TAG_ASSIGNED_TO_CERTIFICATE("SELECT COUNT(*) FROM certificate_has_tag WHERE tag_id = ? AND certificate_id = ?"),
 

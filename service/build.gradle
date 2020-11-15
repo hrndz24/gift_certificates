@@ -2,4 +2,5 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     implementation project(":repository")
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.11'
 }

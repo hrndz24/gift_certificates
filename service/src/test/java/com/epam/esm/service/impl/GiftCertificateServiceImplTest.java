@@ -115,23 +115,4 @@ class GiftCertificateServiceImplTest {
         assertThrows(EntityNotFoundException.class, () -> certificateService.getCertificateById(24));
     }
 
-    @Test
-    void addTagToCertificateWithNonExistingCertificate() {
-        TagDTO tag = new TagDTO();
-        tag.setId(1);
-        when(tagDAO.getTagById(1)).thenReturn(any());
-        when(certificateDAO.getCertificateById(2)).thenReturn(null);
-        assertThrows(EntityNotFoundException.class,
-                () -> certificateService.addTagToCertificate(2, tag));
-
-    }
-
-    @Test
-    void removeTagFromCertificate() {
-        when(tagDAO.getTagById(2)).thenReturn(new Tag());
-        when(certificateDAO.getCertificateById(3)).thenReturn(new GiftCertificate());
-        when(certificateTagDAO.isTagAssignedToCertificate(3, 2)).thenReturn(true);
-        doNothing().when(certificateTagDAO).removeTagFromCertificate(3, 2);
-        certificateService.removeTagFromCertificate(3, 2);
-    }
 }

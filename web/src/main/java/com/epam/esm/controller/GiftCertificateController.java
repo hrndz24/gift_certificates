@@ -45,13 +45,19 @@ public class GiftCertificateController {
      * or creates new one if it doesn't exist.
      * All certificate fields should be passed in the request body.
      *
-     * @param id id of the certificate to update
+     * @param id          id of the certificate to update
      * @param certificate updated certificate information
      */
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public void updateCertificate(@PathVariable int id, @RequestBody GiftCertificateDTO certificate) {
+    public void updateCertificate(@PathVariable("id") int id, @RequestBody GiftCertificateDTO certificate) {
         certificateService.updateCertificate(id, certificate);
+    }
+
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateCertificateFields(@PathVariable("id") int id, @RequestBody Map<String, Object> fields) {
+        certificateService.updateCertificateFields(id, fields);
     }
 
     /**
@@ -89,34 +95,5 @@ public class GiftCertificateController {
     @GetMapping("/{id}")
     public GiftCertificateDTO getCertificateById(@PathVariable("id") int id) {
         return certificateService.getCertificateById(id);
-    }
-
-    /**
-     * Adds a tag to certificate with the specified id.
-     * If a tag doesn't exist it will be creates and
-     * added to the database.
-     *
-     * @param id if of the modified certificate
-     * @param tag tag to add to the certificate
-     * @return modified GiftCertificate
-     */
-    @PostMapping(value = "/{id}/tags", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public GiftCertificateDTO addTagToCertificate(@PathVariable("id") int id, @RequestBody TagDTO tag) {
-        certificateService.addTagToCertificate(id, tag);
-        return certificateService.getCertificateById(id);
-    }
-
-    /**
-     * Removes tag with requested id from certificate with specified id.
-     *
-     * @param certificateId id of the certificate to remove tag from
-     * @param tagId id of the tag to be removed
-     */
-    @DeleteMapping("/{certificateId}/tags/{tagId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTagFromCertificate(@PathVariable("certificateId") int certificateId,
-                                         @PathVariable("tagId") int tagId) {
-        certificateService.removeTagFromCertificate(certificateId, tagId);
     }
 }

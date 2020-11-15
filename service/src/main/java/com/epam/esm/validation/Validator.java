@@ -8,19 +8,21 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class Validator {
 
     private Set<String> parameterNames;
     private Set<String> orderByValues;
+    private Set<String> certificateFieldNames;
+    private Set<String> tagFieldNames;
 
     public Validator() {
         this.parameterNames = new HashSet<>();
         this.orderByValues = new HashSet<>();
+        this.certificateFieldNames = new HashSet<>();
+        this.tagFieldNames = new HashSet<>();
         fillInParameterNames();
     }
 
@@ -33,6 +35,13 @@ public class Validator {
         orderByValues.add("-name");
         orderByValues.add("date");
         orderByValues.add("-date");
+        certificateFieldNames.add("name");
+        certificateFieldNames.add("description");
+        certificateFieldNames.add("price");
+        certificateFieldNames.add("duration");
+        certificateFieldNames.add("tags");
+        tagFieldNames.add("id");
+        tagFieldNames.add("name");
     }
 
     public void validateCertificate(GiftCertificateDTO giftCertificateDTO) {
@@ -62,7 +71,7 @@ public class Validator {
     }
 
     private void validateStringField(String string, String field) {
-        if (StringUtils.isEmpty(string)) {
+        if (!StringUtils.hasText(string)) {
             throw new ValidatorException(ServiceExceptionCode.CANNOT_BE_EMPTY.getErrorCode(), field);
         }
     }
@@ -92,12 +101,62 @@ public class Validator {
 
     public void validateParams(Map<String, String> params) {
         validateNonNull(params, params.getClass().getName());
-        trimAndLowerCase(params);
+        trimAndLowerCaseValues(params);
         checkAllParametersExist(params);
         checkParamsHaveOrderBy(params);
     }
 
-    private void trimAndLowerCase(Map<String, String> params) {
+    public void validateCertificateUpdateFields(Map<String, Object> fields) {
+        validateNonNull(fields, fields.getClass().getName());
+        checkCertificateFieldsExist(fields);
+        checkFieldValuesNonNull(fields);
+        checkFieldsHaveTagsField(fields);
+    }
+
+    public void validateCertificateUpdateFieldMatchesDataType(Class<?> requested, Map.Entry<String, Object> field) {
+        if (requested != field.getValue().getClass()) {
+            throw new ValidatorException(
+                    ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), field.getKey());
+        }
+    }
+
+    private void checkCertificateFieldsExist(Map<String, Object> fields) {
+        fields.keySet().forEach((fieldName) -> {
+            if (!certificateFieldNames.contains(fieldName)) {
+                throw new ValidatorException(
+                        ServiceExceptionCode.NON_EXISTING_CERTIFICATE_FIELD_NAME.getErrorCode(), fieldName);
+            }
+        });
+    }
+
+    private void checkFieldValuesNonNull(Map<String, Object> fields) {
+        fields.forEach((key, value) -> validateNonNull(value, key));
+    }
+
+    private void checkFieldsHaveTagsField(Map<String, Object> fields) {
+        if (fields.containsKey("tags")) {
+            validateTagsField(fields.get("tags"));
+        }
+    }
+
+    private void validateTagsField(Object tagsValue) {
+        List<?> tagList = (ArrayList<?>) tagsValue;
+        tagList.forEach(tagRecord -> {
+            Map<String, Object> tagFields = (Map<String, Object>) tagRecord;
+            tagFields.entrySet().forEach((tagField) -> {
+                if (!tagFieldNames.contains(tagField.getKey())) {
+                    throw new ValidatorException(
+                            ServiceExceptionCode.NON_EXISTING_TAG_FIELD_NAME.getErrorCode(), tagField.getKey());
+                }
+                if (tagField.getKey().equals("id"))
+                    validateCertificateUpdateFieldMatchesDataType(Integer.class, tagField);
+                if (tagField.getKey().equals("name"))
+                    validateCertificateUpdateFieldMatchesDataType(String.class, tagField);
+            });
+        });
+    }
+
+    private void trimAndLowerCaseValues(Map<String, String> params) {
         params.replaceAll((k, v) -> v.toLowerCase().trim());
     }
 

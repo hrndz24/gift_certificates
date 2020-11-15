@@ -6,6 +6,8 @@ public interface CertificateTagDAO {
 
     void removeTagFromCertificate(int certificateId, int tagId);
 
+    void removeAllTagsFromCertificate(int certificateId);
+
     boolean isTagAssignedToAnyCertificate(int tagId);
 
     boolean isTagAssignedToCertificate(int certificateId, int tagId);
