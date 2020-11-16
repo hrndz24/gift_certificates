@@ -4,14 +4,12 @@ import com.epam.esm.dao.CertificateTagDAO;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
-import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.GiftCertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.GiftCertificate;
-import com.epam.esm.model.Tag;
-import com.epam.esm.utils.QueryGenerator;
+import com.epam.esm.utils.GiftCertificateQueryGenerator;
 import com.epam.esm.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +38,7 @@ class GiftCertificateServiceImplTest {
     @Spy
     private Validator validator = new Validator();
     @Spy
-    private QueryGenerator queryGenerator = new QueryGenerator();
+    private GiftCertificateQueryGenerator giftCertificateQueryGenerator = new GiftCertificateQueryGenerator();
     @Spy
     private GiftCertificateMapper certificateMapper = new GiftCertificateMapper(new ModelMapper());
     @Spy

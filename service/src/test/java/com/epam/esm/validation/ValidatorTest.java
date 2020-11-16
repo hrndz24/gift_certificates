@@ -107,19 +107,19 @@ class ValidatorTest {
 
     @Test
     void validateParams() {
-        validator.validateParams(params);
+        validator.validateCertificateParams(params);
     }
 
     @Test
     void validateParams_NonExistentParam() {
         params.put("nonExistent", "alpha");
-        assertThrows(ValidatorException.class, () -> validator.validateParams(params));
+        assertThrows(ValidatorException.class, () -> validator.validateCertificateParams(params));
     }
 
     @Test
     void validateParams_NonExistentOrderByValue() {
         params.put("orderBy", "alpha");
         assertThrows(ValidatorException.class,
-                () -> validator.validateParams(params));
+                () -> validator.validateCertificateParams(params));
     }
 }

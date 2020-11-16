@@ -71,7 +71,7 @@ class GiftCertificateDAOImplTest {
 
     @Test
     void removeGiftCertificateShouldRemoveCertificate() {
-        giftCertificateDAO.removeCertificate(1);
+        giftCertificateDAO.removeCertificate(3);
         assertEquals(2, giftCertificateDAO.getCertificates(queryConditionToGetAllTags).size());
     }
 

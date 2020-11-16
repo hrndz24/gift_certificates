@@ -12,7 +12,10 @@ public enum ColumnLabel {
     CERTIFICATE_PRICE("price"), CERTIFICATE_CREATE_DATE("create_date"),
     CERTIFICATE_LAST_UPDATE_DATE("last_update_date"), CERTIFICATE_DURATION("duration"),
 
-    USER_EMAIL("email"), USER_PASSWORD("password");
+    USER_EMAIL("email"), USER_PASSWORD("password"),
+
+    ORDER_ID("order_id"), USER_ID("user_id"),
+    ORDER_COST("cost"), ORDER_DATE("date");
 
     private String columnName;
 

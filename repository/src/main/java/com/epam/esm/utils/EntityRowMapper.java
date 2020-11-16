@@ -2,6 +2,7 @@ package com.epam.esm.utils;
 
 import com.epam.esm.dao.ColumnLabel;
 import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.model.Order;
 import com.epam.esm.model.Tag;
 import com.epam.esm.model.User;
 import org.springframework.stereotype.Component;
@@ -37,5 +38,14 @@ public class EntityRowMapper {
         user.setEmail(rs.getString(ColumnLabel.USER_EMAIL.getColumnName()));
         user.setPassword(rs.getString(ColumnLabel.USER_PASSWORD.getColumnName()));
         return user;
+    }
+
+    public Order mapOrderFields(ResultSet rs) throws SQLException {
+        Order order = new Order();
+        order.setId(rs.getInt(ColumnLabel.ORDER_ID.getColumnName()));
+        order.setUserId(rs.getInt(ColumnLabel.USER_ID.getColumnName()));
+        order.setCost(rs.getBigDecimal(ColumnLabel.ORDER_COST.getColumnName()));
+        order.setDate(rs.getDate(ColumnLabel.ORDER_DATE.getColumnName()));
+        return order;
     }
 }

@@ -1,6 +1,7 @@
 package com.epam.esm.validation;
 
 import com.epam.esm.dto.GiftCertificateDTO;
+import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.exception.ValidatorException;
@@ -13,13 +14,15 @@ import java.util.*;
 @Component
 public class Validator {
 
-    private Set<String> parameterNames;
+    private Set<String> certificateParameterNames;
+    private Set<String> orderParameterNames;
     private Set<String> orderByValues;
     private Set<String> certificateFieldNames;
     private Set<String> tagFieldNames;
 
     public Validator() {
-        this.parameterNames = new HashSet<>();
+        this.certificateParameterNames = new HashSet<>();
+        this.orderParameterNames = new HashSet<>();
         this.orderByValues = new HashSet<>();
         this.certificateFieldNames = new HashSet<>();
         this.tagFieldNames = new HashSet<>();
@@ -27,10 +30,11 @@ public class Validator {
     }
 
     private void fillInParameterNames() {
-        parameterNames.add("certificateName");
-        parameterNames.add("certificateDescription");
-        parameterNames.add("tagName");
-        parameterNames.add("orderBy");
+        certificateParameterNames.add("certificateName");
+        certificateParameterNames.add("certificateDescription");
+        certificateParameterNames.add("tagName");
+        certificateParameterNames.add("orderBy");
+        orderParameterNames.add("userId");
         orderByValues.add("name");
         orderByValues.add("-name");
         orderByValues.add("date");
@@ -55,6 +59,17 @@ public class Validator {
     public void validateTag(TagDTO tagDTO) {
         validateNonNull(tagDTO, TagDTO.class.getName());
         validateStringField(tagDTO.getName(), "tag name");
+    }
+
+    public void validateOrder(OrderDTO orderDTO) {
+        validateNonNull(orderDTO, OrderDTO.class.getName());
+        checkIdIsPositive(orderDTO.getUserId());
+        checkOrderHasCertificates(orderDTO);
+    }
+
+    public void validateCertificateForOrdering(GiftCertificateDTO certificate) {
+        validateNonNull(certificate, GiftCertificateDTO.class.getName());
+        checkIdIsPositive(certificate.getId());
     }
 
     public void checkIdIsPositive(int id) {
@@ -99,11 +114,17 @@ public class Validator {
         }
     }
 
-    public void validateParams(Map<String, String> params) {
+    public void validateCertificateParams(Map<String, String> params) {
         validateNonNull(params, params.getClass().getName());
         trimAndLowerCaseValues(params);
-        checkAllParametersExist(params);
+        checkCertificateParametersExist(params);
         checkParamsHaveOrderBy(params);
+    }
+
+    public void validateOrderParams(Map<String, String> params) {
+        validateNonNull(params, params.getClass().getName());
+        trimAndLowerCaseValues(params);
+        checkOrderParametersExist(params);
     }
 
     public void validateCertificateUpdateFields(Map<String, Object> fields) {
@@ -127,6 +148,14 @@ public class Validator {
                         ServiceExceptionCode.NON_EXISTING_CERTIFICATE_FIELD_NAME.getErrorCode(), fieldName);
             }
         });
+    }
+
+    private void checkOrderHasCertificates(OrderDTO order) {
+        List<GiftCertificateDTO> certificates = order.getCertificates();
+        if (certificates == null || certificates.isEmpty()) {
+            throw new ValidatorException(
+                    ServiceExceptionCode.ORDER_SHOULD_HAVE_CERTIFICATES.getErrorCode());
+        }
     }
 
     private void checkFieldValuesNonNull(Map<String, Object> fields) {
@@ -160,9 +189,17 @@ public class Validator {
         params.replaceAll((k, v) -> v.toLowerCase().trim());
     }
 
-    private void checkAllParametersExist(Map<String, String> params) {
+    private void checkCertificateParametersExist(Map<String, String> params) {
         params.forEach((key, value) -> {
-            if (!parameterNames.contains(key)) {
+            if (!certificateParameterNames.contains(key)) {
+                throw new ValidatorException(ServiceExceptionCode.NON_EXISTING_PARAM_NAME.getErrorCode(), key);
+            }
+        });
+    }
+
+    private void checkOrderParametersExist(Map<String, String> params) {
+        params.forEach((key, value) -> {
+            if (!orderParameterNames.contains(key)) {
                 throw new ValidatorException(ServiceExceptionCode.NON_EXISTING_PARAM_NAME.getErrorCode(), key);
             }
         });

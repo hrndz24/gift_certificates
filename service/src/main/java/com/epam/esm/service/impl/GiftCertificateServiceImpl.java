@@ -12,7 +12,7 @@ import com.epam.esm.mapper.GiftCertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
-import com.epam.esm.utils.QueryGenerator;
+import com.epam.esm.utils.GiftCertificateQueryGenerator;
 import com.epam.esm.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private TagDAO tagDAO;
     private CertificateTagDAO certificateTagDAO;
     private Validator validator;
-    private QueryGenerator queryGenerator;
+    private GiftCertificateQueryGenerator giftCertificateQueryGenerator;
     private GiftCertificateMapper certificateMapper;
     private TagMapper tagMapper;
 
@@ -37,14 +37,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                                       TagDAO tagDAO,
                                       CertificateTagDAO certificateTagDAO,
                                       Validator validator,
-                                      QueryGenerator queryGenerator,
+                                      GiftCertificateQueryGenerator giftCertificateQueryGenerator,
                                       GiftCertificateMapper certificateMapper,
                                       TagMapper tagMapper) {
         this.certificateDAO = certificateDAO;
         this.tagDAO = tagDAO;
         this.certificateTagDAO = certificateTagDAO;
         this.validator = validator;
-        this.queryGenerator = queryGenerator;
+        this.giftCertificateQueryGenerator = giftCertificateQueryGenerator;
         this.certificateMapper = certificateMapper;
         this.tagMapper = tagMapper;
     }
@@ -177,8 +177,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificateDTO> getCertificates(Map<String, String> params) {
-        validator.validateParams(params);
-        String query = queryGenerator.generateQuery(params);
+        validator.validateCertificateParams(params);
+        String query = giftCertificateQueryGenerator.generateQuery(params);
         List<GiftCertificateDTO> certificates = new ArrayList<>();
         certificateDAO.getCertificates(query).forEach(giftCertificate ->
                 certificates.add(certificateMapper.toDTO(giftCertificate)));
@@ -199,5 +199,4 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
         return certificate;
     }
-
 }

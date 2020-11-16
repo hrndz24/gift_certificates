@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class QueryGenerator {
+public class GiftCertificateQueryGenerator {
 
     private Map<String, String> queries;
     private Map<String, String> orderByQueries;
@@ -34,7 +34,7 @@ public class QueryGenerator {
 
     private StringBuilder queryBuilder;
 
-    public QueryGenerator() {
+    public GiftCertificateQueryGenerator() {
         queries = new HashMap<>();
         orderByQueries = new HashMap<>();
         fillInQueries();
