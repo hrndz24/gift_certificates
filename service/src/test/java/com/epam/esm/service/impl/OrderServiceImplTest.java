@@ -1,7 +1,6 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
-import com.epam.esm.dao.OrderCertificateDAO;
 import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.dao.UserDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
@@ -29,7 +28,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 class OrderServiceImplTest {
@@ -38,8 +36,6 @@ class OrderServiceImplTest {
     private OrderServiceImpl orderService;
     @Mock
     private OrderDAO orderDAO;
-    @Mock
-    private OrderCertificateDAO orderCertificateDAO;
     @Mock
     private GiftCertificateDAO certificateDAO;
     @Mock
@@ -68,7 +64,6 @@ class OrderServiceImplTest {
         order.setUserId(1);
         when(orderDAO.addOrder(any())).thenReturn(order);
         when(orderDAO.getOrderById(4)).thenReturn(order);
-        doNothing().when(orderCertificateDAO).addCertificateToOrder(1, 1);
         when(userDAO.getUserById(1)).thenReturn(new User());
         GiftCertificate certificate = new GiftCertificate();
         certificate.setPrice(new BigDecimal("13.00"));

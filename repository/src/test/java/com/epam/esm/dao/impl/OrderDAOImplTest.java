@@ -1,36 +1,38 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.model.Order;
-import org.junit.jupiter.api.AfterEach;
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = DAOTestConfig.class)
+@SpringBootTest
+@Transactional
 class OrderDAOImplTest {
 
-    private EmbeddedDatabase embeddedDatabase;
+    @Autowired
+    private SessionFactory sessionFactory;
 
     private OrderDAOImpl orderDAO;
 
     private static final String GET_ALL_ORDERS_QUERY = "";
-    private static final String GET_ORDERS_BY_USER_QUERY = " WHERE user_id = 2";
+    private static final String GET_ORDERS_BY_USER_QUERY = " WHERE userId = 2";
 
     @BeforeEach
     void setUp() {
-        embeddedDatabase = new EmbeddedDatabaseBuilder()
-                .addDefaultScripts()
-                .setType(EmbeddedDatabaseType.H2)
-                .build();
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-        orderDAO = new OrderDAOImpl(jdbcTemplate);
+        orderDAO = new OrderDAOImpl(sessionFactory);
     }
 
     @Test
@@ -39,8 +41,8 @@ class OrderDAOImplTest {
         newOrder.setUserId(1);
         newOrder.setCost(new BigDecimal("45.00"));
         newOrder.setDate(new Date());
-        orderDAO.addOrder(newOrder);
-        assertNotEquals(0, newOrder.getId());
+        Order returnedOrder = orderDAO.addOrder(newOrder);
+        assertNotEquals(0, returnedOrder.getId());
     }
 
     @Test
@@ -50,6 +52,7 @@ class OrderDAOImplTest {
 
     @Test
     void getOrdersByUserIdShouldReturnListOfTwo() {
+        System.out.println(orderDAO.getOrders(GET_ORDERS_BY_USER_QUERY));
         assertEquals(2, orderDAO.getOrders(GET_ORDERS_BY_USER_QUERY).size());
     }
 
@@ -61,10 +64,5 @@ class OrderDAOImplTest {
     @Test
     void getOrderByIdWithNonExistingIdShouldReturnNull() {
         assertNull(orderDAO.getOrderById(4));
-    }
-
-    @AfterEach
-    void tearDown() {
-        embeddedDatabase.shutdown();
     }
 }

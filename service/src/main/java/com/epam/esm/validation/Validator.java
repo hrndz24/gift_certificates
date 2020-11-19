@@ -127,17 +127,25 @@ public class Validator {
         checkOrderParametersExist(params);
     }
 
-    public void validateCertificateUpdateFields(Map<String, Object> fields) {
-        validateNonNull(fields, fields.getClass().getName());
-        checkCertificateFieldsExist(fields);
-        checkFieldValuesNonNull(fields);
-        checkFieldsHaveTagsField(fields);
+    public void validateCertificateUpdateField(Map<String, Object> field) {
+        validateNonNull(field, field.getClass().getName());
+        checkThereIsOneUpdateField(field);
+        checkCertificateFieldsExist(field);
+        checkFieldValuesNonNull(field);
+        checkFieldsHaveTagsField(field);
     }
 
     public void validateCertificateUpdateFieldMatchesDataType(Class<?> requested, Map.Entry<String, Object> field) {
         if (requested != field.getValue().getClass()) {
             throw new ValidatorException(
                     ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), field.getKey());
+        }
+    }
+
+    private void checkThereIsOneUpdateField(Map<String, Object> fields) {
+        if (fields.size() != 1) {
+            throw new ValidatorException
+                    (ServiceExceptionCode.ONLY_ONE_FIELD_CAN_BE_UPDATED.getErrorCode());
         }
     }
 
@@ -168,6 +176,7 @@ public class Validator {
         }
     }
 
+    @SuppressWarnings("unchecked cast")
     private void validateTagsField(Object tagsValue) {
         List<?> tagList = (ArrayList<?>) tagsValue;
         tagList.forEach(tagRecord -> {

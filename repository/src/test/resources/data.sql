@@ -23,7 +23,7 @@ VALUES ('pak@pak.com',
        ('smb@somewhere.org',
         '89d3c17daa2466d721ec21e9ac27f0654fd1f67d701b937c6835416ad26c4c66b55fe32fdd941952eebd3b215554219c7cfdf0643bac88ebe332c7f07258a8ea');
 
-INSERT INTO `order`(user_id, cost, date)
+INSERT INTO orders(user_id, cost, date)
 VALUES (1, 100.00, '2020-10-28 21:17:24'),
        (2, 378.89, '2020-04-26 21:17:24'),
        (2, 45.50, '2020-05-05 21:17:24');

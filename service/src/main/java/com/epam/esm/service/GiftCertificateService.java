@@ -13,7 +13,7 @@ public interface GiftCertificateService {
 
     void updateCertificate(int id, GiftCertificateDTO certificateDTO);
 
-    void updateCertificateFields(int id, Map<String, Object> fields);
+    void updateCertificateField(int id, Map<String, Object> fields);
 
     List<GiftCertificateDTO> getCertificates(Map<String, String> params);
 

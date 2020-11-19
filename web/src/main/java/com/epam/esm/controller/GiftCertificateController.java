@@ -1,7 +1,6 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.GiftCertificateDTO;
-import com.epam.esm.dto.TagDTO;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,7 +56,7 @@ public class GiftCertificateController {
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public void updateCertificateFields(@PathVariable("id") int id, @RequestBody Map<String, Object> fields) {
-        certificateService.updateCertificateFields(id, fields);
+        certificateService.updateCertificateField(id, fields);
     }
 
     /**

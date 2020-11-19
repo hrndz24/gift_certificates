@@ -1,12 +1,19 @@
 package com.epam.esm.model;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Entity
+@Table(name = "user")
 public class User implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "email")
     private String email;
+    @Column(name = "password")
     private String password;
 
     public User() {

@@ -1,19 +1,33 @@
 package com.epam.esm.model;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
+@Entity
+@Table(name = "orders")
 public class Order implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "user_id")
     private int userId;
+    @Column(name = "date")
     private Date date;
+    @Column(name = "cost")
     private BigDecimal cost;
-    private List<GiftCertificate> certificates = new ArrayList<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "order_has_certificate",
+            joinColumns = {@JoinColumn(name = "order_id")},
+            inverseJoinColumns = {@JoinColumn(name = "certificate_id")}
+    )
+    private Set<GiftCertificate> certificates = new HashSet<>();
 
     public Order() {
     }
@@ -50,11 +64,11 @@ public class Order implements Serializable {
         this.cost = cost;
     }
 
-    public List<GiftCertificate> getCertificates() {
+    public Set<GiftCertificate> getCertificates() {
         return certificates;
     }
 
-    public void setCertificates(List<GiftCertificate> certificates) {
+    public void setCertificates(Set<GiftCertificate> certificates) {
         this.certificates = certificates;
     }
 

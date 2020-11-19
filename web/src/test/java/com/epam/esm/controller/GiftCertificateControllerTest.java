@@ -1,7 +1,6 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.GiftCertificateDTO;
-import com.epam.esm.dto.TagDTO;
 import com.epam.esm.service.GiftCertificateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

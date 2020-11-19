@@ -1,31 +1,33 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.model.User;
-import org.junit.jupiter.api.AfterEach;
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = DAOTestConfig.class)
+@SpringBootTest
+@Transactional
 class UserDAOImplTest {
-
-    private static EmbeddedDatabase embeddedDatabase;
 
     private UserDAOImpl userDAO;
 
+    @Autowired
+    private SessionFactory sessionFactory;
+
     @BeforeEach
     void setUp() {
-        embeddedDatabase = new EmbeddedDatabaseBuilder()
-                .addDefaultScripts()
-                .setType(EmbeddedDatabaseType.H2)
-                .build();
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-        userDAO = new UserDAOImpl(jdbcTemplate);
+        userDAO = new UserDAOImpl(sessionFactory);
     }
 
     @Test
@@ -45,10 +47,5 @@ class UserDAOImplTest {
     @Test
     void getUserByIdWithNonExistentIdShouldReturnNull() {
         assertNull(userDAO.getUserById(4));
-    }
-
-    @AfterEach
-    void tearDown() {
-        embeddedDatabase.shutdown();
     }
 }

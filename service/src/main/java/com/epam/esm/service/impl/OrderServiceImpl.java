@@ -1,7 +1,6 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
-import com.epam.esm.dao.OrderCertificateDAO;
 import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.dao.UserDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
@@ -28,7 +27,6 @@ import java.util.Map;
 public class OrderServiceImpl implements OrderService {
 
     private OrderDAO orderDAO;
-    private OrderCertificateDAO orderCertificateDAO;
     private GiftCertificateDAO certificateDAO;
     private UserDAO userDAO;
     private Validator validator;
@@ -37,14 +35,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     public OrderServiceImpl(OrderDAO orderDAO,
-                            OrderCertificateDAO orderCertificateDAO,
                             GiftCertificateDAO certificateDAO,
                             UserDAO userDAO,
                             Validator validator,
                             OrderMapper orderMapper,
                             OrderQueryGenerator queryGenerator) {
         this.orderDAO = orderDAO;
-        this.orderCertificateDAO = orderCertificateDAO;
         this.certificateDAO = certificateDAO;
         this.userDAO = userDAO;
         this.validator = validator;
@@ -56,9 +52,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderDTO addOrder(OrderDTO order) {
         prepareOrderBeforeAddingToDatabase(order);
-        OrderDTO orderReturned = orderMapper.toDTO(orderDAO.addOrder(orderMapper.toModel(order)));
-        addCertificatesToOrder(orderReturned.getId(), order.getCertificates());
-        return orderMapper.toDTO(orderDAO.getOrderById(orderReturned.getId()));
+        return orderMapper.toDTO(orderDAO.addOrder(orderMapper.toModel(order)));
     }
 
     private void prepareOrderBeforeAddingToDatabase(OrderDTO order) {
@@ -77,20 +71,6 @@ public class OrderServiceImpl implements OrderService {
             cost = cost.add(certificateDAO.getCertificateById(certificate.getId()).getPrice());
         }
         return cost;
-    }
-
-    private void addCertificatesToOrder(int orderId, List<GiftCertificateDTO> certificates) {
-        certificates.forEach(certificate -> {
-            addCertificateToOrder(orderId, certificate.getId());
-        });
-    }
-
-    private void addCertificateToOrder(int orderId, int certificateId) {
-        if (orderCertificateDAO.isCertificateAssignedToOrder(orderId, certificateId)) {
-            throw new ValidatorException(
-                    ServiceExceptionCode.CERTIFICATE_IS_ALREADY_ASSIGNED_TO_ORDER.getErrorCode(), "certificate id = " + certificateId);
-        }
-        orderCertificateDAO.addCertificateToOrder(orderId, certificateId);
     }
 
     private void checkCertificateIsExistent(int certificateId) {

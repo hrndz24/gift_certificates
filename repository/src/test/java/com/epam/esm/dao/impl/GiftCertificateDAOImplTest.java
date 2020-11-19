@@ -2,13 +2,15 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
-import org.junit.jupiter.api.AfterEach;
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -19,24 +21,23 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = DAOTestConfig.class)
+@SpringBootTest
+@Transactional
 class GiftCertificateDAOImplTest {
-
-    private EmbeddedDatabase embeddedDatabase;
 
     private GiftCertificateDAOImpl giftCertificateDAO;
 
     private GiftCertificate existentCertificate;
+    @Autowired
+    private SessionFactory sessionFactory;
 
-    private String queryConditionToGetAllTags = "";
+    private String queryConditionToGetAllCertificates = "";
 
     @BeforeEach
     void setUp() throws ParseException {
-        embeddedDatabase = new EmbeddedDatabaseBuilder()
-                .addDefaultScripts()
-                .setType(EmbeddedDatabaseType.H2)
-                .build();
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-        giftCertificateDAO = new GiftCertificateDAOImpl(jdbcTemplate);
+        giftCertificateDAO = new GiftCertificateDAOImpl(sessionFactory);
         createExistentCertificate();
     }
 
@@ -64,15 +65,15 @@ class GiftCertificateDAOImplTest {
         newCertificate.setDescription("Beauty for everyone");
         newCertificate.setPrice(new BigDecimal("100.00"));
         newCertificate.setDuration(10);
-        giftCertificateDAO.addCertificate(newCertificate);
-        assertNotEquals(0, newCertificate.getId());
-        assertEquals(4, giftCertificateDAO.getCertificates(queryConditionToGetAllTags).size());
+        GiftCertificate returnedCertificate = giftCertificateDAO.addCertificate(newCertificate);
+        assertNotEquals(0, returnedCertificate.getId());
+        assertEquals(4, giftCertificateDAO.getCertificates(queryConditionToGetAllCertificates).size());
     }
 
     @Test
     void removeGiftCertificateShouldRemoveCertificate() {
         giftCertificateDAO.removeCertificate(3);
-        assertEquals(2, giftCertificateDAO.getCertificates(queryConditionToGetAllTags).size());
+        assertEquals(2, giftCertificateDAO.getCertificates(queryConditionToGetAllCertificates).size());
     }
 
     @Test
@@ -85,16 +86,11 @@ class GiftCertificateDAOImplTest {
 
     @Test
     void getGiftCertificatesShouldReturnListOfThreeCertificates() {
-        assertEquals(3, giftCertificateDAO.getCertificates(queryConditionToGetAllTags).size());
+        assertEquals(3, giftCertificateDAO.getCertificates(queryConditionToGetAllCertificates).size());
     }
 
     @Test
     void getGiftCertificateByIdShouldReturnCertificate() {
         assertEquals(existentCertificate, giftCertificateDAO.getCertificateById(1));
-    }
-
-    @AfterEach
-    void tearDown() {
-        embeddedDatabase.shutdown();
     }
 }

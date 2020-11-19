@@ -31,7 +31,7 @@ CREATE TABLE user
     password VARCHAR(128)
 );
 
-CREATE TABLE `order`
+CREATE TABLE orders
 (
     id      INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT,
@@ -45,6 +45,6 @@ CREATE TABLE order_has_certificate
     order_id       INT,
     certificate_id INT,
     PRIMARY KEY (order_id, certificate_id),
-    FOREIGN KEY (order_id) REFERENCES `order` (id),
+    FOREIGN KEY (order_id) REFERENCES orders (id),
     FOREIGN KEY (certificate_id) REFERENCES gift_certificate (id)
 )
