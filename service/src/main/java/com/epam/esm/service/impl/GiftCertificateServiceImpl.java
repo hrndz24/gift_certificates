@@ -1,13 +1,11 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
-import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.mapper.GiftCertificateMapper;
-import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.utils.GiftCertificateQueryGenerator;
@@ -16,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaQuery;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -23,25 +22,19 @@ import java.util.*;
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private GiftCertificateDAO certificateDAO;
-    private TagDAO tagDAO;
     private Validator validator;
     private GiftCertificateQueryGenerator giftCertificateQueryGenerator;
     private GiftCertificateMapper certificateMapper;
-    private TagMapper tagMapper;
 
     @Autowired
     public GiftCertificateServiceImpl(GiftCertificateDAO certificateDAO,
-                                      TagDAO tagDAO,
                                       Validator validator,
                                       GiftCertificateQueryGenerator giftCertificateQueryGenerator,
-                                      GiftCertificateMapper certificateMapper,
-                                      TagMapper tagMapper) {
+                                      GiftCertificateMapper certificateMapper) {
         this.certificateDAO = certificateDAO;
-        this.tagDAO = tagDAO;
         this.validator = validator;
         this.giftCertificateQueryGenerator = giftCertificateQueryGenerator;
         this.certificateMapper = certificateMapper;
-        this.tagMapper = tagMapper;
     }
 
     @Override
@@ -81,46 +74,33 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         validator.checkIdIsPositive(id);
         validator.validateCertificateUpdateField(fields);
         GiftCertificateDTO certificate = certificateMapper.toDTO(getCertificateIfExists(id));
-        setUpdatedCertificateValues(certificate, fields);
         prepareCertificateBeforeUpdatingInDatabase(id, certificate);
+        setUpdatedField(certificate, fields);
         certificateDAO.updateCertificate(certificateMapper.toModel(certificate));
     }
 
-    private void setUpdatedCertificateValues(GiftCertificateDTO certificate, Map<String, Object> fields) {
-        fields.entrySet().forEach((entry) -> {
-            if (entry.getKey().equals("name")) {
-                validator.validateCertificateUpdateFieldMatchesDataType(String.class, entry);
-                certificate.setName((String) entry.getValue());
-            }
-            if (entry.getKey().equals("description")) {
-                validator.validateCertificateUpdateFieldMatchesDataType(String.class, entry);
-                certificate.setDescription((String) entry.getValue());
-            }
-            if (entry.getKey().equals("price")) {
-                validator.validateCertificateUpdateFieldMatchesDataType(Double.class, entry);
-                certificate.setPrice(BigDecimal.valueOf((Double) entry.getValue()));
-            }
-            if (entry.getKey().equals("duration")) {
-                validator.validateCertificateUpdateFieldMatchesDataType(Integer.class, entry);
-                certificate.setDuration((Integer) entry.getValue());
-            }
-            if (entry.getKey().equals("tags")) {
-                validator.validateCertificateUpdateFieldMatchesDataType(ArrayList.class, entry);
-                List<?> tagList = (ArrayList<?>) entry.getValue();
-                Set<TagDTO> tags = new HashSet<>();
-                tagList.forEach(tagRecord -> {
-                    TagDTO tag = new TagDTO();
-                    Map<?, ?> tagFields = (Map<?, ?>) tagRecord;
-                    Object id = tagFields.get("id");
-                    if (id == null) {
-                        tag.setId(0);
-                    } else {
-                        tag.setId((Integer) id);
-                    }
-                    tag.setName((String) tagFields.get("name"));
-                    tags.add(tag);
-                });
-//                updateCertificateTags(certificate.getId(), tags);
+    private void setUpdatedField(GiftCertificateDTO certificate, Map<String, Object> fields) {
+        fields.forEach((key, value) -> {
+            switch (key) {
+                case "name":
+                    certificate.setName((String) value);
+                    break;
+                case "description":
+                    certificate.setDescription((String) value);
+                    break;
+                case "price":
+                    certificate.setPrice((BigDecimal) value);
+                    break;
+                case "duration":
+                    certificate.setDuration((Integer) value);
+                    break;
+                case "tags":
+                    //check tags
+                    @SuppressWarnings("unchecked cast")
+                    List<TagDTO> tags = (ArrayList<TagDTO>) value;
+                    Set<TagDTO> tagSet = new HashSet<>(tags);
+                    certificate.setTags(tagSet);
+                    break;
             }
         });
     }
@@ -128,15 +108,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private void prepareCertificateBeforeUpdatingInDatabase(int id, GiftCertificateDTO certificateDTO) {
         certificateDTO.setLastUpdateDate(new Date());
         certificateDTO.setId(id);
-        validator.validateCertificate(certificateDTO);
     }
 
     @Override
     public List<GiftCertificateDTO> getCertificates(Map<String, String> params) {
         validator.validateCertificateParams(params);
-        String query = giftCertificateQueryGenerator.generateQuery(params);
+        CriteriaQuery<GiftCertificate> criteriaQuery = giftCertificateQueryGenerator.generateQueryCriteria(params);
         List<GiftCertificateDTO> certificates = new ArrayList<>();
-        certificateDAO.getCertificates(query).forEach(giftCertificate ->
+        certificateDAO.getCertificates(criteriaQuery).forEach(giftCertificate ->
                 certificates.add(certificateMapper.toDTO(giftCertificate)));
         return certificates;
     }

@@ -1,91 +1,91 @@
 package com.epam.esm.utils;
 
+import com.epam.esm.model.GiftCertificate;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.criteria.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
 public class GiftCertificateQueryGenerator {
 
-    private Map<String, String> queries;
     private Map<String, String> orderByQueries;
-
-    private static final String GET_CERTIFICATES_BY_NAME =
-            "WHERE LOWER(name) LIKE LOWER('%?%')";
-
-    private static final String GET_CERTIFICATES_BY_DESCRIPTION =
-            "WHERE LOWER(description) LIKE LOWER('%?%')";
-
-    private static final String GET_CERTIFICATES_BY_TAG_NAME = " WHERE Tag.name LIKE LOWER('%?%')";
-    /*"id IN (SELECT certificate_has_tag.certificate_id FROM certificate_has_tag" +
-            " WHERE certificate_has_tag.tag_id IN\n" +
-            "(SELECT id from tag WHERE LOWER(tag.name) LIKE LOWER('%?%')))";
-*/
-    private static final String ORDER_BY = " ORDER BY ";
+    private SessionFactory sessionFactory;
 
     private static final String ORDER_BY_PARAM_NAME = "orderBy";
     private static final String TAG_NAME_PARAM_NAME = "tagName";
 
-    private static final String NAME_ASC = "name";
-    private static final String NAME_DESC = "name DESC";
-    private static final String DATE_ASC = "createDate";
-    private static final String DATE_DESC = "createDate DESC";
+    private static final String NAME_FIELD = "name";
+    private static final String DATE_FIELD = "createDate";
 
-    private StringBuilder queryBuilder;
+    private CriteriaQuery<GiftCertificate> criteria;
 
-    public GiftCertificateQueryGenerator() {
-        queries = new HashMap<>();
+    @Autowired
+    public GiftCertificateQueryGenerator(SessionFactory sessionFactory) {
         orderByQueries = new HashMap<>();
+        this.sessionFactory = sessionFactory;
         fillInQueries();
     }
 
     private void fillInQueries() {
-        queries.put("certificateName", GET_CERTIFICATES_BY_NAME);
-        queries.put("certificateDescription", GET_CERTIFICATES_BY_DESCRIPTION);
-        queries.put("tagName", GET_CERTIFICATES_BY_TAG_NAME);
-        queries.put("orderBy", ORDER_BY);
-        orderByQueries.put("name", NAME_ASC);
-        orderByQueries.put("-name", NAME_DESC);
-        orderByQueries.put("date", DATE_ASC);
-        orderByQueries.put("-date", DATE_DESC);
+        orderByQueries.put("name", NAME_FIELD);
+        orderByQueries.put("-name", NAME_FIELD);
+        orderByQueries.put("date", DATE_FIELD);
+        orderByQueries.put("-date", DATE_FIELD);
     }
 
-    public String generateQuery(Map<String, String> params) {
-        queryBuilder = new StringBuilder();
-        appendQueryCondition(params);
-        appendSortConditionIfExists(params);
-        return queryBuilder.toString();
+    public CriteriaQuery<GiftCertificate> generateQueryCriteria(Map<String, String> params) {
+        CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
+        criteria = criteriaBuilder.createQuery(GiftCertificate.class);
+        Root<GiftCertificate> root = criteria.from(GiftCertificate.class);
+        criteria.select(root);
+        addQueryPredicates(params, criteriaBuilder, root);
+        return criteria;
     }
 
-    private void appendQueryCondition(Map<String, String> params) {
-        params.keySet().forEach(s -> {
-            if (!ORDER_BY_PARAM_NAME.equals(s)) {
-                String queryCondition = queries.get(s);
-                if (TAG_NAME_PARAM_NAME.equals(s)) {
-                    queryCondition = buildSearchByTagsQuery(params.get(s));
-                } else {
-                    queryCondition = queryCondition.replaceAll("\\?", params.get(s));
-                }
-                queryBuilder.append(queryCondition);
+    private void addQueryPredicates(Map<String, String> params, CriteriaBuilder criteriaBuilder, Root<GiftCertificate> root) {
+        List<Predicate> predicateList = new ArrayList<>();
+        params.keySet().forEach(key -> {
+            if ("certificateName".equals(key)) {
+                predicateList.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")),
+                        "%" + params.get(key).toLowerCase() + "%"));
+            } else if ("certificateDescription".equals(key)) {
+                predicateList.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("description")),
+                        "%" + params.get(key).toLowerCase() + "%"));
+            } else if (ORDER_BY_PARAM_NAME.equals(key)) {
+                addOrderBy(params, criteriaBuilder, root);
+            } else if (TAG_NAME_PARAM_NAME.equals(key)) {
+                predicateList.addAll(addTagNamePredicate(params, criteriaBuilder, root));
             }
         });
+        Predicate[] predicates = new Predicate[0];
+        criteria.where(predicateList.toArray(predicates));
     }
 
-    private String buildSearchByTagsQuery(String tagNamesAsString) {
-        String[] tagNames = tagNamesAsString.split(", ");
-        StringBuilder query = new StringBuilder();
-        for (String tagName : tagNames) {
-            String tagNameSearch = GET_CERTIFICATES_BY_TAG_NAME.replaceAll("\\?", tagName);
-            query.append(tagNameSearch).append(" AND ");
+    private List<Predicate> addTagNamePredicate(Map<String, String> params, CriteriaBuilder criteriaBuilder, Root<GiftCertificate> root) {
+        List<Predicate> predicates = new ArrayList<>();
+        String[] tags = params.get(TAG_NAME_PARAM_NAME).split(", ");
+        for (String tag : tags) {
+            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(
+                    root.join("tags").get("name")), "%" + tag.toLowerCase() + "%"));
         }
-        return query.substring(0, query.length() - " AND ".length());
+        return predicates;
     }
 
-    private void appendSortConditionIfExists(Map<String, String> params) {
-        if (params.containsKey(ORDER_BY_PARAM_NAME)) {
-            queryBuilder.append(queries.get(ORDER_BY_PARAM_NAME));
-            queryBuilder.append(orderByQueries.get(params.get(ORDER_BY_PARAM_NAME)));
+    private void addOrderBy(Map<String, String> params, CriteriaBuilder criteriaBuilder, Root<GiftCertificate> root) {
+        Order orderBy;
+        String value = params.get(ORDER_BY_PARAM_NAME);
+        if (value.startsWith("-")) {
+            orderBy = criteriaBuilder.desc(root.get(orderByQueries.get(value)));
+        } else {
+            orderBy = criteriaBuilder.asc(root.get(orderByQueries.get(value)));
         }
+        criteria.orderBy(orderBy);
     }
+
 }

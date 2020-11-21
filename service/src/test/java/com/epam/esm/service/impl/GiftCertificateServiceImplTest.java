@@ -1,12 +1,10 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDAO;
-import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.GiftCertificateMapper;
-import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.utils.GiftCertificateQueryGenerator;
 import com.epam.esm.validation.Validator;
@@ -19,6 +17,7 @@ import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,16 +29,12 @@ class GiftCertificateServiceImplTest {
     private GiftCertificateServiceImpl certificateService;
     @Mock
     private GiftCertificateDAO certificateDAO;
-    @Mock
-    private TagDAO tagDAO;
     @Spy
     private Validator validator = new Validator();
-    @Spy
-    private GiftCertificateQueryGenerator giftCertificateQueryGenerator = new GiftCertificateQueryGenerator();
+    @Mock
+    private GiftCertificateQueryGenerator giftCertificateQueryGenerator;
     @Spy
     private GiftCertificateMapper certificateMapper = new GiftCertificateMapper(new ModelMapper());
-    @Spy
-    private TagMapper tagMapper = new TagMapper(new ModelMapper());
 
     @BeforeEach
     void setUp() {
@@ -89,8 +84,8 @@ class GiftCertificateServiceImplTest {
         certificates.add(new GiftCertificate());
         certificates.add(new GiftCertificate());
         certificates.add(new GiftCertificate());
-        String queryConditionToGetAllTags = "";
-        when(certificateDAO.getCertificates(queryConditionToGetAllTags)).thenReturn(certificates);
+        when(giftCertificateQueryGenerator.generateQueryCriteria(new HashMap<>())).thenReturn(any());
+        when(certificateDAO.getCertificates(giftCertificateQueryGenerator.generateQueryCriteria(new HashMap<>()))).thenReturn(certificates);
         assertEquals(3, certificateService.getCertificates(anyMap()).size());
     }
 

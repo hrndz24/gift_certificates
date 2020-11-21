@@ -28,6 +28,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 class OrderServiceImplTest {
@@ -44,8 +45,8 @@ class OrderServiceImplTest {
     private Validator validator = new Validator();
     @Spy
     private OrderMapper orderMapper = new OrderMapper(new ModelMapper());
-    @Spy
-    private OrderQueryGenerator queryGenerator = new OrderQueryGenerator();
+    @Mock
+    private OrderQueryGenerator queryGenerator;
 
     @BeforeEach
     void setUp() {
@@ -97,8 +98,8 @@ class OrderServiceImplTest {
         orders.add(new Order());
         orders.add(new Order());
         orders.add(new Order());
-        String queryConditionToGetAllOrders = "";
-        when(orderDAO.getOrders(queryConditionToGetAllOrders)).thenReturn(orders);
+        when(queryGenerator.generateQuery(new HashMap<>())).thenReturn(any());
+        when(orderDAO.getOrders(queryGenerator.generateQuery(new HashMap<>()))).thenReturn(orders);
         assertEquals(3, orderService.getOrders(new HashMap<>()).size());
     }
 

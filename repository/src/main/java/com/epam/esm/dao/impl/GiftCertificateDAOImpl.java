@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
 @Repository
@@ -36,6 +37,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             session.close();
         } catch (PersistenceException e) {
             session.getTransaction().rollback();
+            session.close();
             throw new DAOException(DAOExceptionCode.FAILED_ADD_CERTIFICATE.getErrorCode(), e);
         }
         return sessionFactory.openSession().get(GiftCertificate.class, id);
@@ -54,21 +56,25 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public void updateCertificate(GiftCertificate certificate) {
-        Session session = sessionFactory.getCurrentSession();
+        Session session = sessionFactory.openSession();
         try {
+            session.beginTransaction();
             session.load(GiftCertificate.class, certificate.getId());
             session.merge(certificate);
+            session.getTransaction().commit();
+            session.close();
         } catch (DataAccessException e) {
+            session.getTransaction().rollback();
+            session.close();
             throw new DAOException(DAOExceptionCode.FAILED_UPDATE_CERTIFICATE.getErrorCode(), e);
         }
     }
 
     @Override
-    @SuppressWarnings("unchecked assignment")
-    public List<GiftCertificate> getCertificates(String queryCondition) {
+    public List<GiftCertificate> getCertificates(CriteriaQuery<GiftCertificate> criteriaQuery) {
         Session session = sessionFactory.getCurrentSession();
         try {
-            return session.createQuery("from GiftCertificate " + queryCondition).list();
+            return session.createQuery(criteriaQuery).list();
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_CERTIFICATES.getErrorCode(), e);
         }

@@ -119,6 +119,23 @@ public class Validator {
         trimAndLowerCaseValues(params);
         checkCertificateParametersExist(params);
         checkParamsHaveOrderBy(params);
+        checkParamsHaveTagName(params);
+    }
+
+    private void checkParamsHaveTagName(Map<String, String> params) {
+        if (params.containsKey("tagName")) {
+            params.replace("tagName", validateTagNames(params.get("tagName")));
+        }
+    }
+
+    private String validateTagNames(String tagNamesAsString) {
+        List<String> validatedTags = new ArrayList<>();
+        String[] tagNames = tagNamesAsString.split(",");
+        for (String tagName : tagNames) {
+            validateStringField(tagName, "tag name");
+            validatedTags.add(tagName.trim().toLowerCase());
+        }
+        return String.join(", ", validatedTags.toArray(new String[0]));
     }
 
     public void validateOrderParams(Map<String, String> params) {
@@ -132,7 +149,36 @@ public class Validator {
         checkThereIsOneUpdateField(field);
         checkCertificateFieldsExist(field);
         checkFieldValuesNonNull(field);
-        checkFieldsHaveTagsField(field);
+        validateFieldValue(field);
+    }
+
+    private void validateFieldValue(Map<String, Object> field) {
+        field.entrySet().forEach(entry -> {
+            switch (entry.getKey()) {
+                case "name":
+                    validateCertificateUpdateFieldMatchesDataType(String.class, entry);
+                    validateStringField((String) entry.getValue(), "certificate name");
+                    break;
+                case "description":
+                    validateCertificateUpdateFieldMatchesDataType(String.class, entry);
+                    validateStringField((String) entry.getValue(), "certificate description");
+                    break;
+                case "price":
+                    validateCertificateUpdateFieldMatchesDataType(Double.class, entry);
+                    validatePrice((BigDecimal) entry.getValue());
+                    break;
+                case "duration":
+                    validateCertificateUpdateFieldMatchesDataType(Integer.class, entry);
+                    validateDuration((Integer) entry.getValue());
+                    break;
+                case "tags":
+                    System.out.println(entry.getValue());
+                    System.out.println(entry.getValue().getClass().getName());
+                    validateCertificateUpdateFieldMatchesDataType(ArrayList.class, entry);
+                    validateTagsField(entry.getValue());
+                    break;
+            }
+        });
     }
 
     public void validateCertificateUpdateFieldMatchesDataType(Class<?> requested, Map.Entry<String, Object> field) {
@@ -170,12 +216,6 @@ public class Validator {
         fields.forEach((key, value) -> validateNonNull(value, key));
     }
 
-    private void checkFieldsHaveTagsField(Map<String, Object> fields) {
-        if (fields.containsKey("tags")) {
-            validateTagsField(fields.get("tags"));
-        }
-    }
-
     @SuppressWarnings("unchecked cast")
     private void validateTagsField(Object tagsValue) {
         List<?> tagList = (ArrayList<?>) tagsValue;
@@ -186,10 +226,14 @@ public class Validator {
                     throw new ValidatorException(
                             ServiceExceptionCode.NON_EXISTING_TAG_FIELD_NAME.getErrorCode(), tagField.getKey());
                 }
-                if (tagField.getKey().equals("id"))
+                if (tagField.getKey().equals("id")) {
                     validateCertificateUpdateFieldMatchesDataType(Integer.class, tagField);
-                if (tagField.getKey().equals("name"))
+                    checkIdIsPositive((Integer) tagField.getValue());
+                }
+                if (tagField.getKey().equals("name")) {
                     validateCertificateUpdateFieldMatchesDataType(String.class, tagField);
+                    validateStringField((String) tagField.getValue(), "tag name");
+                }
             });
         });
     }

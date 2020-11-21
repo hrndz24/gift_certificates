@@ -96,8 +96,7 @@ public class OrderServiceImpl implements OrderService {
 
     private List<OrderDTO> getOrdersFromDatabase(Map<String, String> params) {
         List<OrderDTO> orders = new ArrayList<>();
-        String queryCondition = queryGenerator.generateQuery(params);
-        orderDAO.getOrders(queryCondition).forEach(order -> {
+        orderDAO.getOrders(queryGenerator.generateQuery(params)).forEach(order -> {
             orders.add(orderMapper.toDTO(order));
         });
         return orders;

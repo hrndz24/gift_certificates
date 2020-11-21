@@ -1,7 +1,13 @@
 package com.epam.esm.utils;
 
+import com.epam.esm.model.Order;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,13 +15,16 @@ import java.util.Map;
 public class OrderQueryGenerator {
 
     private Map<String, String> queries;
+    private SessionFactory sessionFactory;
 
     private static final String GET_BY_USER_ID = " WHERE user_id = ?";
 
-    private StringBuilder queryBuilder;
+    private CriteriaQuery<Order> criteria;
 
-    public OrderQueryGenerator() {
+    @Autowired
+    public OrderQueryGenerator(SessionFactory sessionFactory) {
         queries = new HashMap<>();
+        this.sessionFactory = sessionFactory;
         fillInQueries();
     }
 
@@ -23,17 +32,19 @@ public class OrderQueryGenerator {
         queries.put("userId", GET_BY_USER_ID);
     }
 
-    public String generateQuery(Map<String, String> params) {
-        queryBuilder = new StringBuilder();
-        appendQueryCondition(params);
-        return queryBuilder.toString();
+    public CriteriaQuery<Order> generateQuery(Map<String, String> params) {
+        CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
+        criteria = criteriaBuilder.createQuery(Order.class);
+        appendPredicates(params, criteriaBuilder);
+        return criteria;
     }
 
-    private void appendQueryCondition(Map<String, String> params) {
-        params.keySet().forEach(s -> {
-            String queryCondition = queries.get(s);
-            queryCondition = queryCondition.replaceAll("\\?", params.get(s));
-            queryBuilder.append(queryCondition);
+    private void appendPredicates(Map<String, String> params, CriteriaBuilder criteriaBuilder) {
+        Root<Order> root = criteria.from(Order.class);
+        params.keySet().forEach(key -> {
+            if (key.equals("userId")) {
+                criteria.select(root).where(criteriaBuilder.equal(root.get(key), params.get(key)));
+            }
         });
     }
 }

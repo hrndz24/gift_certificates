@@ -11,6 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -27,12 +29,13 @@ class OrderDAOImplTest {
 
     private OrderDAOImpl orderDAO;
 
-    private static final String GET_ALL_ORDERS_QUERY = "";
-    private static final String GET_ORDERS_BY_USER_QUERY = " WHERE userId = 2";
+    private CriteriaQuery<Order> criteriaQuery;
 
     @BeforeEach
     void setUp() {
         orderDAO = new OrderDAOImpl(sessionFactory);
+        criteriaQuery = sessionFactory.getCriteriaBuilder().createQuery(Order.class);
+        criteriaQuery.select(criteriaQuery.from(Order.class));
     }
 
     @Test
@@ -47,13 +50,15 @@ class OrderDAOImplTest {
 
     @Test
     void getOrdersShouldReturnListOfThreeOrders() {
-        assertEquals(3, orderDAO.getOrders(GET_ALL_ORDERS_QUERY).size());
+        assertEquals(3, orderDAO.getOrders(criteriaQuery).size());
     }
 
     @Test
     void getOrdersByUserIdShouldReturnListOfTwo() {
-        System.out.println(orderDAO.getOrders(GET_ORDERS_BY_USER_QUERY));
-        assertEquals(2, orderDAO.getOrders(GET_ORDERS_BY_USER_QUERY).size());
+        Root<Order> root = criteriaQuery.from(Order.class);
+        criteriaQuery.select(root)
+                .where(sessionFactory.getCriteriaBuilder().equal(root.get("userId"), 2)).distinct(true);
+        assertEquals(2, orderDAO.getOrders(criteriaQuery).size());
     }
 
     @Test

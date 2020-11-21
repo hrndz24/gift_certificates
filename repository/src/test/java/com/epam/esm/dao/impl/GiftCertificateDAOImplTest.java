@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaQuery;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,11 +34,13 @@ class GiftCertificateDAOImplTest {
     @Autowired
     private SessionFactory sessionFactory;
 
-    private String queryConditionToGetAllCertificates = "";
+    private CriteriaQuery<GiftCertificate> criteriaQuery;
 
     @BeforeEach
     void setUp() throws ParseException {
         giftCertificateDAO = new GiftCertificateDAOImpl(sessionFactory);
+        criteriaQuery = sessionFactory.getCriteriaBuilder().createQuery(GiftCertificate.class);
+        criteriaQuery.select(criteriaQuery.from(GiftCertificate.class));
         createExistentCertificate();
     }
 
@@ -67,13 +70,13 @@ class GiftCertificateDAOImplTest {
         newCertificate.setDuration(10);
         GiftCertificate returnedCertificate = giftCertificateDAO.addCertificate(newCertificate);
         assertNotEquals(0, returnedCertificate.getId());
-        assertEquals(4, giftCertificateDAO.getCertificates(queryConditionToGetAllCertificates).size());
+        assertEquals(4, giftCertificateDAO.getCertificates(criteriaQuery).size());
     }
 
     @Test
     void removeGiftCertificateShouldRemoveCertificate() {
         giftCertificateDAO.removeCertificate(3);
-        assertEquals(2, giftCertificateDAO.getCertificates(queryConditionToGetAllCertificates).size());
+        assertEquals(2, giftCertificateDAO.getCertificates(criteriaQuery).size());
     }
 
     @Test
@@ -86,7 +89,7 @@ class GiftCertificateDAOImplTest {
 
     @Test
     void getGiftCertificatesShouldReturnListOfThreeCertificates() {
-        assertEquals(3, giftCertificateDAO.getCertificates(queryConditionToGetAllCertificates).size());
+        assertEquals(3, giftCertificateDAO.getCertificates(criteriaQuery).size());
     }
 
     @Test

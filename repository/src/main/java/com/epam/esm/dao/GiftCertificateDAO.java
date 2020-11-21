@@ -2,6 +2,7 @@ package com.epam.esm.dao;
 
 import com.epam.esm.model.GiftCertificate;
 
+import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
 public interface GiftCertificateDAO {
@@ -12,7 +13,7 @@ public interface GiftCertificateDAO {
 
     void updateCertificate(GiftCertificate certificate);
 
-    List<GiftCertificate> getCertificates(String queryCondition);
+    List<GiftCertificate> getCertificates(CriteriaQuery<GiftCertificate> criteriaQuery);
 
     GiftCertificate getCertificateById(int id);
 }

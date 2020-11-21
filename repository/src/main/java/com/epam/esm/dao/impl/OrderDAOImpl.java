@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
 @Repository
@@ -40,10 +41,9 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    @SuppressWarnings("unchecked assignment")
-    public List<Order> getOrders(String queryCondition) {
+    public List<Order> getOrders(CriteriaQuery<Order> criteriaQuery) {
         try {
-            return sessionFactory.getCurrentSession().createQuery("from Order" + queryCondition).list();
+            return sessionFactory.getCurrentSession().createQuery(criteriaQuery).list();
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_ORDERS.getErrorCode(), e);
         }

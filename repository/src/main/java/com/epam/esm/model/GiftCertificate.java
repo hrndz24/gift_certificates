@@ -1,5 +1,7 @@
 package com.epam.esm.model;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -10,6 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "gift_certificate")
+@DynamicUpdate
 public class GiftCertificate implements Serializable {
 
     @Id

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
 @Repository
@@ -48,10 +50,12 @@ public class TagDAOImpl implements TagDAO {
     }
 
     @Override
-    @SuppressWarnings("unchecked assignment")
     public List<Tag> getTags() {
         Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("from Tag").list();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
+        criteriaQuery.from(Tag.class);
+        return session.createQuery(criteriaQuery).getResultList();
     }
 
     @Override
