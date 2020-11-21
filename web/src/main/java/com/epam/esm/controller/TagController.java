@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controller used to manipulate CRD operations on
@@ -31,8 +32,8 @@ public class TagController {
      * @return list of TagDTOs corresponding to tags in the database
      */
     @GetMapping
-    public List<TagDTO> getAllTags() {
-        return tagService.getTags();
+    public List<TagDTO> getAllTags(@RequestParam Map<String, String> params) {
+        return tagService.getTags(params);
     }
 
     /**

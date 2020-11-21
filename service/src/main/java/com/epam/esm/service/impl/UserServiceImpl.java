@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -31,15 +32,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTO> getUsers() {
+    public List<UserDTO> getUsers(Map<String, String> params) {
         List<UserDTO> userDTOS = new ArrayList<>();
-        userDAO.getUsers().forEach(user -> userDTOS.add(userMapper.toDTO(user)));
+        validator.validateUserParams(params);
+        int limit = Integer.parseInt(params.get("size"));
+        int offset = (Integer.parseInt(params.get("page")) - 1) * limit;
+        userDAO.getUsers(limit, offset).forEach(user -> userDTOS.add(userMapper.toDTO(user)));
         return userDTOS;
     }
 
     @Override
     public UserDTO getUserById(int id) {
-        validator.checkIdIsPositive(id);
+        validator.validateIdIsPositive(id);
         User user = getUserByIdIfExists(id);
         return userMapper.toDTO(user);
     }

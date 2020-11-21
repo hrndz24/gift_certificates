@@ -13,7 +13,7 @@ public interface GiftCertificateDAO {
 
     void updateCertificate(GiftCertificate certificate);
 
-    List<GiftCertificate> getCertificates(CriteriaQuery<GiftCertificate> criteriaQuery);
+    List<GiftCertificate> getCertificates(CriteriaQuery<GiftCertificate> criteriaQuery, int limit, int offset);
 
     GiftCertificate getCertificateById(int id);
 }

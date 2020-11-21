@@ -96,7 +96,9 @@ public class OrderServiceImpl implements OrderService {
 
     private List<OrderDTO> getOrdersFromDatabase(Map<String, String> params) {
         List<OrderDTO> orders = new ArrayList<>();
-        orderDAO.getOrders(queryGenerator.generateQuery(params)).forEach(order -> {
+        int limit = Integer.parseInt(params.get("size"));
+        int offset = (Integer.parseInt(params.get("page")) - 1) * limit;
+        orderDAO.getOrders(queryGenerator.generateQuery(params), limit, offset).forEach(order -> {
             orders.add(orderMapper.toDTO(order));
         });
         return orders;
@@ -110,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO getOrderById(int id) {
-        validator.checkIdIsPositive(id);
+        validator.validateIdIsPositive(id);
         return orderMapper.toDTO(getOrderIfExists(id));
     }
 

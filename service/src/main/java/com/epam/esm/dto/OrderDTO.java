@@ -3,6 +3,7 @@ package com.epam.esm.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,7 +50,7 @@ public class OrderDTO {
     }
 
     public void setCost(BigDecimal cost) {
-        this.cost = cost;
+        this.cost = cost.setScale(2, RoundingMode.HALF_UP);
     }
 
     public List<GiftCertificateDTO> getCertificates() {

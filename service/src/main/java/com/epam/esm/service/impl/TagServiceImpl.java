@@ -2,7 +2,6 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
-import com.epam.esm.exception.DAOException;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.exception.ValidatorException;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -36,22 +36,22 @@ public class TagServiceImpl implements TagService {
     public TagDTO addTag(TagDTO tagDTO) {
         validator.validateTag(tagDTO);
         tagDTO.setId(0);
-        Tag tag = addTagIfItDoesNotExist(mapper.toModel(tagDTO));
-        return mapper.toDTO(tag);
+        checkTagNameDoesNotExist(tagDTO);
+        return mapper.toDTO(tagDAO.addTag(mapper.toModel(tagDTO)));
     }
 
-    private Tag addTagIfItDoesNotExist(Tag tag) {
-        try {
-            return tagDAO.addTag(tag);
-        } catch (DAOException e) {
+    private void checkTagNameDoesNotExist(TagDTO tag) {
+        Tag tagReturned = tagDAO.getTagByName(tag.getName());
+        if (tagReturned != null) {
             throw new ValidatorException(
-                    ServiceExceptionCode.CANNOT_ADD_EXISTING_TAG.getErrorCode());
+                    ServiceExceptionCode.CANNOT_ADD_EXISTING_TAG.getErrorCode(),
+                    tag.getName() + ", id = " + tagReturned.getId());
         }
     }
 
     @Override
     public void removeTag(int tagId) {
-        validator.checkIdIsPositive(tagId);
+        validator.validateIdIsPositive(tagId);
         Tag tag = getTagIfExists(tagId);
         checkTagIsNotAssignedToAnyCertificate(tag);
         tagDAO.removeTag(tagId);
@@ -74,15 +74,18 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDTO> getTags() {
+    public List<TagDTO> getTags(Map<String, String> params) {
         List<TagDTO> tags = new ArrayList<>();
-        tagDAO.getTags().forEach(tag -> tags.add(mapper.toDTO(tag)));
+        validator.validateTagParams(params);
+        int limit = Integer.parseInt(params.get("size"));
+        int offset = (Integer.parseInt(params.get("page")) - 1) * limit;
+        tagDAO.getTags(limit, offset).forEach(tag -> tags.add(mapper.toDTO(tag)));
         return tags;
     }
 
     @Override
     public TagDTO getTagById(int id) {
-        validator.checkIdIsPositive(id);
+        validator.validateIdIsPositive(id);
         Tag tag = getTagIfExists(id);
         return mapper.toDTO(tag);
     }

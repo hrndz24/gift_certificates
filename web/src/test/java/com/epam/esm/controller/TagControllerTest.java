@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -45,7 +46,7 @@ class TagControllerTest {
         tags.add(new TagDTO());
         tags.add(new TagDTO());
         tags.add(new TagDTO());
-        given(service.getTags()).willReturn(tags);
+        given(service.getTags(new HashMap<>())).willReturn(tags);
         mockMvc.perform(get(tagsURL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(tags.size()));

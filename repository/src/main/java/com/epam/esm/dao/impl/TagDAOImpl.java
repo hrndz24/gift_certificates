@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository
@@ -50,17 +51,28 @@ public class TagDAOImpl implements TagDAO {
     }
 
     @Override
-    public List<Tag> getTags() {
+    public List<Tag> getTags(int limit, int offset) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
-        criteriaQuery.from(Tag.class);
-        return session.createQuery(criteriaQuery).getResultList();
+        Root<Tag> root = criteriaQuery.from(Tag.class);
+        criteriaQuery.orderBy(criteriaBuilder.asc(root.get("id")));
+        return session.createQuery(criteriaQuery).setMaxResults(limit).setFirstResult(offset).getResultList();
     }
 
     @Override
     public Tag getTagById(int id) {
         Session session = sessionFactory.getCurrentSession();
         return session.get(Tag.class, id);
+    }
+
+    @Override
+    public Tag getTagByName(String name) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
+        Root<Tag> root = criteriaQuery.from(Tag.class);
+        criteriaQuery.where(criteriaBuilder.equal(root.get("name"), name));
+        return session.createQuery(criteriaQuery).getResultList().stream().findFirst().orElse(null);
     }
 }

@@ -12,7 +12,6 @@ public class Tag implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @OrderBy
     @Column(name = "id")
     private int id;
     @Column(name = "name", updatable = false)

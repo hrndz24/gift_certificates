@@ -9,7 +9,7 @@ public interface OrderDAO {
 
     Order addOrder(Order order);
 
-    List<Order> getOrders(CriteriaQuery<Order> criteriaQuery);
+    List<Order> getOrders(CriteriaQuery<Order> criteriaQuery, int limit, int offset);
 
     Order getOrderById(int id);
 }

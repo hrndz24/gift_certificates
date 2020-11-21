@@ -3,6 +3,7 @@ package com.epam.esm.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
@@ -53,7 +54,7 @@ public class GiftCertificateDTO {
     }
 
     public void setPrice(BigDecimal price) {
-        this.price = price;
+        this.price = price.setScale(2, RoundingMode.HALF_UP);
     }
 
     public Date getCreateDate() {

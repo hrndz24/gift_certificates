@@ -71,10 +71,10 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public List<GiftCertificate> getCertificates(CriteriaQuery<GiftCertificate> criteriaQuery) {
+    public List<GiftCertificate> getCertificates(CriteriaQuery<GiftCertificate> criteriaQuery, int limit, int offset) {
         Session session = sessionFactory.getCurrentSession();
         try {
-            return session.createQuery(criteriaQuery).list();
+            return session.createQuery(criteriaQuery).setMaxResults(limit).setFirstResult(offset).list();
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_CERTIFICATES.getErrorCode(), e);
         }

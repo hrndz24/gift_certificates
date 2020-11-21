@@ -4,12 +4,10 @@ import com.epam.esm.dto.UserDTO;
 import com.epam.esm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controller used to implement GET operations on
@@ -33,8 +31,8 @@ public class UserController {
      * @return list of UserDTOs corresponding to users in the database
      */
     @GetMapping
-    public List<UserDTO> getUsers() {
-        return userService.getUsers();
+    public List<UserDTO> getUsers(@RequestParam Map<String, String> params) {
+        return userService.getUsers(params);
     }
 
     /**

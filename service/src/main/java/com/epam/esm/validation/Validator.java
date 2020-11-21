@@ -5,6 +5,7 @@ import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.exception.ValidatorException;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -16,25 +17,39 @@ public class Validator {
 
     private Set<String> certificateParameterNames;
     private Set<String> orderParameterNames;
+    private Set<String> tagParameterNames;
+    private Set<String> userParameterNames;
     private Set<String> orderByValues;
     private Set<String> certificateFieldNames;
     private Set<String> tagFieldNames;
+    private Set<String> paginationParameters;
+    private static final int DEFAULT_SIZE = 10;
+    private static final int DEFAULT_PAGE_NUMBER = 1;
 
     public Validator() {
         this.certificateParameterNames = new HashSet<>();
         this.orderParameterNames = new HashSet<>();
+        this.tagParameterNames = new HashSet<>();
+        this.userParameterNames = new HashSet<>();
         this.orderByValues = new HashSet<>();
         this.certificateFieldNames = new HashSet<>();
         this.tagFieldNames = new HashSet<>();
+        this.paginationParameters = new HashSet<>();
         fillInParameterNames();
     }
 
     private void fillInParameterNames() {
+        paginationParameters.add("page");
+        paginationParameters.add("size");
         certificateParameterNames.add("certificateName");
         certificateParameterNames.add("certificateDescription");
         certificateParameterNames.add("tagName");
         certificateParameterNames.add("orderBy");
+        certificateParameterNames.addAll(paginationParameters);
         orderParameterNames.add("userId");
+        orderParameterNames.addAll(paginationParameters);
+        tagParameterNames.addAll(paginationParameters);
+        userParameterNames.addAll(paginationParameters);
         orderByValues.add("name");
         orderByValues.add("-name");
         orderByValues.add("date");
@@ -63,16 +78,16 @@ public class Validator {
 
     public void validateOrder(OrderDTO orderDTO) {
         validateNonNull(orderDTO, OrderDTO.class.getName());
-        checkIdIsPositive(orderDTO.getUserId());
+        validateIdIsPositive(orderDTO.getUserId());
         checkOrderHasCertificates(orderDTO);
     }
 
     public void validateCertificateForOrdering(GiftCertificateDTO certificate) {
         validateNonNull(certificate, GiftCertificateDTO.class.getName());
-        checkIdIsPositive(certificate.getId());
+        validateIdIsPositive(certificate.getId());
     }
 
-    public void checkIdIsPositive(int id) {
+    public void validateIdIsPositive(int id) {
         if (id <= 0) {
             throw new ValidatorException(
                     ServiceExceptionCode.SHOULD_BE_POSITIVE.getErrorCode(), "id = " + id);
@@ -117,6 +132,7 @@ public class Validator {
     public void validateCertificateParams(Map<String, String> params) {
         validateNonNull(params, params.getClass().getName());
         trimAndLowerCaseValues(params);
+        checkParamsHavePaginationParameters(params);
         checkCertificateParametersExist(params);
         checkParamsHaveOrderBy(params);
         checkParamsHaveTagName(params);
@@ -141,7 +157,38 @@ public class Validator {
     public void validateOrderParams(Map<String, String> params) {
         validateNonNull(params, params.getClass().getName());
         trimAndLowerCaseValues(params);
+        checkParamsHavePaginationParameters(params);
         checkOrderParametersExist(params);
+    }
+
+    public void validateTagParams(Map<String, String> params) {
+        validateNonNull(params, params.getClass().getName());
+        trimAndLowerCaseValues(params);
+        checkParamsHavePaginationParameters(params);
+        checkTagParameterExist(params);
+    }
+
+    private void checkTagParameterExist(Map<String, String> params) {
+        params.forEach((key, value) -> {
+            if (!tagParameterNames.contains(key)) {
+                throw new ValidatorException(ServiceExceptionCode.NON_EXISTING_PARAM_NAME.getErrorCode(), key);
+            }
+        });
+    }
+
+    public void validateUserParams(Map<String, String> params) {
+        validateNonNull(params, params.getClass().getName());
+        trimAndLowerCaseValues(params);
+        checkParamsHavePaginationParameters(params);
+        checkUserParameterExist(params);
+    }
+
+    private void checkUserParameterExist(Map<String, String> params) {
+        params.forEach((key, value) -> {
+            if (!userParameterNames.contains(key)) {
+                throw new ValidatorException(ServiceExceptionCode.NON_EXISTING_PARAM_NAME.getErrorCode(), key);
+            }
+        });
     }
 
     public void validateCertificateUpdateField(Map<String, Object> field) {
@@ -165,15 +212,13 @@ public class Validator {
                     break;
                 case "price":
                     validateCertificateUpdateFieldMatchesDataType(Double.class, entry);
-                    validatePrice((BigDecimal) entry.getValue());
+                    validatePrice(BigDecimal.valueOf((Double) entry.getValue()));
                     break;
                 case "duration":
                     validateCertificateUpdateFieldMatchesDataType(Integer.class, entry);
                     validateDuration((Integer) entry.getValue());
                     break;
                 case "tags":
-                    System.out.println(entry.getValue());
-                    System.out.println(entry.getValue().getClass().getName());
                     validateCertificateUpdateFieldMatchesDataType(ArrayList.class, entry);
                     validateTagsField(entry.getValue());
                     break;
@@ -228,7 +273,7 @@ public class Validator {
                 }
                 if (tagField.getKey().equals("id")) {
                     validateCertificateUpdateFieldMatchesDataType(Integer.class, tagField);
-                    checkIdIsPositive((Integer) tagField.getValue());
+                    validateIdIsPositive((Integer) tagField.getValue());
                 }
                 if (tagField.getKey().equals("name")) {
                     validateCertificateUpdateFieldMatchesDataType(String.class, tagField);
@@ -269,4 +314,48 @@ public class Validator {
             throw new ValidatorException(ServiceExceptionCode.INVALID_ORDER_BY_VALUE.getErrorCode(), value);
         }
     }
+
+    private void checkParamsHavePaginationParameters(Map<String, String> params) {
+        validatePageParameter(params);
+        validateSizeParameter(params);
+    }
+
+    private void validatePageParameter(Map<String, String> params) {
+        if (!params.containsKey("page")) {
+            params.put("page", String.valueOf(DEFAULT_PAGE_NUMBER));
+        } else {
+            validatePageParameterValue(params.get("page"));
+        }
+    }
+
+    private void validatePageParameterValue(String page) {
+        if (NumberUtils.isParsable(page) && NumberUtils.createNumber(page).getClass().equals(Integer.class)) {
+            int pageNumber = Integer.parseInt(page);
+            if (pageNumber < 1) {
+                throw new ValidatorException(ServiceExceptionCode.SHOULD_BE_POSITIVE.getErrorCode(), "page = " + page);
+            }
+        } else {
+            throw new ValidatorException(ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), page);
+        }
+    }
+
+    private void validateSizeParameter(Map<String, String> params) {
+        if (!params.containsKey("size")) {
+            params.put("size", String.valueOf(DEFAULT_SIZE));
+        } else {
+            validateSizeParameterValue(params.get("size"));
+        }
+    }
+
+    private void validateSizeParameterValue(String size) {
+        if (NumberUtils.isParsable(size) && NumberUtils.createNumber(size).getClass().equals(Integer.class)) {
+            int pageNumber = Integer.parseInt(size);
+            if (pageNumber < 1) {
+                throw new ValidatorException(ServiceExceptionCode.SHOULD_BE_POSITIVE.getErrorCode(), "size = " + size);
+            }
+        } else {
+            throw new ValidatorException(ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), size);
+        }
+    }
+
 }

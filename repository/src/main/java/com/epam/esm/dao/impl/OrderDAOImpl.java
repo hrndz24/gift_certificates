@@ -41,9 +41,10 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public List<Order> getOrders(CriteriaQuery<Order> criteriaQuery) {
+    public List<Order> getOrders(CriteriaQuery<Order> criteriaQuery, int limit, int offset) {
         try {
-            return sessionFactory.getCurrentSession().createQuery(criteriaQuery).list();
+            return sessionFactory.getCurrentSession().createQuery(criteriaQuery)
+                    .setMaxResults(limit).setFirstResult(offset).list();
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_ORDERS.getErrorCode(), e);
         }

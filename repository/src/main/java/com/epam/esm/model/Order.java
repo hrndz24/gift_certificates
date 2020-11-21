@@ -3,6 +3,7 @@ package com.epam.esm.model;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
@@ -61,7 +62,7 @@ public class Order implements Serializable {
     }
 
     public void setCost(BigDecimal cost) {
-        this.cost = cost;
+        this.cost = cost.setScale(2, RoundingMode.HALF_UP);
     }
 
     public Set<GiftCertificate> getCertificates() {

@@ -32,7 +32,7 @@ public class TagDTO {
         if (o == null || getClass() != o.getClass()) return false;
         TagDTO tagDTO = (TagDTO) o;
         return id == tagDTO.id &&
-                name.equals(tagDTO.name);
+                Objects.equals(name, tagDTO.name);
     }
 
     @Override
