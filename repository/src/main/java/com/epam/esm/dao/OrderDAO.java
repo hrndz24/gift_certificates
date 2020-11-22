@@ -12,4 +12,6 @@ public interface OrderDAO {
     List<Order> getOrders(CriteriaQuery<Order> criteriaQuery, int limit, int offset);
 
     Order getOrderById(int id);
+
+    long getCount(CriteriaQuery<Order> criteriaQuery);
 }

@@ -2,13 +2,23 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.service.OrderService;
+import com.epam.esm.util.ControllerPaginationPreparer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.LinkRelation;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller used to add new {@code Order} instances
@@ -19,10 +29,13 @@ import java.util.Map;
 public class OrderController {
 
     private OrderService orderService;
+    private ControllerPaginationPreparer paginationPreparer;
 
     @Autowired
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService,
+                           ControllerPaginationPreparer paginationPreparer) {
         this.orderService = orderService;
+        this.paginationPreparer = paginationPreparer;
     }
 
     /**
@@ -45,8 +58,20 @@ public class OrderController {
      * @return list of OrderDTOs corresponding to orders in the database
      */
     @GetMapping
-    public List<OrderDTO> getAllOrders(@RequestParam Map<String, String> params) {
-        return orderService.getOrders(params);
+    public RepresentationModel<?> getAllOrders(@RequestParam Map<String, String> params) {
+        List<OrderDTO> orders = orderService.getOrders(params);
+        orders.forEach(order -> {
+            order.add(linkTo(methodOn(OrderController.class)
+                    .getOrderById(order.getId()))
+                    .withSelfRel());
+        });
+        int currentPage = Integer.parseInt(params.get("page"));
+        long ordersCount = orderService.getCount(params);
+        List<Link> links = paginationPreparer.prepareLinks(
+                methodOn(OrderController.class).getAllOrders(params), params, currentPage, ordersCount);
+        Map<String, Long> page = paginationPreparer.preparePageInfo(params, currentPage, ordersCount);
+        CollectionModel<OrderDTO> collectionModel = CollectionModel.of(orders);
+        return HalModelBuilder.halModelOf(collectionModel).links(links).embed(page, LinkRelation.of("page")).build();
     }
 
     /**
@@ -58,6 +83,17 @@ public class OrderController {
      */
     @GetMapping("/{id}")
     public OrderDTO getOrderById(@PathVariable("id") int id) {
-        return orderService.getOrderById(id);
+        OrderDTO orderDTO = orderService.getOrderById(id);
+        orderDTO.getCertificates().forEach(certificate -> {
+            certificate.add(linkTo(methodOn(GiftCertificateController.class)
+                    .getCertificateById(certificate.getId()))
+                    .withSelfRel());
+        });
+        Map<String, String> params = new HashMap<>();
+        params.put("userId", String.valueOf(orderDTO.getUserId()));
+        orderDTO.add(linkTo(methodOn(OrderController.class)
+                .getAllOrders(params))
+                .withRel("all orders of this user"));
+        return orderDTO;
     }
 }

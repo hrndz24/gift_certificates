@@ -18,4 +18,6 @@ public interface GiftCertificateService {
     List<GiftCertificateDTO> getCertificates(Map<String, String> params);
 
     GiftCertificateDTO getCertificateById(int id);
+
+    long getCount(Map<String, String> params);
 }

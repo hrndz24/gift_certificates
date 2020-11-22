@@ -15,4 +15,6 @@ public interface TagDAO {
     Tag getTagById(int id);
 
     Tag getTagByName(String name);
+
+    long getCount();
 }

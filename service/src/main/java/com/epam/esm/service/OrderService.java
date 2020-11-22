@@ -12,4 +12,6 @@ public interface OrderService {
     List<OrderDTO> getOrders(Map<String, String> params);
 
     OrderDTO getOrderById(int id);
+
+    long getCount(Map<String, String> params);
 }

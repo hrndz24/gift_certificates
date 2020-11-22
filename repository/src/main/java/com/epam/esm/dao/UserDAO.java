@@ -9,4 +9,6 @@ public interface UserDAO {
     List<User> getUsers(int limit, int offset);
 
     User getUserById(int id);
+
+    long getCount();
 }

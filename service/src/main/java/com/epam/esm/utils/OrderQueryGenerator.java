@@ -41,9 +41,10 @@ public class OrderQueryGenerator {
 
     private void appendPredicates(Map<String, String> params, CriteriaBuilder criteriaBuilder) {
         Root<Order> root = criteria.from(Order.class);
+        root.alias("orderAlias");
         params.keySet().forEach(key -> {
             if (key.equals("userId")) {
-                criteria.select(root).where(criteriaBuilder.equal(root.get(key), params.get(key)));
+                criteria.where(criteriaBuilder.equal(root.get(key), params.get(key)));
             }
         });
     }

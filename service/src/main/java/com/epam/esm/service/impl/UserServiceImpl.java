@@ -42,6 +42,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public long getCount() {
+        return userDAO.getCount();
+    }
+
+    @Override
     public UserDTO getUserById(int id) {
         validator.validateIdIsPositive(id);
         User user = getUserByIdIfExists(id);

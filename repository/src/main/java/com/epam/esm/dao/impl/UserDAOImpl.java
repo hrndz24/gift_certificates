@@ -47,4 +47,13 @@ public class UserDAOImpl implements UserDAO {
             throw new DAOException(DAOExceptionCode.FAILED_GET_USER.getErrorCode(), e);
         }
     }
+
+    @Override
+    public long getCount() {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<Long> count = criteriaBuilder.createQuery(Long.class);
+        count.select(criteriaBuilder.count(count.from(User.class)));
+        return session.createQuery(count).getSingleResult();
+    }
 }

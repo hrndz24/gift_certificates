@@ -14,4 +14,6 @@ public interface TagService {
     List<TagDTO> getTags(Map<String, String> params);
 
     TagDTO getTagById(int id);
+
+    long getCount();
 }

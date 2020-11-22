@@ -2,13 +2,23 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.util.ControllerPaginationPreparer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.LinkRelation;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller used to manipulate CRUD operations on
@@ -19,10 +29,13 @@ import java.util.Map;
 public class GiftCertificateController {
 
     private GiftCertificateService certificateService;
+    private ControllerPaginationPreparer paginationPreparer;
 
     @Autowired
-    public GiftCertificateController(GiftCertificateService certificateService) {
+    public GiftCertificateController(GiftCertificateService certificateService,
+                                     ControllerPaginationPreparer paginationPreparer) {
         this.certificateService = certificateService;
+        this.paginationPreparer = paginationPreparer;
     }
 
     /**
@@ -49,8 +62,9 @@ public class GiftCertificateController {
      */
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public void updateCertificate(@PathVariable("id") int id, @RequestBody GiftCertificateDTO certificate) {
+    public ResponseEntity<Void> updateCertificate(@PathVariable("id") int id, @RequestBody GiftCertificateDTO certificate) {
         certificateService.updateCertificate(id, certificate);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -66,8 +80,9 @@ public class GiftCertificateController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCertificate(@PathVariable("id") int id) {
+    public ResponseEntity<Void> deleteCertificate(@PathVariable("id") int id) {
         certificateService.removeCertificate(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -81,8 +96,45 @@ public class GiftCertificateController {
      * @return list of certificates that match requirements of the parameters
      */
     @GetMapping
-    public List<GiftCertificateDTO> getCertificates(@RequestParam Map<String, String> params) {
-        return certificateService.getCertificates(params);
+    public RepresentationModel<?> getCertificates(@RequestParam Map<String, String> params) {
+        List<GiftCertificateDTO> certificates = certificateService.getCertificates(params);
+        certificates.forEach(certificate -> {
+            certificate.add(linkTo(methodOn(GiftCertificateController.class)
+                    .getCertificateById(certificate.getId()))
+                    .withSelfRel());
+        });
+        int currentPage = Integer.parseInt(params.get("page"));
+        long certificatesCount = certificateService.getCount(params);
+        List<Link> links = paginationPreparer.prepareLinks(
+                methodOn(GiftCertificateController.class).getCertificates(params),
+                params, currentPage, certificatesCount);
+        params.put("orderBy", "name");
+        links.add(linkTo(methodOn(GiftCertificateController.class)
+                .getCertificates(params))
+                .withRel("sort by name asc"));
+        params.put("orderBy", "-name");
+        links.add(linkTo(methodOn(GiftCertificateController.class)
+                .getCertificates(params))
+                .withRel("sort by name desc"));
+        params.put("orderBy", "date");
+        links.add(linkTo(methodOn(GiftCertificateController.class)
+                .getCertificates(params))
+                .withRel("sort by creation date asc"));
+        params.put("orderBy", "-date");
+        links.add(linkTo(methodOn(GiftCertificateController.class)
+                .getCertificates(params))
+                .withRel("sort by creation date desc"));
+        params.put("certificateName", "name");
+        links.add(linkTo(methodOn(GiftCertificateController.class)
+                .getCertificates(params))
+                .withRel("search by name of certificate"));
+        params.put("certificateDescription", "description");
+        links.add(linkTo(methodOn(GiftCertificateController.class)
+                .getCertificates(params))
+                .withRel("search by description of certificate"));
+        Map<String, Long> page = paginationPreparer.preparePageInfo(params, currentPage, certificatesCount);
+        CollectionModel<GiftCertificateDTO> collectionModel = CollectionModel.of(certificates);
+        return HalModelBuilder.halModelOf(collectionModel).links(links).embed(page, LinkRelation.of("page")).build();
     }
 
     /**
@@ -93,6 +145,18 @@ public class GiftCertificateController {
      */
     @GetMapping("/{id}")
     public GiftCertificateDTO getCertificateById(@PathVariable("id") int id) {
-        return certificateService.getCertificateById(id);
+        GiftCertificateDTO certificate = certificateService.getCertificateById(id);
+        certificate.getTags().forEach(tag -> {
+            tag.add(linkTo(methodOn(TagController.class)
+                    .getTagById(tag.getId()))
+                    .withSelfRel());
+        });
+        certificate.add(linkTo(methodOn(GiftCertificateController.class)
+                .deleteCertificate(id))
+                .withRel("delete"));
+        certificate.add(linkTo(methodOn(GiftCertificateController.class)
+                .updateCertificate(id, certificate))
+                .withRel("update"));
+        return certificate;
     }
 }

@@ -2,10 +2,11 @@ package com.epam.esm.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.Objects;
 
-public class UserDTO {
+public class UserDTO extends RepresentationModel<UserDTO> {
 
     private int id;
     private String email;

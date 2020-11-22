@@ -1,6 +1,7 @@
 package com.epam.esm.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -9,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class OrderDTO {
+public class OrderDTO extends RepresentationModel<OrderDTO> {
 
     private int id;
     private int userId;

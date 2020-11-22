@@ -50,7 +50,7 @@ class OrderDAOImplTest {
 
     @Test
     void getOrdersShouldReturnListOfThreeOrders() {
-        assertEquals(3, orderDAO.getOrders(criteriaQuery).size());
+        assertEquals(3, orderDAO.getOrders(criteriaQuery, 10, 0).size());
     }
 
     @Test
@@ -58,7 +58,7 @@ class OrderDAOImplTest {
         Root<Order> root = criteriaQuery.from(Order.class);
         criteriaQuery.select(root)
                 .where(sessionFactory.getCriteriaBuilder().equal(root.get("userId"), 2)).distinct(true);
-        assertEquals(2, orderDAO.getOrders(criteriaQuery).size());
+        assertEquals(2, orderDAO.getOrders(criteriaQuery, 10, 0).size());
     }
 
     @Test

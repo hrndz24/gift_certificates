@@ -45,7 +45,7 @@ class TagDAOImplTest {
         newTag.setName("beauty");
         tagDAO.addTag(newTag);
         assertNotEquals(0, newTag.getId());
-        assertEquals(4, tagDAO.getTags().size());
+        assertEquals(4, tagDAO.getTags(10, 0).size());
     }
 
     @Test
@@ -56,12 +56,12 @@ class TagDAOImplTest {
     @Test
     void removeTagWithoutAssignedCertificateShouldRemoveTag() {
         tagDAO.removeTag(3);
-        assertEquals(2, tagDAO.getTags().size());
+        assertEquals(2, tagDAO.getTags(10, 0).size());
     }
 
     @Test
     void getTagsShouldReturnListOfThreeTags() {
-        assertEquals(3, tagDAO.getTags().size());
+        assertEquals(3, tagDAO.getTags(10, 0).size());
     }
 
     @Test

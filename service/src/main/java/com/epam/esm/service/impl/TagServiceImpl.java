@@ -84,6 +84,11 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    public long getCount() {
+        return tagDAO.getCount();
+    }
+
+    @Override
     public TagDTO getTagById(int id) {
         validator.validateIdIsPositive(id);
         Tag tag = getTagIfExists(id);

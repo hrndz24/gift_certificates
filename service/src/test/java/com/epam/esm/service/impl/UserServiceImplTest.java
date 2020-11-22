@@ -14,6 +14,7 @@ import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,8 +43,8 @@ class UserServiceImplTest {
         users.add(new User());
         users.add(new User());
         users.add(new User());
-        when(userDAO.getUsers()).thenReturn(users);
-        assertEquals(3, userService.getUsers().size());
+        when(userDAO.getUsers(10, 0)).thenReturn(users);
+        assertEquals(3, userService.getUsers(new HashMap<>()).size());
     }
 
     @Test

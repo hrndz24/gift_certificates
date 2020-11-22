@@ -12,6 +12,7 @@ allprojects {
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: findProperty("spring-boot.version")
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: findProperty("spring-boot.version")
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: findProperty("spring-boot.version")
+        implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: findProperty("spring-boot.version")
 
         implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
         implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: findProperty("jackson.version")

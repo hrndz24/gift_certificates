@@ -70,13 +70,13 @@ class GiftCertificateDAOImplTest {
         newCertificate.setDuration(10);
         GiftCertificate returnedCertificate = giftCertificateDAO.addCertificate(newCertificate);
         assertNotEquals(0, returnedCertificate.getId());
-        assertEquals(4, giftCertificateDAO.getCertificates(criteriaQuery).size());
+        assertEquals(4, giftCertificateDAO.getCertificates(criteriaQuery, 10, 0).size());
     }
 
     @Test
     void removeGiftCertificateShouldRemoveCertificate() {
         giftCertificateDAO.removeCertificate(3);
-        assertEquals(2, giftCertificateDAO.getCertificates(criteriaQuery).size());
+        assertEquals(2, giftCertificateDAO.getCertificates(criteriaQuery, 10, 0).size());
     }
 
     @Test
@@ -89,7 +89,7 @@ class GiftCertificateDAOImplTest {
 
     @Test
     void getGiftCertificatesShouldReturnListOfThreeCertificates() {
-        assertEquals(3, giftCertificateDAO.getCertificates(criteriaQuery).size());
+        assertEquals(3, giftCertificateDAO.getCertificates(criteriaQuery, 10, 0).size());
     }
 
     @Test

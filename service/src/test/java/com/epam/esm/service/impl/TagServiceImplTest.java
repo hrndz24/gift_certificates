@@ -17,6 +17,7 @@ import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -91,8 +92,8 @@ class TagServiceImplTest {
         List<TagDTO> tagDTOs = new ArrayList<>();
         tagDTOs.add(tagDTO1);
         tagDTOs.add(tagDTO2);
-        when(tagDAO.getTags()).thenReturn(tags);
-        Assertions.assertEquals(tagDTOs, tagService.getTags());
+        when(tagDAO.getTags(10, 0)).thenReturn(tags);
+        Assertions.assertEquals(tagDTOs, tagService.getTags(new HashMap<>()));
     }
 
     @Test

@@ -75,4 +75,13 @@ public class TagDAOImpl implements TagDAO {
         criteriaQuery.where(criteriaBuilder.equal(root.get("name"), name));
         return session.createQuery(criteriaQuery).getResultList().stream().findFirst().orElse(null);
     }
+
+    @Override
+    public long getCount() {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<Long> count = criteriaBuilder.createQuery(Long.class);
+        count.select(criteriaBuilder.count(count.from(Tag.class)));
+        return session.createQuery(count).getSingleResult();
+    }
 }

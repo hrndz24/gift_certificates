@@ -12,7 +12,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository
@@ -88,5 +90,18 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_CERTIFICATE.getErrorCode(), e);
         }
+    }
+
+    @Override
+    public long getCount(CriteriaQuery<GiftCertificate> criteriaQuery) {
+        CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
+        CriteriaQuery<Long> count = criteriaBuilder.createQuery(Long.class);
+        Root<GiftCertificate> root = count.from(GiftCertificate.class);
+        root.join("tags").alias("tagRoot");
+        root.alias("certificateAlias");
+        count.select(criteriaBuilder.count(root));
+        if (criteriaQuery.getRestriction() != null)
+            count.where(criteriaQuery.getRestriction());
+        return sessionFactory.getCurrentSession().createQuery(count).getSingleResult();
     }
 }

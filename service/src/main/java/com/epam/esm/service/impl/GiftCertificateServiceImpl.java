@@ -166,6 +166,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    public long getCount(Map<String, String> params) {
+        return certificateDAO.getCount(giftCertificateQueryGenerator.generateQueryCriteria(params));
+    }
+
+    @Override
     public GiftCertificateDTO getCertificateById(int id) {
         validator.validateIdIsPositive(id);
         return certificateMapper.toDTO(getCertificateIfExists(id));

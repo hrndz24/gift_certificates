@@ -99,7 +99,8 @@ class OrderServiceImplTest {
         orders.add(new Order());
         orders.add(new Order());
         when(queryGenerator.generateQuery(new HashMap<>())).thenReturn(any());
-        when(orderDAO.getOrders(queryGenerator.generateQuery(new HashMap<>()))).thenReturn(orders);
+        when(orderDAO.getOrders(queryGenerator.generateQuery(
+                new HashMap<>()), 10, 0)).thenReturn(orders);
         assertEquals(3, orderService.getOrders(new HashMap<>()).size());
     }
 

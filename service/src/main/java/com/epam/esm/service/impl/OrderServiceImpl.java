@@ -94,6 +94,11 @@ public class OrderServiceImpl implements OrderService {
         return getOrdersFromDatabase(params);
     }
 
+    @Override
+    public long getCount(Map<String, String> params) {
+        return orderDAO.getCount(queryGenerator.generateQuery(params));
+    }
+
     private List<OrderDTO> getOrdersFromDatabase(Map<String, String> params) {
         List<OrderDTO> orders = new ArrayList<>();
         int limit = Integer.parseInt(params.get("size"));

@@ -10,4 +10,6 @@ public interface UserService {
     List<UserDTO> getUsers(Map<String, String> params);
 
     UserDTO getUserById(int id);
+
+    long getCount();
 }

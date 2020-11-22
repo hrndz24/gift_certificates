@@ -85,7 +85,8 @@ class GiftCertificateServiceImplTest {
         certificates.add(new GiftCertificate());
         certificates.add(new GiftCertificate());
         when(giftCertificateQueryGenerator.generateQueryCriteria(new HashMap<>())).thenReturn(any());
-        when(certificateDAO.getCertificates(giftCertificateQueryGenerator.generateQueryCriteria(new HashMap<>()))).thenReturn(certificates);
+        when(certificateDAO.getCertificates(giftCertificateQueryGenerator.generateQueryCriteria
+                (new HashMap<>()), 10, 0)).thenReturn(certificates);
         assertEquals(3, certificateService.getCertificates(anyMap()).size());
     }
 

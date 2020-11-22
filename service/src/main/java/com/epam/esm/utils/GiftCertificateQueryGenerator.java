@@ -43,6 +43,7 @@ public class GiftCertificateQueryGenerator {
         CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
         criteria = criteriaBuilder.createQuery(GiftCertificate.class);
         Root<GiftCertificate> root = criteria.from(GiftCertificate.class);
+        root.alias("certificateAlias");
         criteria.select(root);
         addQueryPredicates(params, criteriaBuilder, root);
         return criteria;
@@ -70,9 +71,11 @@ public class GiftCertificateQueryGenerator {
     private List<Predicate> addTagNamePredicate(Map<String, String> params, CriteriaBuilder criteriaBuilder, Root<GiftCertificate> root) {
         List<Predicate> predicates = new ArrayList<>();
         String[] tags = params.get(TAG_NAME_PARAM_NAME).split(", ");
+        Join<Object, Object> join = root.join("tags");
+        join.alias("tagRoot");
         for (String tag : tags) {
             predicates.add(criteriaBuilder.like(criteriaBuilder.lower(
-                    root.join("tags").get("name")), "%" + tag.toLowerCase() + "%"));
+                    join.get("name")), "%" + tag.toLowerCase() + "%"));
         }
         return predicates;
     }
@@ -87,5 +90,4 @@ public class GiftCertificateQueryGenerator {
         }
         criteria.orderBy(orderBy);
     }
-
 }

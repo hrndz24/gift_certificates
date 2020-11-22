@@ -32,7 +32,7 @@ class UserDAOImplTest {
 
     @Test
     void getUsersShouldReturnListOfThreeUsers() {
-        assertEquals(3, userDAO.getUsers().size());
+        assertEquals(3, userDAO.getUsers(10, 0).size());
     }
 
     @Test
