@@ -33,7 +33,7 @@ public class OrderQueryGenerator {
         Root<Order> root = criteria.from(Order.class);
         root.alias("orderAlias");
         params.keySet().forEach(key -> {
-            if (key.equals("userId")) {
+            if (key.equals(ServiceConstant.USER_ID_PARAM.getValue())) {
                 criteria.where(criteriaBuilder.equal(root.get(key), params.get(key)));
             }
         });

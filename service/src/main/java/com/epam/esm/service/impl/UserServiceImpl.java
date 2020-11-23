@@ -7,6 +7,7 @@ import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.UserMapper;
 import com.epam.esm.model.User;
 import com.epam.esm.service.UserService;
+import com.epam.esm.utils.ServiceConstant;
 import com.epam.esm.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,8 +36,8 @@ public class UserServiceImpl implements UserService {
     public List<UserDTO> getUsers(Map<String, String> params) {
         List<UserDTO> userDTOS = new ArrayList<>();
         validator.validateUserParams(params);
-        int limit = Integer.parseInt(params.get("size"));
-        int offset = (Integer.parseInt(params.get("page")) - 1) * limit;
+        int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
+        int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
         userDAO.getUsers(limit, offset).forEach(user -> userDTOS.add(userMapper.toDTO(user)));
         return userDTOS;
     }

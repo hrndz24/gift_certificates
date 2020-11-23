@@ -11,6 +11,7 @@ import com.epam.esm.mapper.OrderMapper;
 import com.epam.esm.model.Order;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.utils.OrderQueryGenerator;
+import com.epam.esm.utils.ServiceConstant;
 import com.epam.esm.validation.Validator;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,8 +99,8 @@ public class OrderServiceImpl implements OrderService {
 
     private List<OrderDTO> getOrdersFromDatabase(Map<String, String> params) {
         List<OrderDTO> orders = new ArrayList<>();
-        int limit = Integer.parseInt(params.get("size"));
-        int offset = (Integer.parseInt(params.get("page")) - 1) * limit;
+        int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
+        int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
         orderDAO.getOrders(queryGenerator.generateQuery(params), limit, offset).forEach(order -> {
             orders.add(orderMapper.toDTO(order));
         });
@@ -107,8 +108,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void checkOrderParamsValuesExist(Map<String, String> params) {
-        if (!params.isEmpty() && NumberUtils.isParsable(params.get("userId"))) {
-            checkUserExists(Integer.parseInt(params.get("userId")));
+        if (!params.isEmpty() && NumberUtils.isParsable(params.get(ServiceConstant.USER_ID_PARAM.getValue()))) {
+            checkUserExists(Integer.parseInt(params.get(ServiceConstant.USER_ID_PARAM.getValue())));
         }
     }
 

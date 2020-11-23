@@ -12,6 +12,7 @@ import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.utils.GiftCertificateQueryGenerator;
+import com.epam.esm.utils.ServiceConstant;
 import com.epam.esm.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -135,10 +136,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                     Set<TagDTO> tagSet = new HashSet<>();
                     tags.forEach(tagRecord -> {
                         TagDTO tag = new TagDTO();
-                        if (tagRecord.get("id") != null) {
-                            tag.setId((Integer) tagRecord.get("id"));
+                        if (tagRecord.get(ServiceConstant.ID_FIELD.getValue()) != null) {
+                            tag.setId((Integer) tagRecord.get(ServiceConstant.ID_FIELD.getValue()));
                         }
-                        tag.setName((String) tagRecord.get("name"));
+                        tag.setName((String) tagRecord.get(ServiceConstant.NAME_FIELD.getValue()));
                         tagSet.add(tag);
                     });
                     validateTags(tagSet);
@@ -158,8 +159,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         validator.validateCertificateParams(params);
         CriteriaQuery<GiftCertificate> criteriaQuery = giftCertificateQueryGenerator.generateQueryCriteria(params);
         List<GiftCertificateDTO> certificates = new ArrayList<>();
-        int limit = Integer.parseInt(params.get("size"));
-        int offset = (Integer.parseInt(params.get("page")) - 1) * limit;
+        int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
+        int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
         certificateDAO.getCertificates(criteriaQuery, limit, offset).forEach(giftCertificate ->
                 certificates.add(certificateMapper.toDTO(giftCertificate)));
         return certificates;

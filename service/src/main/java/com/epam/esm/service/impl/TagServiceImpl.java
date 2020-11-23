@@ -8,6 +8,7 @@ import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
+import com.epam.esm.utils.ServiceConstant;
 import com.epam.esm.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,8 +78,8 @@ public class TagServiceImpl implements TagService {
     public List<TagDTO> getTags(Map<String, String> params) {
         List<TagDTO> tags = new ArrayList<>();
         validator.validateTagParams(params);
-        int limit = Integer.parseInt(params.get("size"));
-        int offset = (Integer.parseInt(params.get("page")) - 1) * limit;
+        int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
+        int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
         tagDAO.getTags(limit, offset).forEach(tag -> tags.add(mapper.toDTO(tag)));
         return tags;
     }

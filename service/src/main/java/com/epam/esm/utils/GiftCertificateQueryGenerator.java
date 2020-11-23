@@ -17,11 +17,10 @@ public class GiftCertificateQueryGenerator {
     private Map<String, String> orderByQueries;
     private SessionFactory sessionFactory;
 
-    private static final String ORDER_BY_PARAM_NAME = "orderBy";
-    private static final String TAG_NAME_PARAM_NAME = "tagName";
-
-    private static final String NAME_FIELD = "name";
-    private static final String DATE_FIELD = "createDate";
+    private static final String ORDER_BY_PARAM = "orderBy";
+    private static final String TAG_NAME_PARAM = "tagName";
+    private static final String CERTIFICATE_NAME_PARAM = "certificateName";
+    private static final String CERTIFICATE_DESCRIPTION_PARAM = "certificateDescription";
 
     private CriteriaQuery<GiftCertificate> criteria;
 
@@ -33,10 +32,10 @@ public class GiftCertificateQueryGenerator {
     }
 
     private void fillInQueries() {
-        orderByQueries.put("name", NAME_FIELD);
-        orderByQueries.put("-name", NAME_FIELD);
-        orderByQueries.put("date", DATE_FIELD);
-        orderByQueries.put("-date", DATE_FIELD);
+        orderByQueries.put(ServiceConstant.SORT_BY_NAME_ASC.getValue(), ServiceConstant.NAME_FIELD.getValue());
+        orderByQueries.put(ServiceConstant.SORT_BY_NAME_DESC.getValue(), ServiceConstant.NAME_FIELD.getValue());
+        orderByQueries.put(ServiceConstant.SORT_BY_DATE_ASC.getValue(), ServiceConstant.CREATED_DATE_FIELD.getValue());
+        orderByQueries.put(ServiceConstant.SORT_BY_DATE_DESC.getValue(), ServiceConstant.CREATED_DATE_FIELD.getValue());
     }
 
     public CriteriaQuery<GiftCertificate> generateQueryCriteria(Map<String, String> params) {
@@ -53,19 +52,23 @@ public class GiftCertificateQueryGenerator {
         List<Predicate> predicateList = new ArrayList<>();
         params.keySet().forEach(key -> {
             switch (key) {
-                case "certificateName":
-                    predicateList.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")),
+                case CERTIFICATE_NAME_PARAM:
+                    predicateList.add(criteriaBuilder.like(criteriaBuilder.lower
+                                    (root.get(ServiceConstant.NAME_FIELD.getValue())),
                             "%" + params.get(key).toLowerCase() + "%"));
                     break;
-                case "certificateDescription":
-                    predicateList.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("description")),
+                case CERTIFICATE_DESCRIPTION_PARAM:
+                    predicateList.add(criteriaBuilder.like(criteriaBuilder.lower
+                                    (root.get(ServiceConstant.DESCRIPTION_FIELD.getValue())),
                             "%" + params.get(key).toLowerCase() + "%"));
                     break;
-                case ORDER_BY_PARAM_NAME:
+                case ORDER_BY_PARAM:
                     addOrderBy(params, criteriaBuilder, root);
                     break;
-                case TAG_NAME_PARAM_NAME:
+                case TAG_NAME_PARAM:
                     predicateList.addAll(addTagNamePredicate(params, criteriaBuilder, root));
+                    break;
+                default:
                     break;
             }
         });
@@ -75,19 +78,19 @@ public class GiftCertificateQueryGenerator {
 
     private List<Predicate> addTagNamePredicate(Map<String, String> params, CriteriaBuilder criteriaBuilder, Root<GiftCertificate> root) {
         List<Predicate> predicates = new ArrayList<>();
-        String[] tags = params.get(TAG_NAME_PARAM_NAME).split(", ");
-        Join<Object, Object> join = root.join("tags");
+        String[] tags = params.get(TAG_NAME_PARAM).split(ServiceConstant.TAGS_TO_SEARCH_BY_SEPARATOR.getValue());
+        Join<Object, Object> join = root.join(ServiceConstant.TAGS_FIELD.getValue());
         join.alias("tagRoot");
         for (String tag : tags) {
             predicates.add(criteriaBuilder.like(criteriaBuilder.lower(
-                    join.get("name")), "%" + tag.toLowerCase() + "%"));
+                    join.get(ServiceConstant.NAME_FIELD.getValue())), "%" + tag.toLowerCase() + "%"));
         }
         return predicates;
     }
 
     private void addOrderBy(Map<String, String> params, CriteriaBuilder criteriaBuilder, Root<GiftCertificate> root) {
         Order orderBy;
-        String value = params.get(ORDER_BY_PARAM_NAME);
+        String value = params.get(ORDER_BY_PARAM);
         if (value.startsWith("-")) {
             orderBy = criteriaBuilder.desc(root.get(orderByQueries.get(value)));
         } else {

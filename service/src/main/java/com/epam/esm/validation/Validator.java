@@ -5,6 +5,7 @@ import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.exception.ValidatorException;
+import com.epam.esm.utils.ServiceConstant;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -39,28 +40,28 @@ public class Validator {
     }
 
     private void fillInParameterNames() {
-        paginationParameters.add("page");
-        paginationParameters.add("size");
-        certificateParameterNames.add("certificateName");
-        certificateParameterNames.add("certificateDescription");
-        certificateParameterNames.add("tagName");
-        certificateParameterNames.add("orderBy");
+        paginationParameters.add(ServiceConstant.PAGE_PARAM.getValue());
+        paginationParameters.add(ServiceConstant.SIZE_PARAM.getValue());
+        certificateParameterNames.add(ServiceConstant.CERTIFICATE_NAME_PARAM.getValue());
+        certificateParameterNames.add(ServiceConstant.CERTIFICATE_DESCRIPTION_PARAM.getValue());
+        certificateParameterNames.add(ServiceConstant.TAG_NAME_PARAM.getValue());
+        certificateParameterNames.add(ServiceConstant.ORDER_BY_PARAM.getValue());
         certificateParameterNames.addAll(paginationParameters);
-        orderParameterNames.add("userId");
+        orderParameterNames.add(ServiceConstant.USER_ID_PARAM.getValue());
         orderParameterNames.addAll(paginationParameters);
         tagParameterNames.addAll(paginationParameters);
         userParameterNames.addAll(paginationParameters);
-        orderByValues.add("name");
-        orderByValues.add("-name");
-        orderByValues.add("date");
-        orderByValues.add("-date");
-        certificateFieldNames.add("name");
-        certificateFieldNames.add("description");
-        certificateFieldNames.add("price");
-        certificateFieldNames.add("duration");
-        certificateFieldNames.add("tags");
-        tagFieldNames.add("id");
-        tagFieldNames.add("name");
+        orderByValues.add(ServiceConstant.SORT_BY_NAME_ASC.getValue());
+        orderByValues.add(ServiceConstant.SORT_BY_NAME_DESC.getValue());
+        orderByValues.add(ServiceConstant.SORT_BY_DATE_ASC.getValue());
+        orderByValues.add(ServiceConstant.SORT_BY_DATE_DESC.getValue());
+        certificateFieldNames.add(ServiceConstant.NAME_FIELD.getValue());
+        certificateFieldNames.add(ServiceConstant.DESCRIPTION_FIELD.getValue());
+        certificateFieldNames.add(ServiceConstant.PRICE_FIELD.getValue());
+        certificateFieldNames.add(ServiceConstant.DURATION_FIELD.getValue());
+        certificateFieldNames.add(ServiceConstant.TAGS_FIELD.getValue());
+        tagFieldNames.add(ServiceConstant.ID_FIELD.getValue());
+        tagFieldNames.add(ServiceConstant.NAME_FIELD.getValue());
     }
 
     public void validateCertificate(GiftCertificateDTO giftCertificateDTO) {
@@ -139,8 +140,9 @@ public class Validator {
     }
 
     private void checkParamsHaveTagName(Map<String, String> params) {
-        if (params.containsKey("tagName")) {
-            params.replace("tagName", validateTagNames(params.get("tagName")));
+        if (params.containsKey(ServiceConstant.TAG_NAME_PARAM.getValue())) {
+            params.replace(ServiceConstant.TAG_NAME_PARAM.getValue(),
+                    validateTagNames(params.get(ServiceConstant.TAG_NAME_PARAM.getValue())));
         }
     }
 
@@ -151,7 +153,7 @@ public class Validator {
             validateStringField(tagName, "tag name");
             validatedTags.add(tagName.trim().toLowerCase());
         }
-        return String.join(", ", validatedTags.toArray(new String[0]));
+        return String.join(ServiceConstant.TAGS_TO_SEARCH_BY_SEPARATOR.getValue(), validatedTags.toArray(new String[0]));
     }
 
     public void validateOrderParams(Map<String, String> params) {
@@ -271,11 +273,11 @@ public class Validator {
                     throw new ValidatorException(
                             ServiceExceptionCode.NON_EXISTING_TAG_FIELD_NAME.getErrorCode(), tagField.getKey());
                 }
-                if (tagField.getKey().equals("id")) {
+                if (tagField.getKey().equals(ServiceConstant.ID_FIELD.getValue())) {
                     validateCertificateUpdateFieldMatchesDataType(Integer.class, tagField);
                     validateIdIsPositive((Integer) tagField.getValue());
                 }
-                if (tagField.getKey().equals("name")) {
+                if (tagField.getKey().equals(ServiceConstant.NAME_FIELD.getValue())) {
                     validateCertificateUpdateFieldMatchesDataType(String.class, tagField);
                     validateStringField((String) tagField.getValue(), "tag name");
                 }
@@ -304,8 +306,8 @@ public class Validator {
     }
 
     private void checkParamsHaveOrderBy(Map<String, String> params) {
-        if (params.containsKey("orderBy")) {
-            validateOrderByValue(params.get("orderBy"));
+        if (params.containsKey(ServiceConstant.ORDER_BY_PARAM.getValue())) {
+            validateOrderByValue(params.get(ServiceConstant.ORDER_BY_PARAM.getValue()));
         }
     }
 
@@ -321,10 +323,10 @@ public class Validator {
     }
 
     private void validatePageParameter(Map<String, String> params) {
-        if (!params.containsKey("page")) {
-            params.put("page", String.valueOf(DEFAULT_PAGE_NUMBER));
+        if (!params.containsKey(ServiceConstant.PAGE_PARAM.getValue())) {
+            params.put(ServiceConstant.PAGE_PARAM.getValue(), String.valueOf(DEFAULT_PAGE_NUMBER));
         } else {
-            validatePageParameterValue(params.get("page"));
+            validatePageParameterValue(params.get(ServiceConstant.PAGE_PARAM.getValue()));
         }
     }
 
@@ -340,10 +342,10 @@ public class Validator {
     }
 
     private void validateSizeParameter(Map<String, String> params) {
-        if (!params.containsKey("size")) {
-            params.put("size", String.valueOf(DEFAULT_SIZE));
+        if (!params.containsKey(ServiceConstant.SIZE_PARAM.getValue())) {
+            params.put(ServiceConstant.SIZE_PARAM.getValue(), String.valueOf(DEFAULT_SIZE));
         } else {
-            validateSizeParameterValue(params.get("size"));
+            validateSizeParameterValue(params.get(ServiceConstant.SIZE_PARAM.getValue()));
         }
     }
 
@@ -357,5 +359,4 @@ public class Validator {
             throw new ValidatorException(ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), size);
         }
     }
-
 }
