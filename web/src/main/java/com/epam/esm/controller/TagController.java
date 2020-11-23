@@ -119,4 +119,16 @@ public class TagController {
         tagService.removeTag(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    /**
+     * Special endpoint that returns the most used tag of the user
+     * who has spent more money than others on certificates
+     *
+     * @return TagDTO that represents most used tag of the user with
+     * the highest cost of all orders
+     */
+    @GetMapping("/most-used")
+    public TagDTO getMostUsedTagOfUserWithHighestCostOfOrders() {
+        return tagService.getMostUsedTagOfUserWithHighestCostOfOrders();
+    }
 }

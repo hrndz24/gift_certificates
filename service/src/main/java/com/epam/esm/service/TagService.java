@@ -16,4 +16,6 @@ public interface TagService {
     TagDTO getTagById(int id);
 
     long getCount();
+
+    TagDTO getMostUsedTagOfUserWithHighestCostOfOrders();
 }

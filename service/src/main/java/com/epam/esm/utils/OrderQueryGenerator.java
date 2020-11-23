@@ -8,28 +8,18 @@ import org.springframework.stereotype.Component;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class OrderQueryGenerator {
 
-    private Map<String, String> queries;
     private SessionFactory sessionFactory;
-
-    private static final String GET_BY_USER_ID = " WHERE user_id = ?";
 
     private CriteriaQuery<Order> criteria;
 
     @Autowired
     public OrderQueryGenerator(SessionFactory sessionFactory) {
-        queries = new HashMap<>();
         this.sessionFactory = sessionFactory;
-        fillInQueries();
-    }
-
-    private void fillInQueries() {
-        queries.put("userId", GET_BY_USER_ID);
     }
 
     public CriteriaQuery<Order> generateQuery(Map<String, String> params) {

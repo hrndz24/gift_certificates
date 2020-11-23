@@ -52,16 +52,21 @@ public class GiftCertificateQueryGenerator {
     private void addQueryPredicates(Map<String, String> params, CriteriaBuilder criteriaBuilder, Root<GiftCertificate> root) {
         List<Predicate> predicateList = new ArrayList<>();
         params.keySet().forEach(key -> {
-            if ("certificateName".equals(key)) {
-                predicateList.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")),
-                        "%" + params.get(key).toLowerCase() + "%"));
-            } else if ("certificateDescription".equals(key)) {
-                predicateList.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("description")),
-                        "%" + params.get(key).toLowerCase() + "%"));
-            } else if (ORDER_BY_PARAM_NAME.equals(key)) {
-                addOrderBy(params, criteriaBuilder, root);
-            } else if (TAG_NAME_PARAM_NAME.equals(key)) {
-                predicateList.addAll(addTagNamePredicate(params, criteriaBuilder, root));
+            switch (key) {
+                case "certificateName":
+                    predicateList.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")),
+                            "%" + params.get(key).toLowerCase() + "%"));
+                    break;
+                case "certificateDescription":
+                    predicateList.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("description")),
+                            "%" + params.get(key).toLowerCase() + "%"));
+                    break;
+                case ORDER_BY_PARAM_NAME:
+                    addOrderBy(params, criteriaBuilder, root);
+                    break;
+                case TAG_NAME_PARAM_NAME:
+                    predicateList.addAll(addTagNamePredicate(params, criteriaBuilder, root));
+                    break;
             }
         });
         Predicate[] predicates = new Predicate[0];

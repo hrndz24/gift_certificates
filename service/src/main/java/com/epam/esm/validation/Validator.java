@@ -250,7 +250,7 @@ public class Validator {
     }
 
     private void checkOrderHasCertificates(OrderDTO order) {
-        List<GiftCertificateDTO> certificates = order.getCertificates();
+        Set<GiftCertificateDTO> certificates = order.getCertificates();
         if (certificates == null || certificates.isEmpty()) {
             throw new ValidatorException(
                     ServiceExceptionCode.ORDER_SHOULD_HAVE_CERTIFICATES.getErrorCode());

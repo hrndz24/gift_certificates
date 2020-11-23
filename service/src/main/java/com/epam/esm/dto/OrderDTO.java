@@ -5,10 +5,10 @@ import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class OrderDTO extends RepresentationModel<OrderDTO> {
 
@@ -17,7 +17,7 @@ public class OrderDTO extends RepresentationModel<OrderDTO> {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm'Z'")
     private Date date;
     private BigDecimal cost;
-    private List<GiftCertificateDTO> certificates = new ArrayList<>();
+    private Set<GiftCertificateDTO> certificates = new HashSet<>();
 
     public OrderDTO() {
     }
@@ -54,11 +54,11 @@ public class OrderDTO extends RepresentationModel<OrderDTO> {
         this.cost = cost.setScale(2, RoundingMode.HALF_UP);
     }
 
-    public List<GiftCertificateDTO> getCertificates() {
+    public Set<GiftCertificateDTO> getCertificates() {
         return certificates;
     }
 
-    public void setCertificates(List<GiftCertificateDTO> certificates) {
+    public void setCertificates(Set<GiftCertificateDTO> certificates) {
         this.certificates = certificates;
     }
 

@@ -17,4 +17,6 @@ public interface TagDAO {
     Tag getTagByName(String name);
 
     long getCount();
+
+    Tag getMostUsedTagOfUserWithHighestCostOfOrders();
 }

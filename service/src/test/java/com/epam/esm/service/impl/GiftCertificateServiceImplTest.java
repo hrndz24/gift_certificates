@@ -16,6 +16,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,8 +46,10 @@ class GiftCertificateServiceImplTest {
     void addCertificateWithValidParamsShouldAddCertificate() {
         GiftCertificate certificateReturned = new GiftCertificate();
         certificateReturned.setId(24);
+        certificateReturned.setPrice(new BigDecimal("45.00"));
         when(certificateDAO.addCertificate(any())).thenReturn(certificateReturned);
         GiftCertificateDTO certificateDTOToAdd = new GiftCertificateDTO();
+        certificateDTOToAdd.setPrice(new BigDecimal("45.00"));
         doNothing().when(validator).validateCertificate(certificateDTOToAdd);
         assertEquals(24, certificateService.addCertificate(certificateDTOToAdd).getId());
         assertNotNull(certificateDTOToAdd.getCreateDate());
@@ -69,7 +72,9 @@ class GiftCertificateServiceImplTest {
     @Test
     void updateCertificateShouldUpdateCertificate() {
         GiftCertificate certificateToUpdate = new GiftCertificate();
+        certificateToUpdate.setPrice(new BigDecimal("34.00"));
         GiftCertificateDTO certificateDTOToUpdate = new GiftCertificateDTO();
+        certificateDTOToUpdate.setPrice(new BigDecimal("34.00"));
         doNothing().when(validator).validateCertificate(certificateDTOToUpdate);
         doNothing().when(certificateDAO).updateCertificate(certificateToUpdate);
         when(certificateDAO.getCertificateById(2)).thenReturn(new GiftCertificate());
@@ -81,9 +86,11 @@ class GiftCertificateServiceImplTest {
     @Test
     void getCertificatesShouldReturnListOfThreeCertificates() {
         List<GiftCertificate> certificates = new ArrayList<>();
-        certificates.add(new GiftCertificate());
-        certificates.add(new GiftCertificate());
-        certificates.add(new GiftCertificate());
+        GiftCertificate certificate = new GiftCertificate();
+        certificate.setPrice(new BigDecimal("34.00"));
+        certificates.add(certificate);
+        certificates.add(certificate);
+        certificates.add(certificate);
         when(giftCertificateQueryGenerator.generateQueryCriteria(new HashMap<>())).thenReturn(any());
         when(certificateDAO.getCertificates(giftCertificateQueryGenerator.generateQueryCriteria
                 (new HashMap<>()), 10, 0)).thenReturn(certificates);
@@ -94,9 +101,11 @@ class GiftCertificateServiceImplTest {
     void getCertificateByIdWithExistingIdShouldReturnCertificate() {
         GiftCertificate certificateReturned = new GiftCertificate();
         certificateReturned.setId(2);
+        certificateReturned.setPrice(new BigDecimal("12.00"));
         when(certificateDAO.getCertificateById(2)).thenReturn(certificateReturned);
         GiftCertificateDTO certificateDTOReturned = new GiftCertificateDTO();
         certificateDTOReturned.setId(2);
+        certificateDTOReturned.setPrice(new BigDecimal("12.00"));
         assertEquals(certificateDTOReturned, certificateService.getCertificateById(2));
     }
 

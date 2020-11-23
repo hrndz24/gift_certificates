@@ -28,7 +28,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 class OrderServiceImplTest {
@@ -57,12 +56,15 @@ class OrderServiceImplTest {
     void addOrderWithValidOrderShouldAddOrder() {
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setUserId(1);
+        orderDTO.setCost(new BigDecimal("123"));
         GiftCertificateDTO certificateDTO = new GiftCertificateDTO();
         certificateDTO.setId(1);
+        certificateDTO.setPrice(new BigDecimal("13.00"));
         orderDTO.getCertificates().add(certificateDTO);
         Order order = new Order();
         order.setId(4);
         order.setUserId(1);
+        order.setCost(new BigDecimal("13.00"));
         when(orderDAO.addOrder(any())).thenReturn(order);
         when(orderDAO.getOrderById(4)).thenReturn(order);
         when(userDAO.getUserById(1)).thenReturn(new User());
@@ -70,6 +72,7 @@ class OrderServiceImplTest {
         certificate.setPrice(new BigDecimal("13.00"));
         when(certificateDAO.getCertificateById(1)).thenReturn(certificate);
         OrderDTO returnedOrderDTO = orderService.addOrder(orderDTO);
+        returnedOrderDTO.setCost(new BigDecimal("123"));
         assertEquals(4, returnedOrderDTO.getId());
         assertNotNull(orderDTO.getDate());
         assertNotNull(orderDTO.getCost());
@@ -95,9 +98,11 @@ class OrderServiceImplTest {
     @Test
     void getOrdersShouldReturnListOfThreeOrders() {
         List<Order> orders = new ArrayList<>();
-        orders.add(new Order());
-        orders.add(new Order());
-        orders.add(new Order());
+        Order order = new Order();
+        order.setCost(new BigDecimal("23.00"));
+        orders.add(order);
+        orders.add(order);
+        orders.add(order);
         when(queryGenerator.generateQuery(new HashMap<>())).thenReturn(any());
         when(orderDAO.getOrders(queryGenerator.generateQuery(
                 new HashMap<>()), 10, 0)).thenReturn(orders);

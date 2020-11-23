@@ -94,4 +94,9 @@ public class TagServiceImpl implements TagService {
         Tag tag = getTagIfExists(id);
         return mapper.toDTO(tag);
     }
+
+    @Override
+    public TagDTO getMostUsedTagOfUserWithHighestCostOfOrders() {
+        return mapper.toDTO(tagDAO.getMostUsedTagOfUserWithHighestCostOfOrders());
+    }
 }

@@ -84,4 +84,10 @@ public class TagDAOImpl implements TagDAO {
         count.select(criteriaBuilder.count(count.from(Tag.class)));
         return session.createQuery(count).getSingleResult();
     }
+
+    @Override
+    public Tag getMostUsedTagOfUserWithHighestCostOfOrders() {
+        Session session = sessionFactory.getCurrentSession();
+        return session.createNativeQuery(NativeQuery.GET_MOST_USED_TAG.getQuery(), Tag.class).getSingleResult();
+    }
 }

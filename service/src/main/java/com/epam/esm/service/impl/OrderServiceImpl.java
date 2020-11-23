@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -63,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
         order.setDate(new Date());
     }
 
-    private BigDecimal calculateOrderCost(List<GiftCertificateDTO> certificates) {
+    private BigDecimal calculateOrderCost(Set<GiftCertificateDTO> certificates) {
         BigDecimal cost = new BigDecimal(0);
         for (GiftCertificateDTO certificate : certificates) {
             validator.validateCertificateForOrdering(certificate);
