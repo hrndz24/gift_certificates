@@ -50,12 +50,12 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public List<Tag> getTags(int limit, int offset) {
-        Session session = sessionFactory.getCurrentSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
         CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
         Root<Tag> root = criteriaQuery.from(Tag.class);
         criteriaQuery.orderBy(criteriaBuilder.asc(root.get("id")));
-        return session.createQuery(criteriaQuery).setMaxResults(limit).setFirstResult(offset).getResultList();
+        return sessionFactory.getCurrentSession().createQuery(criteriaQuery)
+                .setMaxResults(limit).setFirstResult(offset).getResultList();
     }
 
     @Override

@@ -11,12 +11,14 @@ import com.epam.esm.utils.ServiceConstant;
 import com.epam.esm.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private UserDAO userDAO;
@@ -50,8 +52,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUserById(int id) {
         validator.validateIdIsPositive(id);
-        User user = getUserByIdIfExists(id);
-        return userMapper.toDTO(user);
+        return userMapper.toDTO(getUserByIdIfExists(id));
     }
 
     private User getUserByIdIfExists(int id) {

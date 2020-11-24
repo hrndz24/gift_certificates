@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.*;
 
 @Service
+@Transactional
 public class OrderServiceImpl implements OrderService {
 
     private OrderDAO orderDAO;
@@ -47,7 +48,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
     public OrderDTO addOrder(OrderDTO order) {
         prepareOrderBeforeAddingToDatabase(order);
         return orderMapper.toDTO(orderDAO.addOrder(orderMapper.toModel(order)));
@@ -101,9 +101,8 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDTO> orders = new ArrayList<>();
         int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
         int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
-        orderDAO.getOrders(queryGenerator.generateQuery(params), limit, offset).forEach(order -> {
-            orders.add(orderMapper.toDTO(order));
-        });
+        orderDAO.getOrders(queryGenerator.generateQuery(params), limit, offset)
+                .forEach(order -> orders.add(orderMapper.toDTO(order)));
         return orders;
     }
 

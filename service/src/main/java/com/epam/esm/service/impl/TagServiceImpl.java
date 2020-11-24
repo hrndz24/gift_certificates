@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Transactional
 public class TagServiceImpl implements TagService {
 
     private TagDAO tagDAO;
@@ -35,7 +36,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    @Transactional
     public TagDTO addTag(TagDTO tagDTO) {
         validator.validateTag(tagDTO);
         tagDTO.setId(0);
@@ -53,7 +53,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    @Transactional
     public void removeTag(int tagId) {
         validator.validateIdIsPositive(tagId);
         Tag tag = getTagIfExists(tagId);
