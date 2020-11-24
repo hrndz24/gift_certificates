@@ -12,9 +12,11 @@ import java.util.Set;
 
 public class OrderDTO extends RepresentationModel<OrderDTO> {
 
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm'Z'";
+
     private int id;
     private int userId;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm'Z'")
+    @JsonFormat(pattern = DATE_FORMAT)
     private Date date;
     private BigDecimal cost;
     private Set<GiftCertificateDTO> certificates = new HashSet<>();

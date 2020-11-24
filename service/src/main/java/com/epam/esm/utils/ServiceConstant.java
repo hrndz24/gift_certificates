@@ -2,25 +2,26 @@ package com.epam.esm.utils;
 
 public enum ServiceConstant {
 
-    ORDER_BY_PARAM("orderBy"),
-    TAG_NAME_PARAM("tagName"),
-    CERTIFICATE_NAME_PARAM("certificateName"),
-    CERTIFICATE_DESCRIPTION_PARAM("certificateDescription"),
+    ORDER_BY_PARAM(Constant.ORDER_BY_PARAM),
+    TAG_NAME_PARAM(Constant.TAG_NAME_PARAM),
+    CERTIFICATE_NAME_PARAM(Constant.CERTIFICATE_NAME_PARAM),
+    CERTIFICATE_DESCRIPTION_PARAM(Constant.CERTIFICATE_DESCRIPTION_PARAM),
 
-    USER_ID_PARAM("userId"),
+    USER_ID_PARAM(Constant.USER_ID_PARAM),
 
-    PAGE_PARAM("page"), SIZE_PARAM("size"),
-    ID_FIELD("id"), NAME_FIELD("name"),
-    DESCRIPTION_FIELD("description"),
-    TAGS_FIELD("tags"), CREATED_DATE_FIELD("createDate"),
-    DURATION_FIELD("duration"), PRICE_FIELD("price"),
+    PAGE_PARAM(Constant.PAGE_PARAM), SIZE_PARAM(Constant.SIZE_PARAM),
 
-    SORT_BY_NAME_ASC("name"),
-    SORT_BY_NAME_DESC("-name"),
-    SORT_BY_DATE_ASC("date"),
-    SORT_BY_DATE_DESC("-date"),
+    ID_FIELD(Constant.ID_FIELD), NAME_FIELD(Constant.NAME_FIELD),
+    DESCRIPTION_FIELD(Constant.DESCRIPTION_FIELD),
+    TAGS_FIELD(Constant.TAGS_FIELD), CREATED_DATE_FIELD(Constant.CREATED_DATE_FIELD),
+    DURATION_FIELD(Constant.DURATION_FIELD), PRICE_FIELD(Constant.PRICE_FIELD),
 
-    TAGS_TO_SEARCH_BY_SEPARATOR(", ");
+    SORT_BY_NAME_ASC(Constant.SORT_BY_NAME_ASC),
+    SORT_BY_NAME_DESC(Constant.SORT_BY_NAME_DESC),
+    SORT_BY_DATE_ASC(Constant.SORT_BY_DATE_ASC),
+    SORT_BY_DATE_DESC(Constant.SORT_BY_DATE_DESC),
+
+    TAGS_TO_SEARCH_BY_SEPARATOR(Constant.TAGS_TO_SEARCH_BY_SEPARATOR);
 
     private final String value;
 
@@ -30,5 +31,33 @@ public enum ServiceConstant {
 
     public String getValue() {
         return value;
+    }
+
+    private static class Constant {
+
+        private static final String ORDER_BY_PARAM = "orderBy";
+        private static final String TAG_NAME_PARAM = "tagName";
+        private static final String CERTIFICATE_NAME_PARAM = "certificateName";
+        private static final String CERTIFICATE_DESCRIPTION_PARAM = "certificateDescription";
+
+        private static final String USER_ID_PARAM = "userId";
+
+        private static final String PAGE_PARAM = "page";
+        private static final String SIZE_PARAM = "size";
+
+        private static final String ID_FIELD = "id";
+        private static final String NAME_FIELD = "name";
+        private static final String DESCRIPTION_FIELD = "description";
+        private static final String TAGS_FIELD = "tags";
+        private static final String CREATED_DATE_FIELD = "createDate";
+        private static final String DURATION_FIELD = "duration";
+        private static final String PRICE_FIELD = "price";
+
+        private static final String SORT_BY_NAME_ASC = "name";
+        private static final String SORT_BY_NAME_DESC = "-name";
+        private static final String SORT_BY_DATE_ASC = "date";
+        private static final String SORT_BY_DATE_DESC = "-date";
+
+        private static final String TAGS_TO_SEARCH_BY_SEPARATOR = ", ";
     }
 }

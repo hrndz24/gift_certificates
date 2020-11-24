@@ -12,13 +12,15 @@ import java.util.Set;
 
 public class GiftCertificateDTO extends RepresentationModel<GiftCertificateDTO> {
 
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm'Z'";
+
     private int id;
     private String name;
     private String description;
     private BigDecimal price;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm'Z'")
+    @JsonFormat(pattern = DATE_FORMAT)
     private Date createDate;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm'Z'")
+    @JsonFormat(pattern = DATE_FORMAT)
     private Date lastUpdateDate;
     private int duration;
     private Set<TagDTO> tags = new HashSet<>();

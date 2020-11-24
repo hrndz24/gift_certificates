@@ -31,6 +31,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private GiftCertificateQueryGenerator giftCertificateQueryGenerator;
     private GiftCertificateMapper certificateMapper;
 
+    private static final String NAME_FIELD = "name";
+    private static final String DESCRIPTION_FIELD = "description";
+    private static final String TAGS_FIELD = "tags";
+    private static final String DURATION_FIELD = "duration";
+    private static final String PRICE_FIELD = "price";
+
     @Autowired
     public GiftCertificateServiceImpl(GiftCertificateDAO certificateDAO,
                                       TagDAO tagDAO,
@@ -120,19 +126,19 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private void setUpdatedField(GiftCertificateDTO certificate, Map<String, Object> fields) {
         fields.forEach((key, value) -> {
             switch (key) {
-                case "name":
+                case NAME_FIELD:
                     certificate.setName((String) value);
                     break;
-                case "description":
+                case DESCRIPTION_FIELD:
                     certificate.setDescription((String) value);
                     break;
-                case "price":
+                case PRICE_FIELD:
                     certificate.setPrice(BigDecimal.valueOf((Double) value));
                     break;
-                case "duration":
+                case DURATION_FIELD:
                     certificate.setDuration((Integer) value);
                     break;
-                case "tags":
+                case TAGS_FIELD:
                     @SuppressWarnings("unchecked cast")
                     List<Map<String, Object>> tags = (ArrayList<Map<String, Object>>) value;
                     Set<TagDTO> tagSet = new HashSet<>();

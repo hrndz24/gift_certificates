@@ -27,6 +27,12 @@ public class Validator {
     private static final int DEFAULT_SIZE = 10;
     private static final int DEFAULT_PAGE_NUMBER = 1;
 
+    private static final String NAME_FIELD = "name";
+    private static final String DESCRIPTION_FIELD = "description";
+    private static final String TAGS_FIELD = "tags";
+    private static final String DURATION_FIELD = "duration";
+    private static final String PRICE_FIELD = "price";
+
     public Validator() {
         this.certificateParameterNames = new HashSet<>();
         this.orderParameterNames = new HashSet<>();
@@ -204,23 +210,23 @@ public class Validator {
     private void validateFieldValue(Map<String, Object> field) {
         field.entrySet().forEach(entry -> {
             switch (entry.getKey()) {
-                case "name":
+                case NAME_FIELD:
                     validateCertificateUpdateFieldMatchesDataType(String.class, entry);
                     validateStringField((String) entry.getValue(), "certificate name");
                     break;
-                case "description":
+                case DESCRIPTION_FIELD:
                     validateCertificateUpdateFieldMatchesDataType(String.class, entry);
                     validateStringField((String) entry.getValue(), "certificate description");
                     break;
-                case "price":
+                case PRICE_FIELD:
                     validateCertificateUpdateFieldMatchesDataType(Double.class, entry);
                     validatePrice(BigDecimal.valueOf((Double) entry.getValue()));
                     break;
-                case "duration":
+                case DURATION_FIELD:
                     validateCertificateUpdateFieldMatchesDataType(Integer.class, entry);
                     validateDuration((Integer) entry.getValue());
                     break;
-                case "tags":
+                case TAGS_FIELD:
                     validateCertificateUpdateFieldMatchesDataType(ArrayList.class, entry);
                     validateTagsField(entry.getValue());
                     break;
