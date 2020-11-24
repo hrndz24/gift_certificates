@@ -90,6 +90,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public void removeCertificate(int certificateId) {
         validator.validateIdIsPositive(certificateId);
         getCertificateIfExists(certificateId);
@@ -106,6 +107,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
+    @Transactional
     public void updateCertificateField(int id, Map<String, Object> fields) {
         validator.validateIdIsPositive(id);
         validator.validateCertificateUpdateField(fields);

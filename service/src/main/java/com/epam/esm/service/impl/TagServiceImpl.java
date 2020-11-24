@@ -12,6 +12,7 @@ import com.epam.esm.utils.ServiceConstant;
 import com.epam.esm.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional
     public TagDTO addTag(TagDTO tagDTO) {
         validator.validateTag(tagDTO);
         tagDTO.setId(0);
@@ -51,6 +53,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional
     public void removeTag(int tagId) {
         validator.validateIdIsPositive(tagId);
         Tag tag = getTagIfExists(tagId);
