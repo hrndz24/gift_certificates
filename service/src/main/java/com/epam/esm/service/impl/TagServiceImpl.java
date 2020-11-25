@@ -38,9 +38,13 @@ public class TagServiceImpl implements TagService {
     @Override
     public TagDTO addTag(TagDTO tagDTO) {
         validator.validateTag(tagDTO);
-        tagDTO.setId(0);
+        ensureIdIsNotSet(tagDTO);
         checkTagNameDoesNotExist(tagDTO);
         return mapper.toDTO(tagDAO.addTag(mapper.toModel(tagDTO)));
+    }
+
+    private void ensureIdIsNotSet(TagDTO tagDTO) {
+        tagDTO.setId(0);
     }
 
     private void checkTagNameDoesNotExist(TagDTO tag) {
