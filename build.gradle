@@ -2,7 +2,7 @@ allprojects {
     apply plugin: "java"
     group 'com.epam.esm'
 
-    sourceCompatibility = 1.8
+    sourceCompatibility = findProperty("source-compatability")
 
     repositories {
         mavenCentral()
@@ -14,16 +14,16 @@ allprojects {
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: findProperty("spring-boot.version")
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: findProperty("spring-boot.version")
 
-        implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.8'
+        implementation group: 'org.modelmapper', name: 'modelmapper', version: findProperty("model-mapper.version")
         implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: findProperty("jackson.version")
         implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: findProperty("jackson.version")
 
-        testImplementation(platform('org.junit:junit-bom:5.7.0'))
+        testImplementation(platform(group: 'org.junit', name: 'junit-bom', version: findProperty("junit-bom.version")))
         testImplementation('org.junit.jupiter:junit-jupiter')
-        testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.6.0'
+        testImplementation group: 'org.mockito', name: 'mockito-core', version: findProperty("mockito.version")
         testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: findProperty("spring-boot.version")
-        testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
-        testImplementation 'com.jayway.jsonpath:json-path:2.2.0'
+        testImplementation group: 'org.hamcrest', name: 'hamcrest', version: findProperty("hamcrest.version")
+        testImplementation group: 'com.jayway.jsonpath', name: 'json-path', version: findProperty("json-path.version")
     }
 
     test {
