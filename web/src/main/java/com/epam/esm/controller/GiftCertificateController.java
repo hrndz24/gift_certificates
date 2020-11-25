@@ -2,13 +2,9 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.service.GiftCertificateService;
-import com.epam.esm.util.ControllerPaginationPreparer;
+import com.epam.esm.util.HateoasBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller used to manipulate CRUD operations on
@@ -29,13 +22,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class GiftCertificateController {
 
     private GiftCertificateService certificateService;
-    private ControllerPaginationPreparer paginationPreparer;
+    private HateoasBuilder hateoasBuilder;
 
     @Autowired
     public GiftCertificateController(GiftCertificateService certificateService,
-                                     ControllerPaginationPreparer paginationPreparer) {
+                                     HateoasBuilder hateoasBuilder) {
         this.certificateService = certificateService;
-        this.paginationPreparer = paginationPreparer;
+        this.hateoasBuilder = hateoasBuilder;
     }
 
     /**
@@ -98,43 +91,8 @@ public class GiftCertificateController {
     @GetMapping
     public RepresentationModel<?> getCertificates(@RequestParam Map<String, String> params) {
         List<GiftCertificateDTO> certificates = certificateService.getCertificates(params);
-        certificates.forEach(certificate -> {
-            certificate.add(linkTo(methodOn(GiftCertificateController.class)
-                    .getCertificateById(certificate.getId()))
-                    .withSelfRel());
-        });
-        int currentPage = Integer.parseInt(params.get("page"));
         long certificatesCount = certificateService.getCount(params);
-        List<Link> links = paginationPreparer.prepareLinks(
-                methodOn(GiftCertificateController.class).getCertificates(params),
-                params, currentPage, certificatesCount);
-        params.put("orderBy", "name");
-        links.add(linkTo(methodOn(GiftCertificateController.class)
-                .getCertificates(params))
-                .withRel("sort by name asc"));
-        params.put("orderBy", "-name");
-        links.add(linkTo(methodOn(GiftCertificateController.class)
-                .getCertificates(params))
-                .withRel("sort by name desc"));
-        params.put("orderBy", "date");
-        links.add(linkTo(methodOn(GiftCertificateController.class)
-                .getCertificates(params))
-                .withRel("sort by creation date asc"));
-        params.put("orderBy", "-date");
-        links.add(linkTo(methodOn(GiftCertificateController.class)
-                .getCertificates(params))
-                .withRel("sort by creation date desc"));
-        params.put("certificateName", "name");
-        links.add(linkTo(methodOn(GiftCertificateController.class)
-                .getCertificates(params))
-                .withRel("search by name of certificate"));
-        params.put("certificateDescription", "description");
-        links.add(linkTo(methodOn(GiftCertificateController.class)
-                .getCertificates(params))
-                .withRel("search by description of certificate"));
-        Map<String, Long> page = paginationPreparer.preparePageInfo(params, currentPage, certificatesCount);
-        CollectionModel<GiftCertificateDTO> collectionModel = CollectionModel.of(certificates);
-        return HalModelBuilder.halModelOf(collectionModel).links(links).embed(page, LinkRelation.of("page")).build();
+        return hateoasBuilder.addLinksForListOfCertificateDTOs(certificates, params, certificatesCount);
     }
 
     /**
@@ -146,17 +104,6 @@ public class GiftCertificateController {
     @GetMapping("/{id}")
     public GiftCertificateDTO getCertificateById(@PathVariable("id") int id) {
         GiftCertificateDTO certificate = certificateService.getCertificateById(id);
-        certificate.getTags().forEach(tag -> {
-            tag.add(linkTo(methodOn(TagController.class)
-                    .getTagById(tag.getId()))
-                    .withSelfRel());
-        });
-        certificate.add(linkTo(methodOn(GiftCertificateController.class)
-                .deleteCertificate(id))
-                .withRel("delete"));
-        certificate.add(linkTo(methodOn(GiftCertificateController.class)
-                .updateCertificate(id, certificate))
-                .withRel("update"));
-        return certificate;
+        return hateoasBuilder.addLinksForCertificateDTO(certificate);
     }
 }

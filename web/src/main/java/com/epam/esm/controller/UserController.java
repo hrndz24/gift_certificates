@@ -2,22 +2,14 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.UserDTO;
 import com.epam.esm.service.UserService;
-import com.epam.esm.util.ControllerPaginationPreparer;
+import com.epam.esm.util.HateoasBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller used to implement GET operations on
@@ -28,13 +20,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UserController {
 
     private UserService userService;
-    private ControllerPaginationPreparer paginationPreparer;
+    private HateoasBuilder hateoasBuilder;
 
     @Autowired
     public UserController(UserService userService,
-                          ControllerPaginationPreparer paginationPreparer) {
+                          HateoasBuilder hateoasBuilder) {
         this.userService = userService;
-        this.paginationPreparer = paginationPreparer;
+        this.hateoasBuilder = hateoasBuilder;
     }
 
     /**
@@ -46,18 +38,8 @@ public class UserController {
     @GetMapping
     public RepresentationModel<?> getUsers(@RequestParam Map<String, String> params) {
         List<UserDTO> users = userService.getUsers(params);
-        users.forEach(user -> {
-            user.add(linkTo(methodOn(UserController.class)
-                    .getUserById(user.getId()))
-                    .withSelfRel());
-        });
-        int currentPage = Integer.parseInt(params.get("page"));
         long usersCount = userService.getCount();
-        List<Link> links = paginationPreparer.prepareLinks(
-                methodOn(UserController.class).getUsers(params), params, currentPage, usersCount);
-        Map<String, Long> page = paginationPreparer.preparePageInfo(params, currentPage, usersCount);
-        CollectionModel<UserDTO> collectionModel = CollectionModel.of(users);
-        return HalModelBuilder.halModelOf(collectionModel).links(links).embed(page, LinkRelation.of("page")).build();
+        return hateoasBuilder.addLinksForListOfUserDTOs(users, params, usersCount);
     }
 
     /**
@@ -70,14 +52,6 @@ public class UserController {
     @GetMapping("/{id}")
     public UserDTO getUserById(@PathVariable("id") int id) {
         UserDTO userDTO = userService.getUserById(id);
-        userDTO.add(linkTo(methodOn(UserController.class)
-                .getUserById(id))
-                .withSelfRel());
-        Map<String, String> params = new HashMap<>();
-        params.put("userId", String.valueOf(id));
-        userDTO.add(linkTo(methodOn(OrderController.class)
-                .getAllOrders(params))
-                .withRel("orders"));
-        return userDTO;
+        return hateoasBuilder.addLinksForUserDTO(userDTO);
     }
 }

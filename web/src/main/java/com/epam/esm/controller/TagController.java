@@ -2,24 +2,16 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.service.TagService;
-import com.epam.esm.util.ControllerPaginationPreparer;
+import com.epam.esm.util.HateoasBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.mediatype.hal.HalModelBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Controller used to manipulate CRD operations on
@@ -30,13 +22,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class TagController {
 
     private TagService tagService;
-    private ControllerPaginationPreparer paginationPreparer;
+    private HateoasBuilder hateoasBuilder;
 
     @Autowired
     public TagController(TagService tagService,
-                         ControllerPaginationPreparer paginationPreparer) {
+                         HateoasBuilder hateoasBuilder) {
         this.tagService = tagService;
-        this.paginationPreparer = paginationPreparer;
+        this.hateoasBuilder = hateoasBuilder;
     }
 
     /**
@@ -48,18 +40,8 @@ public class TagController {
     @GetMapping
     public RepresentationModel<?> getAllTags(@RequestParam Map<String, String> params) {
         List<TagDTO> tags = tagService.getTags(params);
-        tags.forEach(tagDTO -> {
-            tagDTO.add(linkTo(methodOn(TagController.class)
-                    .getTagById(tagDTO.getId()))
-                    .withSelfRel());
-        });
-        int currentPage = Integer.parseInt(params.get("page"));
         long tagsCount = tagService.getCount();
-        List<Link> links = paginationPreparer.prepareLinks(
-                methodOn(TagController.class).getAllTags(params), params, currentPage, tagsCount);
-        Map<String, Long> page = paginationPreparer.preparePageInfo(params, currentPage, tagsCount);
-        CollectionModel<TagDTO> collectionModel = CollectionModel.of(tags);
-        return HalModelBuilder.halModelOf(collectionModel).links(links).embed(page, LinkRelation.of("page")).build();
+        return hateoasBuilder.addLinksForListOfTagDTOs(tags, params, tagsCount);
     }
 
     /**
@@ -72,18 +54,7 @@ public class TagController {
     @GetMapping("/{id}")
     public TagDTO getTagById(@PathVariable("id") int id) {
         TagDTO tagDTO = tagService.getTagById(id);
-        tagDTO.add(linkTo(methodOn(TagController.class)
-                .getTagById(tagDTO.getId()))
-                .withSelfRel());
-        tagDTO.add(linkTo(methodOn(TagController.class)
-                .deleteTag(tagDTO.getId()))
-                .withRel("delete"));
-        Map<String, String> params = new HashMap<>();
-        params.put("tagName", tagDTO.getName());
-        tagDTO.add(linkTo(methodOn(GiftCertificateController.class)
-                .getCertificates(params))
-                .withRel("certificates"));
-        return tagDTO;
+        return hateoasBuilder.addLinksForTagDTO(tagDTO);
     }
 
     /**
@@ -95,17 +66,7 @@ public class TagController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public TagDTO createTag(@RequestBody TagDTO tag) {
-        TagDTO tagDTO = tagService.addTag(tag);
-        tagDTO.add(linkTo(methodOn(TagController.class)
-                .createTag(tag))
-                .withSelfRel());
-        tagDTO.add(linkTo(methodOn(TagController.class)
-                .getTagById(tagDTO.getId()))
-                .withRel("get"));
-        tagDTO.add(linkTo(methodOn(TagController.class)
-                .deleteTag(tagDTO.getId()))
-                .withRel("delete"));
-        return tagDTO;
+        return tagService.addTag(tag);
     }
 
     /**

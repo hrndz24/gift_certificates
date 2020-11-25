@@ -68,12 +68,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 checkTagNameDoesNotExist(tag);
             } else {
                 validator.validateIdIsPositive(tag.getId());
-                checkWithSuchIdExists(tag);
+                checkTagWithSuchIdExists(tag);
             }
         });
     }
 
-    private void checkWithSuchIdExists(TagDTO tag) {
+    private void checkTagWithSuchIdExists(TagDTO tag) {
         if (tagDAO.getTagById(tag.getId()) == null)
             throw new ValidatorException(
                     ServiceExceptionCode.NON_EXISTING_TAG_ID.getErrorCode(), String.valueOf(tag.getId()));
