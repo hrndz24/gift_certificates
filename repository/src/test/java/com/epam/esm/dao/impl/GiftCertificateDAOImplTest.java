@@ -2,7 +2,6 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
-import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaQuery;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -28,18 +29,19 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 @Transactional
 class GiftCertificateDAOImplTest {
 
+    @Autowired
     private GiftCertificateDAOImpl giftCertificateDAO;
 
     private GiftCertificate existentCertificate;
-    @Autowired
-    private SessionFactory sessionFactory;
 
     private CriteriaQuery<GiftCertificate> criteriaQuery;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @BeforeEach
     void setUp() throws ParseException {
-        giftCertificateDAO = new GiftCertificateDAOImpl(sessionFactory);
-        criteriaQuery = sessionFactory.getCriteriaBuilder().createQuery(GiftCertificate.class);
+        criteriaQuery = entityManager.getCriteriaBuilder().createQuery(GiftCertificate.class);
         criteriaQuery.select(criteriaQuery.from(GiftCertificate.class));
         createExistentCertificate();
     }

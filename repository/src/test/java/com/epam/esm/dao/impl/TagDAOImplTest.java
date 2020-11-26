@@ -12,6 +12,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -20,16 +23,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class TagDAOImplTest {
 
+    @Autowired
     private TagDAOImpl tagDAO;
 
     private Tag existentTag;
 
-    @Autowired
-    private SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @BeforeEach
     void setUp() {
-        tagDAO = new TagDAOImpl(sessionFactory);
         createExistentTag();
     }
 

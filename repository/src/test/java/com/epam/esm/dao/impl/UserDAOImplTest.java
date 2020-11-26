@@ -1,8 +1,6 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.model.User;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -20,15 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @Transactional
 class UserDAOImplTest {
 
+    @Autowired
     private UserDAOImpl userDAO;
 
-    @Autowired
-    private SessionFactory sessionFactory;
-
-    @BeforeEach
-    void setUp() {
-        userDAO = new UserDAOImpl(sessionFactory);
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Test
     void getUsersShouldReturnListOfThreeUsers() {

@@ -52,8 +52,8 @@ public enum ControllerConstant {
         private static final String ELEMENTS_NUMBER = "total number of elements";
 
         private static final String ORDERS_RELATION = "orders";
-        private static final String ALL_USER_ORDERS_RELATION = "orders";
-        private static final String CERTIFICATES_RELATION = "orders";
+        private static final String ALL_USER_ORDERS_RELATION = "other orders of this user";
+        private static final String CERTIFICATES_RELATION = "certificates";
 
         private static final String CERTIFICATE_NAME_EXAMPLE = "name";
         private static final String CERTIFICATE_DESCRIPTION_EXAMPLE = "description";

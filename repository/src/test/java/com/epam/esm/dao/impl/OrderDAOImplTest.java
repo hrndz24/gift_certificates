@@ -11,6 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.math.BigDecimal;
@@ -24,17 +26,17 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class OrderDAOImplTest {
 
-    @Autowired
-    private SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager entityManager;
 
+    @Autowired
     private OrderDAOImpl orderDAO;
 
     private CriteriaQuery<Order> criteriaQuery;
 
     @BeforeEach
     void setUp() {
-        orderDAO = new OrderDAOImpl(sessionFactory);
-        criteriaQuery = sessionFactory.getCriteriaBuilder().createQuery(Order.class);
+        criteriaQuery = entityManager.getCriteriaBuilder().createQuery(Order.class);
         criteriaQuery.select(criteriaQuery.from(Order.class));
     }
 
@@ -57,7 +59,7 @@ class OrderDAOImplTest {
     void getOrdersByUserIdShouldReturnListOfTwo() {
         Root<Order> root = criteriaQuery.from(Order.class);
         criteriaQuery.select(root)
-                .where(sessionFactory.getCriteriaBuilder().equal(root.get("userId"), 2)).distinct(true);
+                .where(entityManager.getCriteriaBuilder().equal(root.get("userId"), 2)).distinct(true);
         assertEquals(2, orderDAO.getOrders(criteriaQuery, 10, 0).size());
     }
 
