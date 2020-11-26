@@ -10,9 +10,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class OrderDTO extends RepresentationModel<OrderDTO> {
-
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm'Z'";
+public class OrderDTO extends RepresentationModel<OrderDTO> implements ISO8601Formatable {
 
     private int id;
     private int userId;

@@ -10,9 +10,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class GiftCertificateDTO extends RepresentationModel<GiftCertificateDTO> {
-
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm'Z'";
+public class GiftCertificateDTO extends RepresentationModel<GiftCertificateDTO> implements ISO8601Formatable {
 
     private int id;
     private String name;
