@@ -24,7 +24,7 @@ public class Order implements Serializable {
     private BigDecimal cost;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "order_has_certificate",
+            name = "order_certificate",
             joinColumns = {@JoinColumn(name = "order_id")},
             inverseJoinColumns = {@JoinColumn(name = "certificate_id")}
     )

@@ -9,7 +9,7 @@ VALUES ('Disney Land', 'Needs no description cuz it is Disney Land', 12.00, '202
        ('Comic con', 'About comics', 10.00, '2020-10-26 21:17:24', now(), 35),
        ('Skiing in the Alps', 'Skiing where famous Milka lives', 34.50, '2020-10-25 21:17:24', now(), 30);
 
-INSERT INTO certificate_has_tag(certificate_id, tag_id)
+INSERT INTO certificate_tag(certificate_id, tag_id)
 VALUES (1, 1),
        (2, 1),
        (2, 2),
@@ -28,7 +28,7 @@ VALUES (1, 100.00, '2020-10-28 21:17:24'),
        (2, 378.89, '2020-04-26 21:17:24'),
        (2, 45.50, '2020-05-05 21:17:24');
 
-INSERT INTO order_has_certificate(order_id, certificate_id)
+INSERT INTO order_certificate(order_id, certificate_id)
 VALUES (1, 1),
        (2, 2),
        (3, 1),
