@@ -101,7 +101,8 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDTO> orders = new ArrayList<>();
         int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
         int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
-        orderDAO.getOrders(queryGenerator.generateQuery(params), limit, offset)
+        String queryCondition = queryGenerator.generateQuery(params);
+        orderDAO.getOrders(queryCondition, limit, offset)
                 .forEach(order -> orders.add(orderMapper.toDTO(order)));
         return orders;
     }

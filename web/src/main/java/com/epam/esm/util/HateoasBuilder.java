@@ -50,9 +50,9 @@ public class HateoasBuilder {
         orders.forEach(order -> order.add(linkTo(methodOn(OrderController.class)
                 .getOrderById(order.getId()))
                 .withSelfRel()));
+        Map<String, Long> page = paginationPreparer.preparePageInfo(params, ordersCount);
         List<Link> links = paginationPreparer.preparePaginationLinks(
                 methodOn(OrderController.class).getAllOrders(params), params, ordersCount);
-        Map<String, Long> page = paginationPreparer.preparePageInfo(params, ordersCount);
         CollectionModel<OrderDTO> collectionModel = CollectionModel.of(orders);
         return buildModel(collectionModel, links, page);
     }
@@ -81,9 +81,9 @@ public class HateoasBuilder {
         users.forEach(user -> user.add(linkTo(methodOn(UserController.class)
                 .getUserById(user.getId()))
                 .withSelfRel()));
+        Map<String, Long> page = paginationPreparer.preparePageInfo(params, usersCount);
         List<Link> links = paginationPreparer.preparePaginationLinks(
                 methodOn(UserController.class).getUsers(params), params, usersCount);
-        Map<String, Long> page = paginationPreparer.preparePageInfo(params, usersCount);
         CollectionModel<UserDTO> collectionModel = CollectionModel.of(users);
         return buildModel(collectionModel, links, page);
     }
@@ -104,9 +104,9 @@ public class HateoasBuilder {
         tags.forEach(tagDTO -> tagDTO.add(linkTo(methodOn(TagController.class)
                 .getTagById(tagDTO.getId()))
                 .withSelfRel()));
+        Map<String, Long> page = paginationPreparer.preparePageInfo(params, tagsCount);
         List<Link> links = paginationPreparer.preparePaginationLinks(
                 methodOn(TagController.class).getAllTags(params), params, tagsCount);
-        Map<String, Long> page = paginationPreparer.preparePageInfo(params, tagsCount);
         CollectionModel<TagDTO> collectionModel = CollectionModel.of(tags);
         return buildModel(collectionModel, links, page);
     }
@@ -115,6 +115,7 @@ public class HateoasBuilder {
         certificates.forEach(certificate -> certificate.add(linkTo(methodOn(GiftCertificateController.class)
                 .getCertificateById(certificate.getId()))
                 .withSelfRel()));
+        Map<String, Long> page = paginationPreparer.preparePageInfo(params, certificatesCount);
         List<Link> links = paginationPreparer.preparePaginationLinks(
                 methodOn(GiftCertificateController.class).getCertificates(params),
                 params, certificatesCount);
@@ -130,7 +131,6 @@ public class HateoasBuilder {
                 ControllerConstant.CERTIFICATE_NAME_EXAMPLE.getValue(), ControllerConstant.SEARCH_BY_NAME.getValue()));
         links.add(createLinkToGetCertificates(ServiceConstant.CERTIFICATE_DESCRIPTION_PARAM.getValue(),
                 ControllerConstant.CERTIFICATE_DESCRIPTION_EXAMPLE.getValue(), ControllerConstant.SEARCH_BY_DESCRIPTION.getValue()));
-        Map<String, Long> page = paginationPreparer.preparePageInfo(params, certificatesCount);
         CollectionModel<GiftCertificateDTO> collectionModel = CollectionModel.of(certificates);
         return buildModel(collectionModel, links, page);
     }

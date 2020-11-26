@@ -13,9 +13,9 @@ public interface GiftCertificateDAO {
 
     void updateCertificate(GiftCertificate certificate);
 
-    List<GiftCertificate> getCertificates(CriteriaQuery<GiftCertificate> criteriaQuery, int limit, int offset);
+    List<GiftCertificate> getCertificates(String queryCondition, int limit, int offset);
 
     GiftCertificate getCertificateById(int id);
 
-    long getCount(CriteriaQuery<GiftCertificate> criteriaQuery);
+    long getCount(String queryCondition);
 }

@@ -21,6 +21,9 @@ public class TagDAOImpl implements TagDAO {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private static final String ID_FIELD = "id";
+    private static final String NAME_FIELD = "name";
+
     @Override
     public Tag addTag(Tag tag) {
         try {
@@ -46,7 +49,7 @@ public class TagDAOImpl implements TagDAO {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
         Root<Tag> root = criteriaQuery.from(Tag.class);
-        criteriaQuery.orderBy(criteriaBuilder.asc(root.get("id")));
+        criteriaQuery.orderBy(criteriaBuilder.asc(root.get(ID_FIELD)));
         return entityManager.createQuery(criteriaQuery)
                 .setMaxResults(limit).setFirstResult(offset).getResultList();
     }
@@ -61,7 +64,7 @@ public class TagDAOImpl implements TagDAO {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
         Root<Tag> root = criteriaQuery.from(Tag.class);
-        criteriaQuery.where(criteriaBuilder.equal(root.get("name"), name));
+        criteriaQuery.where(criteriaBuilder.equal(root.get(NAME_FIELD), name));
         return entityManager.createQuery(criteriaQuery).getResultList().stream().findFirst().orElse(null);
     }
 

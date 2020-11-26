@@ -49,7 +49,7 @@ public enum ServiceConstant {
         private static final String NAME_FIELD = "name";
         private static final String DESCRIPTION_FIELD = "description";
         private static final String TAGS_FIELD = "tags";
-        private static final String CREATED_DATE_FIELD = "createDate";
+        private static final String CREATED_DATE_FIELD = "create_date";
         private static final String DURATION_FIELD = "duration";
         private static final String PRICE_FIELD = "price";
 

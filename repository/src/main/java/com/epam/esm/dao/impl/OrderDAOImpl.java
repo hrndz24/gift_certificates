@@ -10,10 +10,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class OrderDAOImpl implements OrderDAO {
@@ -31,10 +29,12 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public List<Order> getOrders(CriteriaQuery<Order> criteriaQuery, int limit, int offset) {
+    @SuppressWarnings("unchecked assignment")
+    public List<Order> getOrders(String queryCondition, int limit, int offset) {
         try {
-            return entityManager.createQuery(criteriaQuery)
-                    .setMaxResults(limit).setFirstResult(offset).getResultList();
+            return (List<Order>) entityManager.createNativeQuery(
+                    NativeQuery.GET_ORDERS.getQuery() + queryCondition, Order.class)
+                    .setMaxResults(limit).setFirstResult(offset).getResultStream().distinct().collect(Collectors.toList());
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_ORDERS.getErrorCode(), e);
         }
@@ -50,14 +50,9 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public long getCount(CriteriaQuery<Order> criteriaQuery) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> count = criteriaBuilder.createQuery(Long.class);
-        Root<Order> root = count.from(Order.class);
-        root.alias("orderAlias");
-        count.select(criteriaBuilder.count(root));
-        if (criteriaQuery.getRestriction() != null)
-            count.where(criteriaQuery.getRestriction());
-        return entityManager.createQuery(count).getSingleResult();
+    public long getCount(String queryCondition) {
+        return entityManager.createNativeQuery(
+                NativeQuery.GET_ORDERS.getQuery() + queryCondition, Order.class)
+                .getResultStream().distinct().count();
     }
 }

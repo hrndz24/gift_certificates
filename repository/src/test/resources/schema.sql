@@ -15,7 +15,7 @@ CREATE TABLE gift_certificate
     duration         INT
 );
 
-CREATE TABLE certificate_has_tag
+CREATE TABLE certificate_tag
 (
     certificate_id INT,
     tag_id         INT,
@@ -40,7 +40,7 @@ CREATE TABLE orders
     FOREIGN KEY (user_id) REFERENCES user (id)
 );
 
-CREATE TABLE order_has_certificate
+CREATE TABLE order_certificate
 (
     order_id       INT,
     certificate_id INT,

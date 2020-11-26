@@ -1,7 +1,9 @@
 package com.epam.esm.dao.impl;
 
 public enum NativeQuery {
-    GET_MOST_USED_TAG(Constant.GET_MOST_USED_TAG_QUERY);
+    GET_MOST_USED_TAG(Constant.GET_MOST_USED_TAG_QUERY),
+    GET_CERTIFICATES(Constant.GET_CERTIFICATES),
+    GET_ORDERS(Constant.GET_ORDERS);
 
     private String query;
 
@@ -41,5 +43,17 @@ public enum NativeQuery {
                 .append("                             ORDER BY orders_cost DESC ")
                 .append("                             LIMIT 1) ")
                 .append("      GROUP BY tag_id ORDER BY tag_count DESC LIMIT 1) AS b").toString();
+
+        private static final String ALL_CERTIFICATE_FIELDS = "gc.id certificate_id, gc.name name, description," +
+                " price, create_date, last_update_date, duration, tag.id as tag_id, tag.name as tag_name";
+        private static final String JOIN_TAGS = " LEFT JOIN certificate_tag ct " +
+                "ON gc.id = ct.certificate_id LEFT JOIN tag ON ct.tag_id = tag.id ";
+        private static final String GET_CERTIFICATES = "SELECT " + ALL_CERTIFICATE_FIELDS +
+                " FROM gift_certificate gc " + JOIN_TAGS;
+        private static final String ALL_ORDER_FIELDS = "o.id as id, user_id, cost, o.date";
+        private static final String JOIN_CERTIFICATES = " LEFT JOIN order_certificate ohc ON o.id=ohc.order_id " +
+                "LEFT JOIN gift_certificate gc ON gc.id = ohc.certificate_id ";
+        private static final String GET_ORDERS = "SELECT " + ALL_ORDER_FIELDS + ", " + ALL_CERTIFICATE_FIELDS +
+                " FROM orders o" + JOIN_CERTIFICATES + JOIN_TAGS;
     }
 }

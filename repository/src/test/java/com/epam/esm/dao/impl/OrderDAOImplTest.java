@@ -1,8 +1,6 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.model.Order;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -26,19 +20,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class OrderDAOImplTest {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
     @Autowired
     private OrderDAOImpl orderDAO;
 
-    private CriteriaQuery<Order> criteriaQuery;
-
-    @BeforeEach
-    void setUp() {
-        criteriaQuery = entityManager.getCriteriaBuilder().createQuery(Order.class);
-        criteriaQuery.select(criteriaQuery.from(Order.class));
-    }
+    private static final String GET_ALL_CONDITION = "";
+    private static final String GET_ORDERS_BY_USER_CONDITION = " WHERE user_id = 2";
 
     @Test
     void addOrderShouldAddOrder() {
@@ -52,15 +38,12 @@ class OrderDAOImplTest {
 
     @Test
     void getOrdersShouldReturnListOfThreeOrders() {
-        assertEquals(3, orderDAO.getOrders(criteriaQuery, 10, 0).size());
+        assertEquals(3, orderDAO.getOrders(GET_ALL_CONDITION, 10, 0).size());
     }
 
     @Test
     void getOrdersByUserIdShouldReturnListOfTwo() {
-        Root<Order> root = criteriaQuery.from(Order.class);
-        criteriaQuery.select(root)
-                .where(entityManager.getCriteriaBuilder().equal(root.get("userId"), 2)).distinct(true);
-        assertEquals(2, orderDAO.getOrders(criteriaQuery, 10, 0).size());
+        assertEquals(2, orderDAO.getOrders(GET_ORDERS_BY_USER_CONDITION, 10, 0).size());
     }
 
     @Test

@@ -9,9 +9,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -23,9 +20,6 @@ class UserDAOImplTest {
 
     @Autowired
     private UserDAOImpl userDAO;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Test
     void getUsersShouldReturnListOfThreeUsers() {

@@ -162,11 +162,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificateDTO> getCertificates(Map<String, String> params) {
         validator.validateCertificateParams(params);
-        CriteriaQuery<GiftCertificate> criteriaQuery = giftCertificateQueryGenerator.generateQueryCriteria(params);
+        String queryCondition = giftCertificateQueryGenerator.generateQueryCriteria(params);
         List<GiftCertificateDTO> certificates = new ArrayList<>();
         int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
         int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
-        certificateDAO.getCertificates(criteriaQuery, limit, offset).forEach(giftCertificate ->
+        certificateDAO.getCertificates(queryCondition, limit, offset).forEach(giftCertificate ->
                 certificates.add(certificateMapper.toDTO(giftCertificate)));
         return certificates;
     }

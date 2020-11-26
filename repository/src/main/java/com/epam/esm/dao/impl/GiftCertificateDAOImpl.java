@@ -10,10 +10,8 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class GiftCertificateDAOImpl implements GiftCertificateDAO {
@@ -51,9 +49,12 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public List<GiftCertificate> getCertificates(CriteriaQuery<GiftCertificate> criteriaQuery, int limit, int offset) {
+    @SuppressWarnings("unchecked assignment")
+    public List<GiftCertificate> getCertificates(String queryCondition, int limit, int offset) {
         try {
-            return entityManager.createQuery(criteriaQuery).setMaxResults(limit).setFirstResult(offset).getResultList();
+            return (List<GiftCertificate>) entityManager.createNativeQuery(
+                    NativeQuery.GET_CERTIFICATES.getQuery() + queryCondition, GiftCertificate.class)
+                    .setFirstResult(offset).setMaxResults(limit).getResultStream().distinct().collect(Collectors.toList());
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_CERTIFICATES.getErrorCode(), e);
         }
@@ -69,15 +70,9 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public long getCount(CriteriaQuery<GiftCertificate> criteriaQuery) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> count = criteriaBuilder.createQuery(Long.class);
-        Root<GiftCertificate> root = count.from(GiftCertificate.class);
-        root.join("tags").alias("tagRoot");
-        root.alias("certificateAlias");
-        count.select(criteriaBuilder.count(root));
-        if (criteriaQuery.getRestriction() != null)
-            count.where(criteriaQuery.getRestriction());
-        return entityManager.createQuery(count).getSingleResult();
+    public long getCount(String queryCondition) {
+        return entityManager.createNativeQuery(
+                NativeQuery.GET_CERTIFICATES.getQuery() + queryCondition, GiftCertificate.class)
+                .getResultStream().distinct().count();
     }
 }

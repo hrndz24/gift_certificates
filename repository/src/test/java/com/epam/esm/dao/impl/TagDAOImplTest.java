@@ -2,7 +2,6 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.exception.DAOException;
 import com.epam.esm.model.Tag;
-import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,9 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,9 +23,6 @@ class TagDAOImplTest {
     private TagDAOImpl tagDAO;
 
     private Tag existentTag;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @BeforeEach
     void setUp() {

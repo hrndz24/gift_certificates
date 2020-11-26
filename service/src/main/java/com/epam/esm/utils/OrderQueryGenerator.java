@@ -1,40 +1,42 @@
 package com.epam.esm.utils;
 
-import com.epam.esm.model.Order;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class OrderQueryGenerator {
 
-    private SessionFactory sessionFactory;
+    private Map<String, String> queries;
 
-    private CriteriaQuery<Order> criteria;
+    private static final String GET_BY_USER_ID = " WHERE user_id = ?";
 
-    @Autowired
-    public OrderQueryGenerator(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+    private static final String USER_ID_PARAM = "userId";
+
+    private StringBuilder queryBuilder;
+
+    public OrderQueryGenerator() {
+        queries = new HashMap<>();
+        fillInQueries();
     }
 
-    public CriteriaQuery<Order> generateQuery(Map<String, String> params) {
-        CriteriaBuilder criteriaBuilder = sessionFactory.getCriteriaBuilder();
-        criteria = criteriaBuilder.createQuery(Order.class);
-        appendPredicates(params, criteriaBuilder);
-        return criteria;
+    private void fillInQueries() {
+        queries.put(ServiceConstant.USER_ID_PARAM.getValue(), GET_BY_USER_ID);
     }
 
-    private void appendPredicates(Map<String, String> params, CriteriaBuilder criteriaBuilder) {
-        Root<Order> root = criteria.from(Order.class);
-        root.alias("orderAlias");
+    public String generateQuery(Map<String, String> params) {
+        queryBuilder = new StringBuilder();
+        appendQueryCondition(params);
+        return queryBuilder.toString();
+    }
+
+    private void appendQueryCondition(Map<String, String> params) {
         params.keySet().forEach(key -> {
-            if (key.equals(ServiceConstant.USER_ID_PARAM.getValue())) {
-                criteria.where(criteriaBuilder.equal(root.get(key), params.get(key)));
+            if (USER_ID_PARAM.equals(key)) {
+                String queryCondition = queries.get(key);
+                queryCondition = queryCondition.replaceAll("\\?", params.get(key));
+                queryBuilder.append(queryCondition);
             }
         });
     }
