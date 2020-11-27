@@ -1,5 +1,6 @@
 package com.epam.esm.dto;
 
+import com.epam.esm.utils.StringConstant;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -10,11 +11,11 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class OrderDTO extends RepresentationModel<OrderDTO> implements ISO8601Formatable {
+public class OrderDTO extends RepresentationModel<OrderDTO> {
 
     private int id;
     private int userId;
-    @JsonFormat(pattern = DATE_FORMAT)
+    @JsonFormat(pattern = StringConstant.DATE_FORMAT)
     private Date date;
     private BigDecimal cost;
     private Set<GiftCertificateDTO> certificates = new HashSet<>();
