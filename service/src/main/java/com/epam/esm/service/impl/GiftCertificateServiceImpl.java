@@ -6,7 +6,6 @@ import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ServiceExceptionCode;
-import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.GiftCertificateMapper;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
@@ -64,29 +63,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private void validateTags(Set<TagDTO> tags) {
         tags.forEach(tag -> {
-            if (tag.getId() == 0) {
-                checkTagNameDoesNotExist(tag);
+            validator.validateTag(tag);
+            Tag tagReturned = tagDAO.getTagByName(tag.getName());
+            if (tagReturned != null) {
+                tag.setId(tagReturned.getId());
             } else {
-                validator.validateIdIsPositive(tag.getId());
-                checkTagWithSuchIdExists(tag);
+                withdrawIdIfSet(tag);
             }
         });
     }
 
-    private void checkTagWithSuchIdExists(TagDTO tag) {
-        if (tagDAO.getTagById(tag.getId()) == null)
-            throw new ValidatorException(
-                    ServiceExceptionCode.NON_EXISTING_TAG_ID.getErrorCode(), String.valueOf(tag.getId()));
-    }
-
-    private void checkTagNameDoesNotExist(TagDTO tag) {
-        validator.validateTag(tag);
-        Tag tagReturned = tagDAO.getTagByName(tag.getName());
-        if (tagReturned != null) {
-            throw new ValidatorException(
-                    ServiceExceptionCode.CANNOT_ADD_EXISTING_TAG.getErrorCode(),
-                    tag.getName() + ", id = " + tagReturned.getId());
-        }
+    private void withdrawIdIfSet(TagDTO tag) {
+        tag.setId(0);
     }
 
     private void prepareCertificateBeforeAddingToDatabase(GiftCertificateDTO certificateDTO) {
