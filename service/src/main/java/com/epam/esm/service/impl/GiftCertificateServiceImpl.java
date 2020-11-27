@@ -11,6 +11,7 @@ import com.epam.esm.mapper.GiftCertificateMapper;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.specification.Specification;
 import com.epam.esm.utils.GiftCertificateQueryGenerator;
 import com.epam.esm.utils.ServiceConstant;
 import com.epam.esm.validation.Validator;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.criteria.CriteriaQuery;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -162,11 +162,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public List<GiftCertificateDTO> getCertificates(Map<String, String> params) {
         validator.validateCertificateParams(params);
-        String queryCondition = giftCertificateQueryGenerator.generateQueryCriteria(params);
+        List<Specification> specifications = giftCertificateQueryGenerator.generateQueryCriteria(params);
         List<GiftCertificateDTO> certificates = new ArrayList<>();
         int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
         int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
-        certificateDAO.getCertificates(queryCondition, limit, offset).forEach(giftCertificate ->
+        certificateDAO.getCertificates(specifications, limit, offset).forEach(giftCertificate ->
                 certificates.add(certificateMapper.toDTO(giftCertificate)));
         return certificates;
     }

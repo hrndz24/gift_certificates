@@ -343,7 +343,7 @@ public class Validator {
                 throw new ValidatorException(ServiceExceptionCode.SHOULD_BE_POSITIVE.getErrorCode(), "page = " + page);
             }
         } else {
-            throw new ValidatorException(ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), page);
+            throw new ValidatorException(ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), "page");
         }
     }
 
@@ -362,7 +362,7 @@ public class Validator {
                 throw new ValidatorException(ServiceExceptionCode.SHOULD_BE_POSITIVE.getErrorCode(), "size = " + size);
             }
         } else {
-            throw new ValidatorException(ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), size);
+            throw new ValidatorException(ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), "size");
         }
     }
 }

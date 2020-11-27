@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -30,8 +31,6 @@ class GiftCertificateDAOImplTest {
     private GiftCertificateDAOImpl giftCertificateDAO;
 
     private GiftCertificate existentCertificate;
-
-    private static final String GET_ALL_CONDITION = "";
 
     @BeforeEach
     void setUp() throws ParseException {
@@ -64,13 +63,13 @@ class GiftCertificateDAOImplTest {
         newCertificate.setDuration(10);
         GiftCertificate returnedCertificate = giftCertificateDAO.addCertificate(newCertificate);
         assertNotEquals(0, returnedCertificate.getId());
-        assertEquals(4, giftCertificateDAO.getCertificates(GET_ALL_CONDITION, 10, 0).size());
+        assertEquals(4, giftCertificateDAO.getCertificates(new ArrayList<>(), 10, 0).size());
     }
 
     @Test
     void removeGiftCertificateShouldRemoveCertificate() {
         giftCertificateDAO.removeCertificate(3);
-        assertEquals(2, giftCertificateDAO.getCertificates(GET_ALL_CONDITION, 10, 0).size());
+        assertEquals(2, giftCertificateDAO.getCertificates(new ArrayList<>(), 10, 0).size());
     }
 
     @Test
@@ -83,7 +82,7 @@ class GiftCertificateDAOImplTest {
 
     @Test
     void getGiftCertificatesShouldReturnListOfThreeCertificates() {
-        assertEquals(3, giftCertificateDAO.getCertificates(GET_ALL_CONDITION, 10, 0).size());
+        assertEquals(3, giftCertificateDAO.getCertificates(new ArrayList<>(), 10, 0).size());
     }
 
     @Test

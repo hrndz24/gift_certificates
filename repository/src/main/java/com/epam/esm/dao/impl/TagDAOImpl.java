@@ -21,9 +21,6 @@ public class TagDAOImpl implements TagDAO {
     @PersistenceContext
     private EntityManager entityManager;
 
-    private static final String ID_FIELD = "id";
-    private static final String NAME_FIELD = "name";
-
     @Override
     public Tag addTag(Tag tag) {
         try {
@@ -49,7 +46,7 @@ public class TagDAOImpl implements TagDAO {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
         Root<Tag> root = criteriaQuery.from(Tag.class);
-        criteriaQuery.orderBy(criteriaBuilder.asc(root.get(ID_FIELD)));
+        criteriaQuery.orderBy(criteriaBuilder.asc(root.get(DAOConstant.ID_FIELD.getValue())));
         return entityManager.createQuery(criteriaQuery)
                 .setMaxResults(limit).setFirstResult(offset).getResultList();
     }
@@ -64,7 +61,7 @@ public class TagDAOImpl implements TagDAO {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tag> criteriaQuery = criteriaBuilder.createQuery(Tag.class);
         Root<Tag> root = criteriaQuery.from(Tag.class);
-        criteriaQuery.where(criteriaBuilder.equal(root.get(NAME_FIELD), name));
+        criteriaQuery.where(criteriaBuilder.equal(root.get(DAOConstant.NAME_FIELD.getValue()), name));
         return entityManager.createQuery(criteriaQuery).getResultList().stream().findFirst().orElse(null);
     }
 
@@ -78,6 +75,6 @@ public class TagDAOImpl implements TagDAO {
 
     @Override
     public Tag getMostUsedTagOfUserWithHighestCostOfOrders() {
-        return (Tag) entityManager.createNativeQuery(NativeQuery.GET_MOST_USED_TAG.getQuery(), Tag.class).getSingleResult();
+        return (Tag) entityManager.createNativeQuery(DAOConstant.GET_MOST_USED_TAG_QUERY.getValue(), Tag.class).getSingleResult();
     }
 }

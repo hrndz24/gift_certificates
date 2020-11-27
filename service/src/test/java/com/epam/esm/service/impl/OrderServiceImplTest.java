@@ -44,8 +44,8 @@ class OrderServiceImplTest {
     private Validator validator = new Validator();
     @Spy
     private OrderMapper orderMapper = new OrderMapper(new ModelMapper());
-    @Mock
-    private OrderQueryGenerator queryGenerator;
+    @Spy
+    private OrderQueryGenerator queryGenerator = new OrderQueryGenerator();
 
     @BeforeEach
     void setUp() {
@@ -103,7 +103,6 @@ class OrderServiceImplTest {
         orders.add(order);
         orders.add(order);
         orders.add(order);
-        when(queryGenerator.generateQuery(new HashMap<>())).thenReturn(any());
         when(orderDAO.getOrders(queryGenerator.generateQuery(
                 new HashMap<>()), 10, 0)).thenReturn(orders);
         assertEquals(3, orderService.getOrders(new HashMap<>()).size());

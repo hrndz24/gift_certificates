@@ -1,8 +1,8 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.specification.Specification;
 
-import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
 
 public interface GiftCertificateDAO {
@@ -13,9 +13,9 @@ public interface GiftCertificateDAO {
 
     void updateCertificate(GiftCertificate certificate);
 
-    List<GiftCertificate> getCertificates(String queryCondition, int limit, int offset);
+    List<GiftCertificate> getCertificates(List<Specification> specifications, int limit, int offset);
 
     GiftCertificate getCertificateById(int id);
 
-    long getCount(String queryCondition);
+    long getCount(List<Specification> specifications);
 }

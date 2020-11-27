@@ -26,6 +26,8 @@ public class DAOConfig {
     private String password;
     @Value("${hibernate.dialect}")
     private String dialect;
+    @Value("${packages-to-scan}")
+    private String packagesToScan;
 
     @Bean
     public DataSource dataSource() {
@@ -49,7 +51,7 @@ public class DAOConfig {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource());
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-        entityManagerFactoryBean.setPackagesToScan("com.epam.esm.model");
+        entityManagerFactoryBean.setPackagesToScan(packagesToScan);
         entityManagerFactoryBean.setJpaProperties(hibernateProperties());
         return entityManagerFactoryBean;
     }

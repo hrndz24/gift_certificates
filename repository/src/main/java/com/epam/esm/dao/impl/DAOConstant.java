@@ -1,18 +1,23 @@
 package com.epam.esm.dao.impl;
 
-public enum NativeQuery {
-    GET_MOST_USED_TAG(Constant.GET_MOST_USED_TAG_QUERY),
-    GET_CERTIFICATES(Constant.GET_CERTIFICATES),
-    GET_ORDERS(Constant.GET_ORDERS);
+public enum DAOConstant {
+    GET_MOST_USED_TAG_QUERY(Constant.GET_MOST_USED_TAG_QUERY),
 
-    private String query;
+    ID_FIELD(Constant.ID_FIELD),
+    NAME_FIELD(Constant.NAME_FIELD),
 
-    NativeQuery(String query) {
-        this.query = query;
+    USER_ID_FIELD(Constant.USER_ID_FIELD),
+    TAGS_FIELD(Constant.TAGS_FIELD),
+    DESCRIPTION_FIELD(Constant.DESCRIPTION_FIELD);
+
+    private String value;
+
+    DAOConstant(String value) {
+        this.value = value;
     }
 
-    public String getQuery() {
-        return query;
+    public String getValue() {
+        return value;
     }
 
     private static class Constant {
@@ -44,16 +49,10 @@ public enum NativeQuery {
                 .append("                             LIMIT 1) ")
                 .append("      GROUP BY tag_id ORDER BY tag_count DESC LIMIT 1) AS b").toString();
 
-        private static final String ALL_CERTIFICATE_FIELDS = "gc.id certificate_id, gc.name name, description," +
-                " price, create_date, last_update_date, duration, tag.id as tag_id, tag.name as tag_name";
-        private static final String JOIN_TAGS = " LEFT JOIN certificate_tag ct " +
-                "ON gc.id = ct.certificate_id LEFT JOIN tag ON ct.tag_id = tag.id ";
-        private static final String GET_CERTIFICATES = "SELECT " + ALL_CERTIFICATE_FIELDS +
-                " FROM gift_certificate gc " + JOIN_TAGS;
-        private static final String ALL_ORDER_FIELDS = "o.id as id, user_id, cost, o.date";
-        private static final String JOIN_CERTIFICATES = " LEFT JOIN order_certificate ohc ON o.id=ohc.order_id " +
-                "LEFT JOIN gift_certificate gc ON gc.id = ohc.certificate_id ";
-        private static final String GET_ORDERS = "SELECT " + ALL_ORDER_FIELDS + ", " + ALL_CERTIFICATE_FIELDS +
-                " FROM orders o" + JOIN_CERTIFICATES + JOIN_TAGS;
+        private static final String ID_FIELD = "id";
+        private static final String NAME_FIELD = "name";
+        private static final String USER_ID_FIELD = "userId";
+        private static final String TAGS_FIELD = "tags";
+        private static final String DESCRIPTION_FIELD = "description";
     }
 }

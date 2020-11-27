@@ -4,14 +4,21 @@ import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.exception.DAOException;
 import com.epam.esm.exception.DAOExceptionCode;
 import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.specification.SearchConditionSpecification;
+import com.epam.esm.specification.SortSpecification;
+import com.epam.esm.specification.Specification;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class GiftCertificateDAOImpl implements GiftCertificateDAO {
@@ -49,15 +56,28 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    @SuppressWarnings("unchecked assignment")
-    public List<GiftCertificate> getCertificates(String queryCondition, int limit, int offset) {
+    public List<GiftCertificate> getCertificates(List<Specification> specifications, int limit, int offset) {
         try {
-            return (List<GiftCertificate>) entityManager.createNativeQuery(
-                    NativeQuery.GET_CERTIFICATES.getQuery() + queryCondition, GiftCertificate.class)
-                    .setFirstResult(offset).setMaxResults(limit).getResultStream().distinct().collect(Collectors.toList());
+            return entityManager.createQuery(buildCriteriaQuery(specifications))
+                    .setFirstResult(offset).setMaxResults(limit).getResultList();
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_CERTIFICATES.getErrorCode(), e);
         }
+    }
+
+    private CriteriaQuery<GiftCertificate> buildCriteriaQuery(List<Specification> specifications) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<GiftCertificate> criteriaQuery = criteriaBuilder.createQuery(GiftCertificate.class);
+        Root<GiftCertificate> root = criteriaQuery.from(GiftCertificate.class);
+        List<Predicate> predicateList = new ArrayList<>();
+        specifications.forEach(specification -> {
+            if (specification instanceof SearchConditionSpecification)
+                predicateList.add(((SearchConditionSpecification) specification).toPredicate(criteriaBuilder, root));
+            if (specification instanceof SortSpecification)
+                criteriaQuery.orderBy(((SortSpecification) specification).toOrder(criteriaBuilder, root));
+        });
+        criteriaQuery.where(predicateList.toArray(new Predicate[0]));
+        return criteriaQuery;
     }
 
     @Override
@@ -70,9 +90,8 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public long getCount(String queryCondition) {
-        return entityManager.createNativeQuery(
-                NativeQuery.GET_CERTIFICATES.getQuery() + queryCondition, GiftCertificate.class)
-                .getResultStream().distinct().count();
+    public long getCount(List<Specification> specifications) {
+        CriteriaQuery<GiftCertificate> criteriaQuery = buildCriteriaQuery(specifications);
+        return entityManager.createQuery(criteriaQuery).getResultStream().count();
     }
 }

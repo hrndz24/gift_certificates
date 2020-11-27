@@ -32,8 +32,8 @@ class GiftCertificateServiceImplTest {
     private GiftCertificateDAO certificateDAO;
     @Spy
     private Validator validator = new Validator();
-    @Mock
-    private GiftCertificateQueryGenerator giftCertificateQueryGenerator;
+    @Spy
+    private GiftCertificateQueryGenerator giftCertificateQueryGenerator = new GiftCertificateQueryGenerator();
     @Spy
     private GiftCertificateMapper certificateMapper = new GiftCertificateMapper(new ModelMapper());
 
@@ -91,7 +91,6 @@ class GiftCertificateServiceImplTest {
         certificates.add(certificate);
         certificates.add(certificate);
         certificates.add(certificate);
-        when(giftCertificateQueryGenerator.generateQueryCriteria(new HashMap<>())).thenReturn(any());
         when(certificateDAO.getCertificates(giftCertificateQueryGenerator.generateQueryCriteria
                 (new HashMap<>()), 10, 0)).thenReturn(certificates);
         assertEquals(3, certificateService.getCertificates(anyMap()).size());

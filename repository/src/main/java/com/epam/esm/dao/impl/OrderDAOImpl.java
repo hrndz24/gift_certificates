@@ -4,14 +4,19 @@ import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.exception.DAOException;
 import com.epam.esm.exception.DAOExceptionCode;
 import com.epam.esm.model.Order;
+import com.epam.esm.specification.SearchConditionSpecification;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class OrderDAOImpl implements OrderDAO {
@@ -29,15 +34,25 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    @SuppressWarnings("unchecked assignment")
-    public List<Order> getOrders(String queryCondition, int limit, int offset) {
+    public List<Order> getOrders(List<SearchConditionSpecification> specifications, int limit, int offset) {
         try {
-            return (List<Order>) entityManager.createNativeQuery(
-                    NativeQuery.GET_ORDERS.getQuery() + queryCondition, Order.class)
-                    .setMaxResults(limit).setFirstResult(offset).getResultStream().distinct().collect(Collectors.toList());
+            return entityManager.createQuery(buildCriteriaQuery(specifications))
+                    .setMaxResults(limit).setFirstResult(offset).getResultList();
         } catch (DataAccessException e) {
             throw new DAOException(DAOExceptionCode.FAILED_GET_ORDERS.getErrorCode(), e);
         }
+    }
+
+    private CriteriaQuery<Order> buildCriteriaQuery(List<SearchConditionSpecification> specifications) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Order> criteriaQuery = criteriaBuilder.createQuery(Order.class);
+        Root<Order> root = criteriaQuery.from(Order.class);
+        List<Predicate> predicateList = new ArrayList<>();
+        specifications.forEach(specification -> {
+            predicateList.add(specification.toPredicate(criteriaBuilder, root));
+        });
+        criteriaQuery.where(predicateList.toArray(new Predicate[0]));
+        return criteriaQuery;
     }
 
     @Override
@@ -50,9 +65,8 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public long getCount(String queryCondition) {
-        return entityManager.createNativeQuery(
-                NativeQuery.GET_ORDERS.getQuery() + queryCondition, Order.class)
-                .getResultStream().distinct().count();
+    public long getCount(List<SearchConditionSpecification> specifications) {
+        CriteriaQuery<Order> criteriaQuery = buildCriteriaQuery(specifications);
+        return entityManager.createQuery(criteriaQuery).getResultStream().count();
     }
 }

@@ -1,6 +1,8 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.model.Order;
+import com.epam.esm.specification.SearchConditionSpecification;
+import com.epam.esm.specification.impl.order.GetOrdersByUserId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,9 +26,6 @@ class OrderDAOImplTest {
 
     @Autowired
     private OrderDAOImpl orderDAO;
-
-    private static final String GET_ALL_CONDITION = "";
-    private static final String GET_ORDERS_BY_USER_CONDITION = " WHERE user_id = 2";
 
     @Test
     void addOrderShouldAddOrder() {
@@ -38,12 +39,14 @@ class OrderDAOImplTest {
 
     @Test
     void getOrdersShouldReturnListOfThreeOrders() {
-        assertEquals(3, orderDAO.getOrders(GET_ALL_CONDITION, 10, 0).size());
+        assertEquals(3, orderDAO.getOrders(new ArrayList<>(), 10, 0).size());
     }
 
     @Test
     void getOrdersByUserIdShouldReturnListOfTwo() {
-        assertEquals(2, orderDAO.getOrders(GET_ORDERS_BY_USER_CONDITION, 10, 0).size());
+        List<SearchConditionSpecification> specifications = new ArrayList<>();
+        specifications.add(new GetOrdersByUserId(2));
+        assertEquals(2, orderDAO.getOrders(specifications, 10, 0).size());
     }
 
     @Test

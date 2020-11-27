@@ -10,6 +10,7 @@ import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.OrderMapper;
 import com.epam.esm.model.Order;
 import com.epam.esm.service.OrderService;
+import com.epam.esm.specification.SearchConditionSpecification;
 import com.epam.esm.utils.OrderQueryGenerator;
 import com.epam.esm.utils.ServiceConstant;
 import com.epam.esm.validation.Validator;
@@ -101,8 +102,8 @@ public class OrderServiceImpl implements OrderService {
         List<OrderDTO> orders = new ArrayList<>();
         int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
         int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
-        String queryCondition = queryGenerator.generateQuery(params);
-        orderDAO.getOrders(queryCondition, limit, offset)
+        List<SearchConditionSpecification> specifications = queryGenerator.generateQuery(params);
+        orderDAO.getOrders(specifications, limit, offset)
                 .forEach(order -> orders.add(orderMapper.toDTO(order)));
         return orders;
     }
