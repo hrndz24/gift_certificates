@@ -3,7 +3,6 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.dao.UserDAO;
-import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.OrderMapper;
@@ -19,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.config.Configuration;
+import org.modelmapper.convention.MatchingStrategies;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,7 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -43,55 +45,61 @@ class OrderServiceImplTest {
     @Spy
     private Validator validator = new Validator();
     @Spy
-    private OrderMapper orderMapper = new OrderMapper(new ModelMapper());
+    private OrderMapper orderMapper;
     @Spy
     private OrderQueryGenerator queryGenerator = new OrderQueryGenerator();
 
     @BeforeEach
     void setUp() {
+        ModelMapper mapper = new ModelMapper();
+        mapper.getConfiguration()
+                .setMatchingStrategy(MatchingStrategies.STRICT)
+                .setFieldMatchingEnabled(true)
+                .setSkipNullEnabled(true)
+                .setFieldAccessLevel(Configuration.AccessLevel.PRIVATE);
+        orderMapper = new OrderMapper(mapper);
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
     void addOrderWithValidOrderShouldAddOrder() {
-        OrderDTO orderDTO = new OrderDTO();
-        orderDTO.setUserId(1);
-        orderDTO.setCost(new BigDecimal("123"));
-        GiftCertificateDTO certificateDTO = new GiftCertificateDTO();
-        certificateDTO.setId(1);
-        certificateDTO.setPrice(new BigDecimal("13.00"));
-        orderDTO.getCertificates().add(certificateDTO);
         Order order = new Order();
         order.setId(4);
         order.setUserId(1);
         order.setCost(new BigDecimal("13.00"));
+        GiftCertificate certificate = new GiftCertificate();
+        certificate.setId(1);
+        certificate.setPrice(new BigDecimal("13.00"));
+        order.addCertificate(certificate);
         when(orderDAO.addOrder(any())).thenReturn(order);
         when(orderDAO.getOrderById(4)).thenReturn(order);
         when(userDAO.getUserById(1)).thenReturn(new User());
-        GiftCertificate certificate = new GiftCertificate();
-        certificate.setPrice(new BigDecimal("13.00"));
         when(certificateDAO.getCertificateById(1)).thenReturn(certificate);
-        OrderDTO returnedOrderDTO = orderService.addOrder(orderDTO);
-        returnedOrderDTO.setCost(new BigDecimal("123"));
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("userId", 1);
+        List<Integer> certificatesId = new ArrayList<>();
+        certificatesId.add(1);
+        fields.put("certificatesId", certificatesId);
+        OrderDTO returnedOrderDTO = orderService.addOrder(fields);
+        returnedOrderDTO.setCost(new BigDecimal("13"));
         assertEquals(4, returnedOrderDTO.getId());
-        assertNotNull(orderDTO.getDate());
-        assertNotNull(orderDTO.getCost());
     }
 
     @Test
     void addOrderWithoutCertificatesShouldThrowException() {
-        OrderDTO order = new OrderDTO();
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("userId", 2);
         assertThrows(ValidatorException.class,
-                () -> orderService.addOrder(order));
+                () -> orderService.addOrder(fields));
     }
 
     @Test
     void addOrderWithNonExistingUserShouldThrowException() {
-        OrderDTO order = new OrderDTO();
-        order.setUserId(4);
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("userId", 4);
         when(userDAO.getUserById(4)).thenReturn(null);
         assertThrows(ValidatorException.class,
-                () -> orderService.addOrder(order));
+                () -> orderService.addOrder(fields));
     }
 
 
