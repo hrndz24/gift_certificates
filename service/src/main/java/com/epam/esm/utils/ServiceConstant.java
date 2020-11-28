@@ -20,6 +20,8 @@ public enum ServiceConstant {
 
     TAGS_FIELD(Constant.TAGS_FIELD), CREATED_DATE_FIELD(Constant.CREATED_DATE_FIELD),
 
+    CERTIFICATES_ID_FIELD(Constant.CERTIFICATES_ID_FIELD),
+
     DURATION_FIELD(Constant.DURATION_FIELD), PRICE_FIELD(Constant.PRICE_FIELD),
 
     SORT_BY_NAME_ASC(Constant.SORT_BY_NAME_ASC),
@@ -61,6 +63,7 @@ public enum ServiceConstant {
         private static final String CREATED_DATE_FIELD = "createDate";
         private static final String DURATION_FIELD = "duration";
         private static final String PRICE_FIELD = "price";
+        private static final String CERTIFICATES_ID_FIELD = "certificatesId";
 
         private static final String SORT_BY_NAME_ASC = "name";
         private static final String SORT_BY_NAME_DESC = "-name";

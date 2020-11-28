@@ -20,7 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -49,20 +52,34 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderDTO addOrder(OrderDTO order) {
+    public OrderDTO addOrder(Map<String, Object> fields) {
+        validator.validateOrderFields(fields);
+        OrderDTO order = buildOrderFromFields(fields);
         prepareOrderBeforeAddingToDatabase(order);
         return orderMapper.toDTO(orderDAO.addOrder(orderMapper.toModel(order)));
     }
 
+    @SuppressWarnings("unchecked cast")
+    private OrderDTO buildOrderFromFields(Map<String, Object> fields) {
+        OrderDTO order = new OrderDTO();
+        order.setUserId((Integer) fields.get(ServiceConstant.USER_ID_PARAM.getValue()));
+        List<Integer> certificatesIdValues = (ArrayList<Integer>) fields.get(ServiceConstant.CERTIFICATES_ID_FIELD.getValue());
+        certificatesIdValues.forEach(certificateId -> {
+            GiftCertificateDTO certificate = new GiftCertificateDTO();
+            certificate.setId(certificateId);
+            order.getCertificates().add(certificate);
+        });
+        return order;
+    }
+
     private void prepareOrderBeforeAddingToDatabase(OrderDTO order) {
-        validator.validateOrder(order);
         checkUserExists(order.getUserId());
         BigDecimal cost = calculateOrderCost(order.getCertificates());
         order.setCost(cost);
         order.setDate(new Date());
     }
 
-    private BigDecimal calculateOrderCost(Set<GiftCertificateDTO> certificates) {
+    private BigDecimal calculateOrderCost(List<GiftCertificateDTO> certificates) {
         BigDecimal cost = new BigDecimal(0);
         for (GiftCertificateDTO certificate : certificates) {
             validator.validateCertificateForOrdering(certificate);

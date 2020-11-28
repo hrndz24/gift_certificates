@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface OrderService {
 
-    OrderDTO addOrder(OrderDTO order);
+    OrderDTO addOrder(Map<String, Object> fields);
 
     List<OrderDTO> getOrders(Map<String, String> params);
 

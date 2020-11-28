@@ -1,13 +1,16 @@
 package com.epam.esm.model;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Table(name = "orders")
@@ -28,7 +31,9 @@ public class Order implements Serializable {
             joinColumns = {@JoinColumn(name = "order_id")},
             inverseJoinColumns = {@JoinColumn(name = "certificate_id")}
     )
-    private Set<GiftCertificate> certificates = new HashSet<>();
+    @OrderBy(value = "id")
+    @Fetch(FetchMode.SUBSELECT)
+    private List<GiftCertificate> certificates = new ArrayList<>();
 
     public Order() {
     }
@@ -65,11 +70,11 @@ public class Order implements Serializable {
         this.cost = cost.setScale(2, RoundingMode.HALF_UP);
     }
 
-    public Set<GiftCertificate> getCertificates() {
+    public List<GiftCertificate> getCertificates() {
         return certificates;
     }
 
-    public void setCertificates(Set<GiftCertificate> certificates) {
+    public void setCertificates(List<GiftCertificate> certificates) {
         this.certificates = certificates;
     }
 

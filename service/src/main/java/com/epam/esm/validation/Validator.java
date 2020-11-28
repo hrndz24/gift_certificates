@@ -24,6 +24,7 @@ public class Validator {
     private Set<String> certificateFieldNames;
     private Set<String> tagFieldNames;
     private Set<String> paginationParameters;
+    private Set<String> orderFields;
     private static final int DEFAULT_SIZE = 10;
     private static final int DEFAULT_PAGE_NUMBER = 1;
 
@@ -42,6 +43,7 @@ public class Validator {
         this.certificateFieldNames = new HashSet<>();
         this.tagFieldNames = new HashSet<>();
         this.paginationParameters = new HashSet<>();
+        this.orderFields = new HashSet<>();
         fillInParameterNames();
     }
 
@@ -68,6 +70,8 @@ public class Validator {
         certificateFieldNames.add(ServiceConstant.TAGS_FIELD.getValue());
         tagFieldNames.add(ServiceConstant.ID_FIELD.getValue());
         tagFieldNames.add(ServiceConstant.NAME_FIELD.getValue());
+        orderFields.add(ServiceConstant.USER_ID_PARAM.getValue());
+        orderFields.add(ServiceConstant.CERTIFICATES_ID_FIELD.getValue());
     }
 
     public void validateCertificate(GiftCertificateDTO giftCertificateDTO) {
@@ -199,6 +203,45 @@ public class Validator {
         });
     }
 
+    public void validateOrderFields(Map<String, Object> fields) {
+        validateNonNull(fields, fields.getClass().getName());
+        checkOrderFieldsExist(fields);
+        validateOrderFieldValues(fields);
+        checkOrderHasCertificates(fields.get(ServiceConstant.CERTIFICATES_ID_FIELD.getValue()));
+        validateCertificatesId(fields.get(ServiceConstant.CERTIFICATES_ID_FIELD.getValue()));
+    }
+
+    private void validateCertificatesId(Object certificates) {
+        List<?> certificatesIdValues = (ArrayList<?>) certificates;
+        certificatesIdValues.forEach(certificatesIdValue -> {
+            if (!certificatesIdValue.getClass().equals(Integer.class)) {
+                throw new ValidatorException(
+                        ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), "certificatesId");
+            } else {
+                Integer id = (Integer) certificatesIdValue;
+                validateIdIsPositive(id);
+            }
+        });
+    }
+
+    private void checkOrderFieldsExist(Map<String, Object> fields) {
+        fields.keySet().forEach(key -> {
+            if (!orderFields.contains(key)) {
+                throw new ValidatorException(ServiceExceptionCode.NON_EXISTING_ORDER_FIELD.getErrorCode());
+            }
+        });
+    }
+
+    private void validateOrderFieldValues(Map<String, Object> fields) {
+        fields.entrySet().forEach(field -> {
+            if (ServiceConstant.USER_ID_PARAM.getValue().equals(field.getKey())) {
+                validateFieldMatchesDataType(Integer.class, field);
+            } else if (ServiceConstant.CERTIFICATES_ID_FIELD.getValue().equals(field.getKey())) {
+                validateFieldMatchesDataType(ArrayList.class, field);
+            }
+        });
+    }
+
     public void validateCertificateUpdateField(Map<String, Object> field) {
         validateNonNull(field, field.getClass().getName());
         checkThereIsOneUpdateField(field);
@@ -211,30 +254,30 @@ public class Validator {
         field.entrySet().forEach(entry -> {
             switch (entry.getKey()) {
                 case NAME_FIELD:
-                    validateCertificateUpdateFieldMatchesDataType(String.class, entry);
+                    validateFieldMatchesDataType(String.class, entry);
                     validateStringField((String) entry.getValue(), "certificate name");
                     break;
                 case DESCRIPTION_FIELD:
-                    validateCertificateUpdateFieldMatchesDataType(String.class, entry);
+                    validateFieldMatchesDataType(String.class, entry);
                     validateStringField((String) entry.getValue(), "certificate description");
                     break;
                 case PRICE_FIELD:
-                    validateCertificateUpdateFieldMatchesDataType(Double.class, entry);
+                    validateFieldMatchesDataType(Double.class, entry);
                     validatePrice(BigDecimal.valueOf((Double) entry.getValue()));
                     break;
                 case DURATION_FIELD:
-                    validateCertificateUpdateFieldMatchesDataType(Integer.class, entry);
+                    validateFieldMatchesDataType(Integer.class, entry);
                     validateDuration((Integer) entry.getValue());
                     break;
                 case TAGS_FIELD:
-                    validateCertificateUpdateFieldMatchesDataType(ArrayList.class, entry);
+                    validateFieldMatchesDataType(ArrayList.class, entry);
                     validateTagsField(entry.getValue());
                     break;
             }
         });
     }
 
-    public void validateCertificateUpdateFieldMatchesDataType(Class<?> requested, Map.Entry<String, Object> field) {
+    public void validateFieldMatchesDataType(Class<?> requested, Map.Entry<String, Object> field) {
         if (requested != field.getValue().getClass()) {
             throw new ValidatorException(
                     ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), field.getKey());
@@ -257,9 +300,13 @@ public class Validator {
         });
     }
 
-    private void checkOrderHasCertificates(OrderDTO order) {
-        Set<GiftCertificateDTO> certificates = order.getCertificates();
-        if (certificates == null || certificates.isEmpty()) {
+    private void checkOrderHasCertificates(Object certificates) {
+        if (certificates == null) {
+            throw new ValidatorException(
+                    ServiceExceptionCode.ORDER_SHOULD_HAVE_CERTIFICATES.getErrorCode());
+        }
+        List<?> certificateList = (ArrayList<?>) certificates;
+        if (certificateList.isEmpty()) {
             throw new ValidatorException(
                     ServiceExceptionCode.ORDER_SHOULD_HAVE_CERTIFICATES.getErrorCode());
         }
@@ -280,11 +327,11 @@ public class Validator {
                             ServiceExceptionCode.NON_EXISTING_TAG_FIELD_NAME.getErrorCode(), tagField.getKey());
                 }
                 if (tagField.getKey().equals(ServiceConstant.ID_FIELD.getValue())) {
-                    validateCertificateUpdateFieldMatchesDataType(Integer.class, tagField);
+                    validateFieldMatchesDataType(Integer.class, tagField);
                     validateIdIsPositive((Integer) tagField.getValue());
                 }
                 if (tagField.getKey().equals(ServiceConstant.NAME_FIELD.getValue())) {
-                    validateCertificateUpdateFieldMatchesDataType(String.class, tagField);
+                    validateFieldMatchesDataType(String.class, tagField);
                     validateStringField((String) tagField.getValue(), "tag name");
                 }
             });

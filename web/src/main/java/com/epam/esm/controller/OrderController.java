@@ -38,8 +38,8 @@ public class OrderController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public OrderDTO createOrder(@RequestBody OrderDTO order) {
-        return orderService.addOrder(order);
+    public OrderDTO createOrder(@RequestBody Map<String, Object> fields) {
+        return orderService.addOrder(fields);
     }
 
     /**
