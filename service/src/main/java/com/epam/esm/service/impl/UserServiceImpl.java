@@ -40,6 +40,8 @@ public class UserServiceImpl implements UserService {
         validator.validateUserParams(params);
         int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
         int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
+        long elementsCount = userDAO.getCount();
+        validator.validatePageNumberIsLessThanElementsCount(params, elementsCount);
         userDAO.getUsers(limit, offset).forEach(user -> userDTOS.add(userMapper.toDTO(user)));
         return userDTOS;
     }

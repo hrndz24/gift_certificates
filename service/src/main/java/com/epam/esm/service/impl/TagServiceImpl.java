@@ -86,6 +86,8 @@ public class TagServiceImpl implements TagService {
         validator.validateTagParams(params);
         int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
         int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
+        long elementsCount = tagDAO.getCount();
+        validator.validatePageNumberIsLessThanElementsCount(params, elementsCount);
         tagDAO.getTags(limit, offset).forEach(tag -> tags.add(mapper.toDTO(tag)));
         return tags;
     }

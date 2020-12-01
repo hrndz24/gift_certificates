@@ -93,6 +93,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public void updateCertificate(int id, GiftCertificateDTO certificateDTO) {
         validator.validateIdIsPositive(id);
+        getCertificateIfExists(id);
+        validator.validateCertificate(certificateDTO);
         prepareCertificateBeforeUpdatingInDatabase(id, certificateDTO);
         validateTags(certificateDTO.getTags());
         certificateDAO.updateCertificate(certificateMapper.toModel(certificateDTO));
@@ -101,6 +103,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public void updateCertificateField(int id, Map<String, Object> fields) {
         validator.validateIdIsPositive(id);
+        getCertificateIfExists(id);
         validator.validateCertificateUpdateField(fields);
         GiftCertificateDTO certificate = certificateMapper.toDTO(getCertificateIfExists(id));
         prepareCertificateBeforeUpdatingInDatabase(id, certificate);
@@ -151,6 +154,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public List<GiftCertificateDTO> getCertificates(Map<String, String> params) {
         validator.validateCertificateParams(params);
         List<Specification> specifications = giftCertificateQueryGenerator.generateQueryCriteria(params);
+        long elementsCount = certificateDAO.getCount(specifications);
+        validator.validatePageNumberIsLessThanElementsCount(params, elementsCount);
         List<GiftCertificateDTO> certificates = new ArrayList<>();
         int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
         int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;

@@ -207,13 +207,22 @@ public class Validator {
         validateNonNull(fields, fields.getClass().getName());
         checkOrderFieldsExist(fields);
         validateOrderFieldValues(fields);
+        checkOrderHasUser(fields);
         checkOrderHasCertificates(fields.get(ServiceConstant.CERTIFICATES_ID_FIELD.getValue()));
         validateCertificatesId(fields.get(ServiceConstant.CERTIFICATES_ID_FIELD.getValue()));
+    }
+
+    private void checkOrderHasUser(Map<String, Object> fields) {
+        if (!fields.containsKey(ServiceConstant.USER_ID_PARAM.getValue())) {
+            throw new ValidatorException(ServiceExceptionCode.ORDER_SHOULD_HAVE.getErrorCode(),
+                    ServiceConstant.USER_ID_PARAM.getValue());
+        }
     }
 
     private void validateCertificatesId(Object certificates) {
         List<?> certificatesIdValues = (ArrayList<?>) certificates;
         certificatesIdValues.forEach(certificatesIdValue -> {
+            validateNonNull(certificatesIdValue, "certificate id");
             if (!certificatesIdValue.getClass().equals(Integer.class)) {
                 throw new ValidatorException(
                         ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), "certificatesId");
@@ -227,15 +236,18 @@ public class Validator {
     private void checkOrderFieldsExist(Map<String, Object> fields) {
         fields.keySet().forEach(key -> {
             if (!orderFields.contains(key)) {
-                throw new ValidatorException(ServiceExceptionCode.NON_EXISTING_ORDER_FIELD.getErrorCode());
+                throw new ValidatorException(ServiceExceptionCode.NON_EXISTING_ORDER_FIELD.getErrorCode(), key);
             }
         });
     }
 
     private void validateOrderFieldValues(Map<String, Object> fields) {
         fields.entrySet().forEach(field -> {
+            validateNonNull(field.getKey(), "order parameter");
+            validateNonNull(field.getValue(), field.getKey());
             if (ServiceConstant.USER_ID_PARAM.getValue().equals(field.getKey())) {
                 validateFieldMatchesDataType(Integer.class, field);
+                validateIdIsPositive((Integer) field.getValue());
             } else if (ServiceConstant.CERTIFICATES_ID_FIELD.getValue().equals(field.getKey())) {
                 validateFieldMatchesDataType(ArrayList.class, field);
             }
@@ -321,7 +333,9 @@ public class Validator {
         List<?> tagList = (ArrayList<?>) tagsValue;
         tagList.forEach(tagRecord -> {
             Map<String, Object> tagFields = (Map<String, Object>) tagRecord;
-            tagFields.entrySet().forEach((tagField) -> {
+            tagFields.entrySet().forEach(tagField -> {
+                validateNonNull(tagField.getKey(), "tag parameter");
+                validateNonNull(tagField.getValue(), tagField.getKey());
                 if (!tagFieldNames.contains(tagField.getKey())) {
                     throw new ValidatorException(
                             ServiceExceptionCode.NON_EXISTING_TAG_FIELD_NAME.getErrorCode(), tagField.getKey());
@@ -410,6 +424,16 @@ public class Validator {
             }
         } else {
             throw new ValidatorException(ServiceExceptionCode.DATA_TYPE_DOES_NOT_MATCH_REQUIRED.getErrorCode(), "size");
+        }
+    }
+
+    public void validatePageNumberIsLessThanElementsCount(Map<String, String> params, long elementsCount) {
+        int page = Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue()));
+        int size = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
+        int totalPagesAmount = (int) Math.ceil(elementsCount / (double) size);
+        if (page > totalPagesAmount) {
+            throw new ValidatorException(
+                    ServiceExceptionCode.PAGE_IS_GREATER_THAN_TOTAL_AMOUNT_OF_PAGES.getErrorCode(), "page = " + page);
         }
     }
 }

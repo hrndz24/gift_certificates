@@ -120,6 +120,8 @@ public class OrderServiceImpl implements OrderService {
         int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
         int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
         List<SearchConditionSpecification> specifications = queryGenerator.generateQuery(params);
+        long elementsCount = orderDAO.getCount(specifications);
+        validator.validatePageNumberIsLessThanElementsCount(params, elementsCount);
         orderDAO.getOrders(specifications, limit, offset)
                 .forEach(order -> orders.add(orderMapper.toDTO(order)));
         return orders;
