@@ -1,8 +1,10 @@
 package com.epam.esm.dto;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import java.util.Objects;
 
-public class TagDTO {
+public class TagDTO extends RepresentationModel<TagDTO> {
 
     private int id;
     private String name;
@@ -32,7 +34,7 @@ public class TagDTO {
         if (o == null || getClass() != o.getClass()) return false;
         TagDTO tagDTO = (TagDTO) o;
         return id == tagDTO.id &&
-                name.equals(tagDTO.name);
+                Objects.equals(name, tagDTO.name);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.CertificateTagDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
@@ -18,12 +17,11 @@ import org.mockito.Spy;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -33,8 +31,6 @@ class TagServiceImplTest {
     private TagServiceImpl tagService;
     @Mock
     private TagDAO tagDAO;
-    @Mock
-    private CertificateTagDAO certificateTagDAO;
     @Spy
     private Validator validator = new Validator();
     @Spy
@@ -72,7 +68,6 @@ class TagServiceImplTest {
     void removeTagShouldRemoveTag() {
         doNothing().when(tagDAO).removeTag(3);
         when(tagDAO.getTagById(3)).thenReturn(new Tag());
-        when(certificateTagDAO.isTagAssignedToAnyCertificate(3)).thenReturn(false);
         tagService.removeTag(3);
     }
 
@@ -97,8 +92,8 @@ class TagServiceImplTest {
         List<TagDTO> tagDTOs = new ArrayList<>();
         tagDTOs.add(tagDTO1);
         tagDTOs.add(tagDTO2);
-        when(tagDAO.getTags()).thenReturn(tags);
-        Assertions.assertEquals(tagDTOs, tagService.getTags());
+        when(tagDAO.getTags(10, 0)).thenReturn(tags);
+        Assertions.assertEquals(tagDTOs, tagService.getTags(new HashMap<>()));
     }
 
     @Test

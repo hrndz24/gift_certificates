@@ -8,6 +8,6 @@ dependencies {
     implementation project(":service")
     implementation project(":repository")
 
-    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
-    providedCompile group: 'javax.servlet.jsp', name: 'javax.servlet.jsp-api', version: '2.3.3'
+    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: findProperty("servlet-api.version")
+    providedCompile group: 'javax.servlet.jsp', name: 'javax.servlet.jsp-api', version: findProperty("servlet-jsp-api.version")
 }

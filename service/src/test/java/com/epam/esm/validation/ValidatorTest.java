@@ -66,28 +66,28 @@ class ValidatorTest {
     }
 
     @Test
-    void validateCertificate_NullName() {
+    void validateCertificateWithNullName() {
         validGiftCertificate.setName(null);
         assertThrows(ValidatorException.class,
                 () -> validator.validateCertificate(validGiftCertificate));
     }
 
     @Test
-    void validateCertificate_EmptyDescription() {
+    void validateCertificateWithEmptyDescription() {
         validGiftCertificate.setDescription("");
         assertThrows(ValidatorException.class,
                 () -> validator.validateCertificate(validGiftCertificate));
     }
 
     @Test
-    void validateCertificate_NegativePrice() {
+    void validateCertificateWithNegativePrice() {
         validGiftCertificate.setPrice(new BigDecimal("-12.00"));
         assertThrows(ValidatorException.class,
                 () -> validator.validateCertificate(validGiftCertificate));
     }
 
     @Test
-    void validateCertificate_NegativeDuration() {
+    void validateCertificateWithNegativeDuration() {
         validGiftCertificate.setDuration(-12);
         assertThrows(ValidatorException.class,
                 () -> validator.validateCertificate(validGiftCertificate));
@@ -107,19 +107,19 @@ class ValidatorTest {
 
     @Test
     void validateParams() {
-        validator.validateParams(params);
+        validator.validateCertificateParams(params);
     }
 
     @Test
     void validateParams_NonExistentParam() {
         params.put("nonExistent", "alpha");
-        assertThrows(ValidatorException.class, () -> validator.validateParams(params));
+        assertThrows(ValidatorException.class, () -> validator.validateCertificateParams(params));
     }
 
     @Test
     void validateParams_NonExistentOrderByValue() {
         params.put("orderBy", "alpha");
         assertThrows(ValidatorException.class,
-                () -> validator.validateParams(params));
+                () -> validator.validateCertificateParams(params));
     }
 }

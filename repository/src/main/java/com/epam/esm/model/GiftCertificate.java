@@ -1,21 +1,42 @@
 package com.epam.esm.model;
 
+import org.hibernate.annotations.DynamicUpdate;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@Entity
+@Table(name = "gift_certificate")
+@DynamicUpdate
 public class GiftCertificate implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "description")
     private String description;
+    @Column(name = "price")
     private BigDecimal price;
+    @Column(name = "create_date", updatable = false)
     private Date createDate;
+    @Column(name = "last_update_date")
     private Date lastUpdateDate;
+    @Column(name = "duration")
     private int duration;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "certificate_tag",
+            joinColumns = {@JoinColumn(name = "certificate_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")}
+    )
     private Set<Tag> tags = new HashSet<>();
 
     public GiftCertificate() {
@@ -50,7 +71,7 @@ public class GiftCertificate implements Serializable {
     }
 
     public void setPrice(BigDecimal price) {
-        this.price = price;
+        this.price = price.setScale(2, RoundingMode.HALF_UP);
     }
 
     public Date getCreateDate() {

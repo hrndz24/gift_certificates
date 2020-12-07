@@ -3,6 +3,7 @@ package com.epam.esm.service;
 import com.epam.esm.dto.TagDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TagService {
 
@@ -10,7 +11,11 @@ public interface TagService {
 
     void removeTag(int tagId);
 
-    List<TagDTO> getTags();
+    List<TagDTO> getTags(Map<String, String> params);
 
     TagDTO getTagById(int id);
+
+    long getCount();
+
+    TagDTO getMostUsedTagOfUserWithHighestCostOfOrders();
 }

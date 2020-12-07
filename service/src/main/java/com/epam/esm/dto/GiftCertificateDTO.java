@@ -1,22 +1,25 @@
 package com.epam.esm.dto;
 
+import com.epam.esm.utils.StringConstant;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class GiftCertificateDTO {
+public class GiftCertificateDTO extends RepresentationModel<GiftCertificateDTO> {
 
     private int id;
     private String name;
     private String description;
     private BigDecimal price;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm'Z'")
+    @JsonFormat(pattern = StringConstant.DATE_FORMAT)
     private Date createDate;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm'Z'")
+    @JsonFormat(pattern = StringConstant.DATE_FORMAT)
     private Date lastUpdateDate;
     private int duration;
     private Set<TagDTO> tags = new HashSet<>();
@@ -53,7 +56,7 @@ public class GiftCertificateDTO {
     }
 
     public void setPrice(BigDecimal price) {
-        this.price = price;
+        this.price = price.setScale(2, RoundingMode.HALF_UP);
     }
 
     public Date getCreateDate() {

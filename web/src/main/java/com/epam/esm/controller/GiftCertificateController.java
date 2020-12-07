@@ -1,11 +1,13 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.GiftCertificateDTO;
-import com.epam.esm.dto.TagDTO;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.util.HateoasBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,14 +18,17 @@ import java.util.Map;
  * {@code GiftCertificate} data
  */
 @RestController
-@RequestMapping(value = "/api/v1/certificates", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/certificates", produces = MediaType.APPLICATION_JSON_VALUE)
 public class GiftCertificateController {
 
     private GiftCertificateService certificateService;
+    private HateoasBuilder hateoasBuilder;
 
     @Autowired
-    public GiftCertificateController(GiftCertificateService certificateService) {
+    public GiftCertificateController(GiftCertificateService certificateService,
+                                     HateoasBuilder hateoasBuilder) {
         this.certificateService = certificateService;
+        this.hateoasBuilder = hateoasBuilder;
     }
 
     /**
@@ -45,13 +50,20 @@ public class GiftCertificateController {
      * or creates new one if it doesn't exist.
      * All certificate fields should be passed in the request body.
      *
-     * @param id id of the certificate to update
+     * @param id          id of the certificate to update
      * @param certificate updated certificate information
      */
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public void updateCertificate(@PathVariable int id, @RequestBody GiftCertificateDTO certificate) {
+    public ResponseEntity<Void> updateCertificate(@PathVariable("id") int id, @RequestBody GiftCertificateDTO certificate) {
         certificateService.updateCertificate(id, certificate);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateCertificateFields(@PathVariable("id") int id, @RequestBody Map<String, Object> fields) {
+        certificateService.updateCertificateField(id, fields);
     }
 
     /**
@@ -61,8 +73,9 @@ public class GiftCertificateController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCertificate(@PathVariable("id") int id) {
+    public ResponseEntity<Void> deleteCertificate(@PathVariable("id") int id) {
         certificateService.removeCertificate(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -76,8 +89,10 @@ public class GiftCertificateController {
      * @return list of certificates that match requirements of the parameters
      */
     @GetMapping
-    public List<GiftCertificateDTO> getCertificates(@RequestParam Map<String, String> params) {
-        return certificateService.getCertificates(params);
+    public RepresentationModel<?> getCertificates(@RequestParam Map<String, String> params) {
+        List<GiftCertificateDTO> certificates = certificateService.getCertificates(params);
+        long certificatesCount = certificateService.getCount(params);
+        return hateoasBuilder.addLinksForListOfCertificateDTOs(certificates, params, certificatesCount);
     }
 
     /**
@@ -88,35 +103,7 @@ public class GiftCertificateController {
      */
     @GetMapping("/{id}")
     public GiftCertificateDTO getCertificateById(@PathVariable("id") int id) {
-        return certificateService.getCertificateById(id);
-    }
-
-    /**
-     * Adds a tag to certificate with the specified id.
-     * If a tag doesn't exist it will be creates and
-     * added to the database.
-     *
-     * @param id if of the modified certificate
-     * @param tag tag to add to the certificate
-     * @return modified GiftCertificate
-     */
-    @PostMapping(value = "/{id}/tags", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public GiftCertificateDTO addTagToCertificate(@PathVariable("id") int id, @RequestBody TagDTO tag) {
-        certificateService.addTagToCertificate(id, tag);
-        return certificateService.getCertificateById(id);
-    }
-
-    /**
-     * Removes tag with requested id from certificate with specified id.
-     *
-     * @param certificateId id of the certificate to remove tag from
-     * @param tagId id of the tag to be removed
-     */
-    @DeleteMapping("/{certificateId}/tags/{tagId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTagFromCertificate(@PathVariable("certificateId") int certificateId,
-                                         @PathVariable("tagId") int tagId) {
-        certificateService.removeTagFromCertificate(certificateId, tagId);
+        GiftCertificateDTO certificate = certificateService.getCertificateById(id);
+        return hateoasBuilder.addLinksForCertificateDTO(certificate);
     }
 }

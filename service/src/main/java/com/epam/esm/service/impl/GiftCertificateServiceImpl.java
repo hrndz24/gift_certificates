@@ -1,65 +1,80 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.CertificateTagDAO;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ServiceExceptionCode;
-import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.GiftCertificateMapper;
-import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.model.Tag;
 import com.epam.esm.service.GiftCertificateService;
-import com.epam.esm.utils.QueryGenerator;
+import com.epam.esm.specification.Specification;
+import com.epam.esm.utils.GiftCertificateQueryGenerator;
+import com.epam.esm.utils.ServiceConstant;
 import com.epam.esm.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
+@Transactional
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private GiftCertificateDAO certificateDAO;
     private TagDAO tagDAO;
-    private CertificateTagDAO certificateTagDAO;
     private Validator validator;
-    private QueryGenerator queryGenerator;
+    private GiftCertificateQueryGenerator giftCertificateQueryGenerator;
     private GiftCertificateMapper certificateMapper;
-    private TagMapper tagMapper;
+
+    private static final String NAME_FIELD = "name";
+    private static final String DESCRIPTION_FIELD = "description";
+    private static final String TAGS_FIELD = "tags";
+    private static final String DURATION_FIELD = "duration";
+    private static final String PRICE_FIELD = "price";
 
     @Autowired
     public GiftCertificateServiceImpl(GiftCertificateDAO certificateDAO,
                                       TagDAO tagDAO,
-                                      CertificateTagDAO certificateTagDAO,
                                       Validator validator,
-                                      QueryGenerator queryGenerator,
-                                      GiftCertificateMapper certificateMapper,
-                                      TagMapper tagMapper) {
+                                      GiftCertificateQueryGenerator giftCertificateQueryGenerator,
+                                      GiftCertificateMapper certificateMapper) {
         this.certificateDAO = certificateDAO;
         this.tagDAO = tagDAO;
-        this.certificateTagDAO = certificateTagDAO;
         this.validator = validator;
-        this.queryGenerator = queryGenerator;
+        this.giftCertificateQueryGenerator = giftCertificateQueryGenerator;
         this.certificateMapper = certificateMapper;
-        this.tagMapper = tagMapper;
     }
 
     @Override
-    @Transactional
     public GiftCertificateDTO addCertificate(GiftCertificateDTO certificateDTO) {
         return addNewCertificateToDatabase(certificateDTO);
     }
 
     private GiftCertificateDTO addNewCertificateToDatabase(GiftCertificateDTO certificateDTO) {
         prepareCertificateBeforeAddingToDatabase(certificateDTO);
-        GiftCertificateDTO addedCertificateDTO = certificateMapper.toDTO(
-                certificateDAO.addCertificate(certificateMapper.toModel(certificateDTO)));
-        addCertificateTags(certificateDTO.getTags(), addedCertificateDTO.getId());
-        return addedCertificateDTO;
+        validateTags(certificateDTO.getTags());
+        return certificateMapper.toDTO(certificateDAO.addCertificate(certificateMapper.toModel(certificateDTO)));
+    }
+
+    private void validateTags(Set<TagDTO> tags) {
+        tags.forEach(tag -> {
+            validator.validateTag(tag);
+            Tag tagReturned = tagDAO.getTagByName(tag.getName());
+            if (tagReturned != null) {
+                tag.setId(tagReturned.getId());
+            } else {
+                withdrawIdIfSet(tag);
+            }
+        });
+    }
+
+    private void withdrawIdIfSet(TagDTO tag) {
+        tag.setId(0);
     }
 
     private void prepareCertificateBeforeAddingToDatabase(GiftCertificateDTO certificateDTO) {
@@ -68,73 +83,95 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         validator.validateCertificate(certificateDTO);
     }
 
-    private void addCertificateTags(Set<TagDTO> tags, int certificateId) {
-        tags.forEach(tag -> addTagToCertificateIfExists(certificateId, tag));
-    }
-
-    private void addTagToCertificateIfExists(int certificateId, TagDTO tag) {
-        int tagId = tag.getId();
-        if (!isTagExistent(tag.getId())) {
-            tagId = tagMapper.toDTO(tagDAO.addTag(tagMapper.toModel(tag))).getId();
-        }
-        checkTagIsNotAssignedToCertificate(certificateId, tagId);
-        certificateTagDAO.addTagToCertificate(certificateId, tagId);
-    }
-
-    private boolean isTagExistent(int tagId) {
-        return tagDAO.getTagById(tagId) != null;
-    }
-
-    private void checkTagIsNotAssignedToCertificate(int certificateId, int tagId) {
-        if (certificateTagDAO.isTagAssignedToCertificate(certificateId, tagId)) {
-            throw new ValidatorException(
-                    ServiceExceptionCode.TAG_IS_ALREADY_ASSIGNED_TO_CERTIFICATE.getErrorCode(), "tag id = " + tagId);
-        }
-    }
-
     @Override
     public void removeCertificate(int certificateId) {
-        validator.checkIdIsPositive(certificateId);
+        validator.validateIdIsPositive(certificateId);
         getCertificateIfExists(certificateId);
         certificateDAO.removeCertificate(certificateId);
     }
 
     @Override
-    @Transactional
     public void updateCertificate(int id, GiftCertificateDTO certificateDTO) {
-        validator.checkIdIsPositive(id);
-        if (!isCertificateExistent(id)) {
-            throw new EntityNotFoundException(
-                    ServiceExceptionCode.NON_EXISTING_CERTIFICATE_ID.getErrorCode(), String.valueOf(id));
-        } else {
-            prepareCertificateBeforeUpdatingInDatabase(id, certificateDTO);
-            certificateDAO.updateCertificate(certificateMapper.toModel(certificateDTO));
-        }
+        validator.validateIdIsPositive(id);
+        getCertificateIfExists(id);
+        validator.validateCertificate(certificateDTO);
+        prepareCertificateBeforeUpdatingInDatabase(id, certificateDTO);
+        validateTags(certificateDTO.getTags());
+        certificateDAO.updateCertificate(certificateMapper.toModel(certificateDTO));
+    }
+
+    @Override
+    public void updateCertificateField(int id, Map<String, Object> fields) {
+        validator.validateIdIsPositive(id);
+        getCertificateIfExists(id);
+        validator.validateCertificateUpdateField(fields);
+        GiftCertificateDTO certificate = certificateMapper.toDTO(getCertificateIfExists(id));
+        prepareCertificateBeforeUpdatingInDatabase(id, certificate);
+        setUpdatedField(certificate, fields);
+        certificateDAO.updateCertificate(certificateMapper.toModel(certificate));
+    }
+
+    private void setUpdatedField(GiftCertificateDTO certificate, Map<String, Object> fields) {
+        fields.forEach((key, value) -> {
+            switch (key) {
+                case NAME_FIELD:
+                    certificate.setName((String) value);
+                    break;
+                case DESCRIPTION_FIELD:
+                    certificate.setDescription((String) value);
+                    break;
+                case PRICE_FIELD:
+                    certificate.setPrice(BigDecimal.valueOf((Double) value));
+                    break;
+                case DURATION_FIELD:
+                    certificate.setDuration((Integer) value);
+                    break;
+                case TAGS_FIELD:
+                    @SuppressWarnings("unchecked cast")
+                    List<Map<String, Object>> tags = (ArrayList<Map<String, Object>>) value;
+                    Set<TagDTO> tagSet = new HashSet<>();
+                    tags.forEach(tagRecord -> {
+                        TagDTO tag = new TagDTO();
+                        if (tagRecord.get(ServiceConstant.ID_FIELD.getValue()) != null) {
+                            tag.setId((Integer) tagRecord.get(ServiceConstant.ID_FIELD.getValue()));
+                        }
+                        tag.setName((String) tagRecord.get(ServiceConstant.NAME_FIELD.getValue()));
+                        tagSet.add(tag);
+                    });
+                    validateTags(tagSet);
+                    certificate.setTags(tagSet);
+                    break;
+            }
+        });
     }
 
     private void prepareCertificateBeforeUpdatingInDatabase(int id, GiftCertificateDTO certificateDTO) {
         certificateDTO.setLastUpdateDate(new Date());
         certificateDTO.setId(id);
-        validator.validateCertificate(certificateDTO);
-    }
-
-    private boolean isCertificateExistent(int id) {
-        return certificateDAO.getCertificateById(id) != null;
     }
 
     @Override
     public List<GiftCertificateDTO> getCertificates(Map<String, String> params) {
-        validator.validateParams(params);
-        String query = queryGenerator.generateQuery(params);
+        validator.validateCertificateParams(params);
+        List<Specification> specifications = giftCertificateQueryGenerator.generateQueryCriteria(params);
+        long elementsCount = certificateDAO.getCount(specifications);
+        validator.validatePageNumberIsLessThanElementsCount(params, elementsCount);
         List<GiftCertificateDTO> certificates = new ArrayList<>();
-        certificateDAO.getCertificates(query).forEach(giftCertificate ->
+        int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
+        int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
+        certificateDAO.getCertificates(specifications, limit, offset).forEach(giftCertificate ->
                 certificates.add(certificateMapper.toDTO(giftCertificate)));
         return certificates;
     }
 
     @Override
+    public long getCount(Map<String, String> params) {
+        return certificateDAO.getCount(giftCertificateQueryGenerator.generateQueryCriteria(params));
+    }
+
+    @Override
     public GiftCertificateDTO getCertificateById(int id) {
-        validator.checkIdIsPositive(id);
+        validator.validateIdIsPositive(id);
         return certificateMapper.toDTO(getCertificateIfExists(id));
     }
 
@@ -145,35 +182,5 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                     ServiceExceptionCode.NON_EXISTING_CERTIFICATE_ID.getErrorCode(), String.valueOf(id));
         }
         return certificate;
-    }
-
-    @Override
-    public void addTagToCertificate(int certificateId, TagDTO tag) {
-        validator.checkIdIsPositive(certificateId);
-        getCertificateIfExists(certificateId);
-        addTagToCertificateIfExists(certificateId, tag);
-    }
-
-    @Override
-    public void removeTagFromCertificate(int certificateId, int tagId) {
-        validator.checkIdIsPositive(certificateId);
-        validator.checkIdIsPositive(tagId);
-        getCertificateIfExists(certificateId);
-        checkTagExists(tagId);
-        checkTagIsAssignedToCertificate(certificateId, tagId);
-        certificateTagDAO.removeTagFromCertificate(certificateId, tagId);
-    }
-
-    private void checkTagExists(int tagId) {
-        if (!isTagExistent(tagId))
-            throw new EntityNotFoundException(
-                    ServiceExceptionCode.NON_EXISTING_TAG_ID.getErrorCode(), String.valueOf(tagId));
-    }
-
-    private void checkTagIsAssignedToCertificate(int certificateId, int tagId) {
-        if (!certificateTagDAO.isTagAssignedToCertificate(certificateId, tagId)) {
-            throw new ValidatorException(
-                    ServiceExceptionCode.TAG_IS_NOT_ASSIGNED_TO_CERTIFICATE.getErrorCode(), "tag id = " + tagId);
-        }
     }
 }
