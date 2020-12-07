@@ -11,4 +11,6 @@ public interface UserDAO {
     User getUserById(int id);
 
     long getCount();
+
+    User getUserByEmail(String email);
 }

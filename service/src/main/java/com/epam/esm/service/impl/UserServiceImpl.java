@@ -52,6 +52,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO getUserByEmail(String email) {
+        //todo validate
+        return userMapper.toDTO(userDAO.getUserByEmail(email));
+    }
+
+    @Override
     public UserDTO getUserById(int id) {
         validator.validateIdIsPositive(id);
         return userMapper.toDTO(getUserByIdIfExists(id));

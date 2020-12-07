@@ -12,4 +12,6 @@ public interface UserService {
     UserDTO getUserById(int id);
 
     long getCount();
+
+    UserDTO getUserByEmail(String email);
 }
