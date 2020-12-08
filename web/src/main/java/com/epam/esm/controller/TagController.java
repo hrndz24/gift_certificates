@@ -8,6 +8,7 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class TagController {
      * @return list of TagDTOs corresponding to tags in the database
      */
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public RepresentationModel<?> getAllTags(@RequestParam Map<String, String> params) {
         List<TagDTO> tags = tagService.getTags(params);
         long tagsCount = tagService.getCount();
@@ -52,6 +54,7 @@ public class TagController {
      * @return TagDTO with the requested id
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public TagDTO getTagById(@PathVariable("id") int id) {
         TagDTO tagDTO = tagService.getTagById(id);
         return hateoasBuilder.addLinksForTagDTO(tagDTO);

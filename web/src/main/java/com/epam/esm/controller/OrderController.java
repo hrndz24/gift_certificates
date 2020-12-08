@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class OrderController {
     /**
      * Creates a new Order in the database.
      *
-     * @param order order to be created
+     * @param fields order fields to create an order from
      * @return OrderDTO corresponding to Order that was created
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -50,6 +51,7 @@ public class OrderController {
      * @return list of OrderDTOs corresponding to orders in the database
      */
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMINISTRATOR') or (hasAuthority('USER') and params.get('userId').equals(authentication.principal.id))")
     public RepresentationModel<?> getAllOrders(@RequestParam Map<String, String> params) {
         List<OrderDTO> orders = orderService.getOrders(params);
         long ordersCount = orderService.getCount(params);

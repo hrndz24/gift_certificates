@@ -8,6 +8,7 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -89,6 +90,7 @@ public class GiftCertificateController {
      * @return list of certificates that match requirements of the parameters
      */
     @GetMapping
+    @PreAuthorize("permitAll()")
     public RepresentationModel<?> getCertificates(@RequestParam Map<String, String> params) {
         List<GiftCertificateDTO> certificates = certificateService.getCertificates(params);
         long certificatesCount = certificateService.getCount(params);
@@ -102,6 +104,7 @@ public class GiftCertificateController {
      * @return GiftCertificateDTO with the requested id
      */
     @GetMapping("/{id}")
+    @PreAuthorize("permitAll()")
     public GiftCertificateDTO getCertificateById(@PathVariable("id") int id) {
         GiftCertificateDTO certificate = certificateService.getCertificateById(id);
         return hateoasBuilder.addLinksForCertificateDTO(certificate);

@@ -6,17 +6,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class JwtUser implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
     private int id;
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    public JwtUser(int id,
-                   String email,
-                   String password,
-                   Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(int id,
+                           String email,
+                           String password,
+                           Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.password = password;

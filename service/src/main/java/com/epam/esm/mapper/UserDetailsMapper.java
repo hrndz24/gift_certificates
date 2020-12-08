@@ -1,20 +1,20 @@
-package com.epam.esm.jwt;
+package com.epam.esm.mapper;
 
 import com.epam.esm.dto.UserDTO;
+import com.epam.esm.jwt.UserDetailsImpl;
 import com.epam.esm.model.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public final class JwtUserFactory {
+@Component
+public class UserDetailsMapper {
 
-    public JwtUserFactory() {
-    }
-
-    public static JwtUser create(UserDTO user) {
-        return new JwtUser(
+    public UserDetailsImpl toUserDetails(UserDTO user) {
+        return new UserDetailsImpl(
                 user.getId(),
                 user.getEmail(),
                 user.getPassword(),
@@ -22,7 +22,7 @@ public final class JwtUserFactory {
         );
     }
 
-    private static List<GrantedAuthority> mapToGrantedAuthorities(UserRole userRole) {
+    private List<GrantedAuthority> mapToGrantedAuthorities(UserRole userRole) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(userRole.name()));
         return authorities;
