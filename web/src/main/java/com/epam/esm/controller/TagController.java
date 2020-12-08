@@ -39,7 +39,7 @@ public class TagController {
      * @return list of TagDTOs corresponding to tags in the database
      */
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
+    @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('USER')")
     public RepresentationModel<?> getAllTags(@RequestParam Map<String, String> params) {
         List<TagDTO> tags = tagService.getTags(params);
         long tagsCount = tagService.getCount();
@@ -54,7 +54,7 @@ public class TagController {
      * @return TagDTO with the requested id
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
+    @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('USER')")
     public TagDTO getTagById(@PathVariable("id") int id) {
         TagDTO tagDTO = tagService.getTagById(id);
         return hateoasBuilder.addLinksForTagDTO(tagDTO);
@@ -68,6 +68,7 @@ public class TagController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public TagDTO createTag(@RequestBody TagDTO tag) {
         return tagService.addTag(tag);
     }
@@ -79,6 +80,7 @@ public class TagController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public ResponseEntity<Void> deleteTag(@PathVariable("id") int id) {
         tagService.removeTag(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -92,6 +94,7 @@ public class TagController {
      * the highest cost of all orders
      */
     @GetMapping("/most-used")
+    @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('USER')")
     public TagDTO getMostUsedTagOfUserWithHighestCostOfOrders() {
         return tagService.getMostUsedTagOfUserWithHighestCostOfOrders();
     }

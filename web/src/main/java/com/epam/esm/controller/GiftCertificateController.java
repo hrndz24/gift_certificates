@@ -42,6 +42,7 @@ public class GiftCertificateController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public GiftCertificateDTO createCertificate(@RequestBody GiftCertificateDTO certificate) {
         return certificateService.addCertificate(certificate);
     }
@@ -56,6 +57,7 @@ public class GiftCertificateController {
      */
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public ResponseEntity<Void> updateCertificate(@PathVariable("id") int id, @RequestBody GiftCertificateDTO certificate) {
         certificateService.updateCertificate(id, certificate);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -63,6 +65,7 @@ public class GiftCertificateController {
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public void updateCertificateFields(@PathVariable("id") int id, @RequestBody Map<String, Object> fields) {
         certificateService.updateCertificateField(id, fields);
     }
@@ -74,6 +77,7 @@ public class GiftCertificateController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public ResponseEntity<Void> deleteCertificate(@PathVariable("id") int id) {
         certificateService.removeCertificate(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

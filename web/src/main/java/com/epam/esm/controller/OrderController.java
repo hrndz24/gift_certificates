@@ -39,6 +39,7 @@ public class OrderController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public OrderDTO createOrder(@RequestBody Map<String, Object> fields) {
         return orderService.addOrder(fields);
     }
@@ -66,6 +67,7 @@ public class OrderController {
      * @return OrderDTO with the requested id
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('USER')")
     public OrderDTO getOrderById(@PathVariable("id") int id) {
         OrderDTO orderDTO = orderService.getOrderById(id);
         return hateoasBuilder.addLinksForOrderDTO(orderDTO);
