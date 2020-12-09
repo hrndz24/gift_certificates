@@ -42,7 +42,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
     @Override
     public TokenDTO signUp(UserDTO userDTO) {
-        return null;
+        UserDTO addedUser = userService.addUser(userDTO);
+        String token = jwtTokenProvider.createToken(addedUser);
+        return new TokenDTO(addedUser.getEmail(), token);
     }
 
     @Override

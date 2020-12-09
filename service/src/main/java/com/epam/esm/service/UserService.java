@@ -7,6 +7,8 @@ import java.util.Map;
 
 public interface UserService {
 
+    UserDTO addUser(UserDTO userDTO);
+
     List<UserDTO> getUsers(Map<String, String> params);
 
     UserDTO getUserById(int id);

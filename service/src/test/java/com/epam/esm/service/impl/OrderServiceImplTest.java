@@ -29,7 +29,8 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 class OrderServiceImplTest {
@@ -113,6 +114,7 @@ class OrderServiceImplTest {
         orders.add(order);
         when(orderDAO.getOrders(queryGenerator.generateQuery(
                 new HashMap<>()), 10, 0)).thenReturn(orders);
+        doNothing().when(validator).validatePageNumberIsLessThanElementsCount(anyMap(), anyLong());
         assertEquals(3, orderService.getOrders(new HashMap<>()).size());
     }
 
