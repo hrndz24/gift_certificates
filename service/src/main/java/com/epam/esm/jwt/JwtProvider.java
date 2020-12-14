@@ -1,7 +1,6 @@
 package com.epam.esm.jwt;
 
 import com.epam.esm.dto.UserDTO;
-import com.epam.esm.exception.JwtAuthenticationException;
 import com.epam.esm.mapper.UserDetailsMapper;
 import com.epam.esm.service.UserService;
 import com.epam.esm.utils.ServiceConstant;
@@ -79,7 +78,7 @@ public class JwtProvider {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtAuthenticationException();
+            return false;
         }
     }
 }

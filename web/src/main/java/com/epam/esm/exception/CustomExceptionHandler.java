@@ -98,14 +98,6 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(JwtAuthenticationException.class)
-    public ResponseEntity<ExceptionResponse> handleJwtAuthenticationException(JwtAuthenticationException e, Locale locale) {
-        String errorMessage = messageSource.getMessage(
-                "50107", new Object[]{}, locale);
-        ExceptionResponse response = new ExceptionResponse("50107", errorMessage);
-        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
-    }
-
     private String buildErrorMessage(String localizedMessage, String parameter) {
         return parameter == null ? localizedMessage : localizedMessage + " " + parameter;
     }

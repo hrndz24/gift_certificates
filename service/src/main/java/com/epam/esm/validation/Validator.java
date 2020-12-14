@@ -452,7 +452,7 @@ public class Validator {
     }
 
     private void validateEmailMatchesPattern(String email) {
-        Pattern pattern = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+        Pattern pattern = Pattern.compile(ServiceConstant.EMAIL_REGEX.getValue());
         Matcher matcher = pattern.matcher(email);
         if (!matcher.matches()) {
             throw new ValidatorException(ServiceExceptionCode.EMAIL_NOT_VALID.getErrorCode(), email);
@@ -460,10 +460,10 @@ public class Validator {
     }
 
     private void validatePasswordMatchesPattern(String password) {
-        Pattern pattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$");
+        Pattern pattern = Pattern.compile(ServiceConstant.PASSWORD_REGEX.getValue());
         Matcher matcher = pattern.matcher(password);
         if (!matcher.matches()) {
-            throw new ValidatorException(ServiceExceptionCode.WEEK_PASSWORD.getErrorCode(), password);
+            throw new ValidatorException(ServiceExceptionCode.WEAK_PASSWORD.getErrorCode(), password);
         }
     }
 }

@@ -20,7 +20,10 @@ public enum ServiceConstant {
     TAGS_TO_SEARCH_BY_SEPARATOR(Constant.TAGS_TO_SEARCH_BY_SEPARATOR),
     ROLE(Constant.ROLE),
     AUTHORIZATION_HEADER(Constant.AUTHORIZATION_HEADER),
-    BEARER(Constant.BEARER);
+    BEARER(Constant.BEARER),
+
+    EMAIL_REGEX(Constant.EMAIL_REGEX),
+    PASSWORD_REGEX(Constant.PASSWORD_REGEX);
 
     private final String value;
 
@@ -63,5 +66,8 @@ public enum ServiceConstant {
         private static final String ROLE = "role";
         private static final String AUTHORIZATION_HEADER = "Authorization";
         private static final String BEARER = "Bearer_";
+
+        private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@(.+)$";
+        private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$";
     }
 }
