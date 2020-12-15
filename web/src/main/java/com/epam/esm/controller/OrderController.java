@@ -1,15 +1,16 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.OrderDTO;
+import com.epam.esm.dto.OrdersDTO;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.util.HateoasBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,11 +34,12 @@ public class OrderController {
     /**
      * Creates a new Order in the database.
      *
-     * @param order order to be created
+     * @param fields order fields to create an order from
      * @return OrderDTO corresponding to Order that was created
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('USER')")
     public OrderDTO createOrder(@RequestBody Map<String, Object> fields) {
         return orderService.addOrder(fields);
     }
@@ -50,8 +52,9 @@ public class OrderController {
      * @return list of OrderDTOs corresponding to orders in the database
      */
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMINISTRATOR') or (hasAuthority('USER') and params.get('userId').equals(authentication.principal.id))")
     public RepresentationModel<?> getAllOrders(@RequestParam Map<String, String> params) {
-        List<OrderDTO> orders = orderService.getOrders(params);
+        OrdersDTO orders = orderService.getOrders(params);
         long ordersCount = orderService.getCount(params);
         return hateoasBuilder.addLinksForListOfOrderDTOs(orders, params, ordersCount);
     }
@@ -64,6 +67,7 @@ public class OrderController {
      * @return OrderDTO with the requested id
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('USER')")
     public OrderDTO getOrderById(@PathVariable("id") int id) {
         OrderDTO orderDTO = orderService.getOrderById(id);
         return hateoasBuilder.addLinksForOrderDTO(orderDTO);

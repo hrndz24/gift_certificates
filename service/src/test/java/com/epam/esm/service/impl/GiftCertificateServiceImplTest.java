@@ -93,7 +93,8 @@ class GiftCertificateServiceImplTest {
         certificates.add(certificate);
         when(certificateDAO.getCertificates(giftCertificateQueryGenerator.generateQueryCriteria
                 (new HashMap<>()), 10, 0)).thenReturn(certificates);
-        assertEquals(3, certificateService.getCertificates(anyMap()).size());
+        doNothing().when(validator).validatePageNumberIsLessThanElementsCount(anyMap(), anyLong());
+        assertEquals(3, certificateService.getCertificates(anyMap()).getCertificates().size());
     }
 
     @Test

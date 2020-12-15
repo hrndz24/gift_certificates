@@ -15,6 +15,11 @@ public class User implements Serializable {
     private String email;
     @Column(name = "password")
     private String password;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(columnDefinition = "int", name = "role_id")
+    @JoinTable(name = "user_role",
+            joinColumns = {@JoinColumn(name = "id")})
+    private UserRole userRole;
 
     public User() {
     }
@@ -43,6 +48,14 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -50,7 +63,8 @@ public class User implements Serializable {
         User user = (User) o;
         return id == user.id &&
                 Objects.equals(email, user.email) &&
-                Objects.equals(password, user.password);
+                Objects.equals(password, user.password) &&
+                userRole == user.userRole;
     }
 
     @Override

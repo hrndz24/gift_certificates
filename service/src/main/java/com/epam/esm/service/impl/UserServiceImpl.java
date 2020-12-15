@@ -2,14 +2,17 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.UserDAO;
 import com.epam.esm.dto.UserDTO;
+import com.epam.esm.dto.UsersDTO;
 import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.UserMapper;
 import com.epam.esm.model.User;
+import com.epam.esm.model.UserRole;
 import com.epam.esm.service.UserService;
 import com.epam.esm.utils.ServiceConstant;
 import com.epam.esm.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,18 +27,37 @@ public class UserServiceImpl implements UserService {
     private UserDAO userDAO;
     private UserMapper userMapper;
     private Validator validator;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(UserDAO userDAO,
                            UserMapper userMapper,
-                           Validator validator) {
+                           Validator validator,
+                           BCryptPasswordEncoder passwordEncoder) {
         this.userDAO = userDAO;
         this.userMapper = userMapper;
         this.validator = validator;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public List<UserDTO> getUsers(Map<String, String> params) {
+    public UserDTO addUser(UserDTO userDTO) {
+        validator.validateUser(userDTO);
+        checkEmailIsUnique(userDTO.getEmail());
+        userDTO.setUserRole(UserRole.USER);
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        return userMapper.toDTO(userDAO.addUser(userMapper.toModel(userDTO)));
+    }
+
+    private void checkEmailIsUnique(String email) {
+        User user = userDAO.getUserByEmail(email);
+        if (user != null) {
+            throw new ValidatorException(ServiceExceptionCode.ACCOUNT_WITH_EMAIL_EXISTS.getErrorCode(), email);
+        }
+    }
+
+    @Override
+    public UsersDTO getUsers(Map<String, String> params) {
         List<UserDTO> userDTOS = new ArrayList<>();
         validator.validateUserParams(params);
         int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
@@ -43,12 +65,18 @@ public class UserServiceImpl implements UserService {
         long elementsCount = userDAO.getCount();
         validator.validatePageNumberIsLessThanElementsCount(params, elementsCount);
         userDAO.getUsers(limit, offset).forEach(user -> userDTOS.add(userMapper.toDTO(user)));
-        return userDTOS;
+        return new UsersDTO(userDTOS);
     }
 
     @Override
     public long getCount() {
         return userDAO.getCount();
+    }
+
+    @Override
+    public UserDTO getUserByEmail(String email) {
+        validator.validateEmail(email);
+        return userMapper.toDTO(userDAO.getUserByEmail(email));
     }
 
     @Override

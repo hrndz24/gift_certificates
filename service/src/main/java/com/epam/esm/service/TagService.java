@@ -1,8 +1,8 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.dto.TagsDTO;
 
-import java.util.List;
 import java.util.Map;
 
 public interface TagService {
@@ -11,7 +11,7 @@ public interface TagService {
 
     void removeTag(int tagId);
 
-    List<TagDTO> getTags(Map<String, String> params);
+    TagsDTO getTags(Map<String, String> params);
 
     TagDTO getTagById(int id);
 

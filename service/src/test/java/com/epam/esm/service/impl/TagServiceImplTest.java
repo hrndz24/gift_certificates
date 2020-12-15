@@ -22,6 +22,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -93,7 +95,8 @@ class TagServiceImplTest {
         tagDTOs.add(tagDTO1);
         tagDTOs.add(tagDTO2);
         when(tagDAO.getTags(10, 0)).thenReturn(tags);
-        Assertions.assertEquals(tagDTOs, tagService.getTags(new HashMap<>()));
+        doNothing().when(validator).validatePageNumberIsLessThanElementsCount(anyMap(), anyLong());
+        Assertions.assertEquals(tagDTOs, tagService.getTags(new HashMap<>()).getTags());
     }
 
     @Test

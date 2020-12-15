@@ -3,6 +3,7 @@ package com.epam.esm.validation;
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.OrderDTO;
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.dto.UserDTO;
 import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.utils.ServiceConstant;
@@ -12,6 +13,8 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class Validator {
@@ -434,6 +437,33 @@ public class Validator {
         if (page > totalPagesAmount) {
             throw new ValidatorException(
                     ServiceExceptionCode.PAGE_IS_GREATER_THAN_TOTAL_AMOUNT_OF_PAGES.getErrorCode(), "page = " + page);
+        }
+    }
+
+    public void validateUser(UserDTO user) {
+        validateNonNull(user, UserDTO.class.getName());
+        validateEmail(user.getEmail());
+        validatePasswordMatchesPattern(user.getPassword());
+    }
+
+    public void validateEmail(String email) {
+        validateStringField(email, "email");
+        validateEmailMatchesPattern(email);
+    }
+
+    private void validateEmailMatchesPattern(String email) {
+        Pattern pattern = Pattern.compile(ServiceConstant.EMAIL_REGEX.getValue());
+        Matcher matcher = pattern.matcher(email);
+        if (!matcher.matches()) {
+            throw new ValidatorException(ServiceExceptionCode.EMAIL_NOT_VALID.getErrorCode(), email);
+        }
+    }
+
+    private void validatePasswordMatchesPattern(String password) {
+        Pattern pattern = Pattern.compile(ServiceConstant.PASSWORD_REGEX.getValue());
+        Matcher matcher = pattern.matcher(password);
+        if (!matcher.matches()) {
+            throw new ValidatorException(ServiceExceptionCode.WEAK_PASSWORD.getErrorCode(), password);
         }
     }
 }

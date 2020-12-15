@@ -13,10 +13,14 @@ allprojects {
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: findProperty("spring-boot.version")
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: findProperty("spring-boot.version")
         implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: findProperty("spring-boot.version")
+        implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: findProperty("spring-boot.version")
 
         implementation group: 'org.modelmapper', name: 'modelmapper', version: findProperty("model-mapper.version")
         implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: findProperty("jackson.version")
         implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: findProperty("jackson.version")
+        implementation "com.auth0:java-jwt:3.10.3"
+        implementation "io.jsonwebtoken:jjwt:0.9.1"
+        implementation "org.springframework.security:spring-security-jwt:1.1.1.RELEASE"
 
         testImplementation(platform(group: 'org.junit', name: 'junit-bom', version: findProperty("junit-bom.version")))
         testImplementation('org.junit.jupiter:junit-jupiter')

@@ -3,36 +3,27 @@ package com.epam.esm.utils;
 public enum ServiceConstant {
 
     ORDER_BY_PARAM(Constant.ORDER_BY_PARAM),
-
     TAG_NAME_PARAM(Constant.TAG_NAME_PARAM),
-
     CERTIFICATE_NAME_PARAM(Constant.CERTIFICATE_NAME_PARAM),
-
     CERTIFICATE_DESCRIPTION_PARAM(Constant.CERTIFICATE_DESCRIPTION_PARAM),
-
     USER_ID_PARAM(Constant.USER_ID_PARAM),
-
     PAGE_PARAM(Constant.PAGE_PARAM), SIZE_PARAM(Constant.SIZE_PARAM),
-
     ID_FIELD(Constant.ID_FIELD), NAME_FIELD(Constant.NAME_FIELD),
-
     DESCRIPTION_FIELD(Constant.DESCRIPTION_FIELD),
-
     TAGS_FIELD(Constant.TAGS_FIELD), CREATED_DATE_FIELD(Constant.CREATED_DATE_FIELD),
-
     CERTIFICATES_ID_FIELD(Constant.CERTIFICATES_ID_FIELD),
-
     DURATION_FIELD(Constant.DURATION_FIELD), PRICE_FIELD(Constant.PRICE_FIELD),
-
     SORT_BY_NAME_ASC(Constant.SORT_BY_NAME_ASC),
-
     SORT_BY_NAME_DESC(Constant.SORT_BY_NAME_DESC),
-
     SORT_BY_DATE_ASC(Constant.SORT_BY_DATE_ASC),
-
     SORT_BY_DATE_DESC(Constant.SORT_BY_DATE_DESC),
+    TAGS_TO_SEARCH_BY_SEPARATOR(Constant.TAGS_TO_SEARCH_BY_SEPARATOR),
+    ROLE(Constant.ROLE),
+    AUTHORIZATION_HEADER(Constant.AUTHORIZATION_HEADER),
+    BEARER(Constant.BEARER),
 
-    TAGS_TO_SEARCH_BY_SEPARATOR(Constant.TAGS_TO_SEARCH_BY_SEPARATOR);
+    EMAIL_REGEX(Constant.EMAIL_REGEX),
+    PASSWORD_REGEX(Constant.PASSWORD_REGEX);
 
     private final String value;
 
@@ -71,5 +62,12 @@ public enum ServiceConstant {
         private static final String SORT_BY_DATE_DESC = "-date";
 
         private static final String TAGS_TO_SEARCH_BY_SEPARATOR = ", ";
+
+        private static final String ROLE = "role";
+        private static final String AUTHORIZATION_HEADER = "Authorization";
+        private static final String BEARER = "Bearer_";
+
+        private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@(.+)$";
+        private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$";
     }
 }

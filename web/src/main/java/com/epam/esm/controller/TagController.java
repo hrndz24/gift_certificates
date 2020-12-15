@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.dto.TagsDTO;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.HateoasBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,9 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,8 +39,9 @@ public class TagController {
      * @return list of TagDTOs corresponding to tags in the database
      */
     @GetMapping
+    @PreAuthorize("permitAll()")
     public RepresentationModel<?> getAllTags(@RequestParam Map<String, String> params) {
-        List<TagDTO> tags = tagService.getTags(params);
+        TagsDTO tags = tagService.getTags(params);
         long tagsCount = tagService.getCount();
         return hateoasBuilder.addLinksForListOfTagDTOs(tags, params, tagsCount);
     }
@@ -52,6 +54,7 @@ public class TagController {
      * @return TagDTO with the requested id
      */
     @GetMapping("/{id}")
+    @PreAuthorize("permitAll()")
     public TagDTO getTagById(@PathVariable("id") int id) {
         TagDTO tagDTO = tagService.getTagById(id);
         return hateoasBuilder.addLinksForTagDTO(tagDTO);
@@ -65,6 +68,7 @@ public class TagController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public TagDTO createTag(@RequestBody TagDTO tag) {
         return tagService.addTag(tag);
     }
@@ -76,6 +80,7 @@ public class TagController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public ResponseEntity<Void> deleteTag(@PathVariable("id") int id) {
         tagService.removeTag(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -89,6 +94,7 @@ public class TagController {
      * the highest cost of all orders
      */
     @GetMapping("/most-used")
+    @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('USER')")
     public TagDTO getMostUsedTagOfUserWithHighestCostOfOrders() {
         return tagService.getMostUsedTagOfUserWithHighestCostOfOrders();
     }

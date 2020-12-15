@@ -5,6 +5,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -87,6 +88,14 @@ public class CustomExceptionHandler {
                 "50105", new Object[]{}, locale);
         ExceptionResponse response = new ExceptionResponse("50105", errorMessage);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ExceptionResponse> handleAuthenticationException(AuthenticationException e, Locale locale) {
+        String errorMessage = messageSource.getMessage(
+                "50106", new Object[]{}, locale);
+        ExceptionResponse response = new ExceptionResponse("50106", errorMessage);
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     private String buildErrorMessage(String localizedMessage, String parameter) {

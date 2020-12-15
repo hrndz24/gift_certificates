@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.GiftCertificateDTO;
+import com.epam.esm.dto.GiftCertificatesDTO;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.util.HateoasBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,9 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +42,7 @@ public class GiftCertificateController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public GiftCertificateDTO createCertificate(@RequestBody GiftCertificateDTO certificate) {
         return certificateService.addCertificate(certificate);
     }
@@ -55,6 +57,7 @@ public class GiftCertificateController {
      */
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public ResponseEntity<Void> updateCertificate(@PathVariable("id") int id, @RequestBody GiftCertificateDTO certificate) {
         certificateService.updateCertificate(id, certificate);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -62,6 +65,7 @@ public class GiftCertificateController {
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public void updateCertificateFields(@PathVariable("id") int id, @RequestBody Map<String, Object> fields) {
         certificateService.updateCertificateField(id, fields);
     }
@@ -73,6 +77,7 @@ public class GiftCertificateController {
      */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public ResponseEntity<Void> deleteCertificate(@PathVariable("id") int id) {
         certificateService.removeCertificate(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -89,8 +94,9 @@ public class GiftCertificateController {
      * @return list of certificates that match requirements of the parameters
      */
     @GetMapping
+    @PreAuthorize("permitAll()")
     public RepresentationModel<?> getCertificates(@RequestParam Map<String, String> params) {
-        List<GiftCertificateDTO> certificates = certificateService.getCertificates(params);
+        GiftCertificatesDTO certificates = certificateService.getCertificates(params);
         long certificatesCount = certificateService.getCount(params);
         return hateoasBuilder.addLinksForListOfCertificateDTOs(certificates, params, certificatesCount);
     }
@@ -102,6 +108,7 @@ public class GiftCertificateController {
      * @return GiftCertificateDTO with the requested id
      */
     @GetMapping("/{id}")
+    @PreAuthorize("permitAll()")
     public GiftCertificateDTO getCertificateById(@PathVariable("id") int id) {
         GiftCertificateDTO certificate = certificateService.getCertificateById(id);
         return hateoasBuilder.addLinksForCertificateDTO(certificate);

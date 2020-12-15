@@ -1,5 +1,6 @@
 package com.epam.esm.dto;
 
+import com.epam.esm.model.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.RepresentationModel;
@@ -11,6 +12,7 @@ public class UserDTO extends RepresentationModel<UserDTO> {
     private int id;
     private String email;
     private String password;
+    private UserRole userRole;
 
     public UserDTO() {
     }
@@ -41,6 +43,14 @@ public class UserDTO extends RepresentationModel<UserDTO> {
         this.password = password;
     }
 
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -62,6 +72,7 @@ public class UserDTO extends RepresentationModel<UserDTO> {
                 "id=" + id +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", userRole=" + userRole +
                 '}';
     }
 }

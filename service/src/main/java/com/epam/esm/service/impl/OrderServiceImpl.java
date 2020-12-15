@@ -5,6 +5,7 @@ import com.epam.esm.dao.OrderDAO;
 import com.epam.esm.dao.UserDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
 import com.epam.esm.dto.OrderDTO;
+import com.epam.esm.dto.OrdersDTO;
 import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.OrderMapper;
@@ -104,10 +105,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getOrders(Map<String, String> params) {
+    public OrdersDTO getOrders(Map<String, String> params) {
         validator.validateOrderParams(params);
         checkOrderParamsValuesExist(params);
-        return getOrdersFromDatabase(params);
+        return new OrdersDTO(getOrdersFromDatabase(params));
     }
 
     @Override

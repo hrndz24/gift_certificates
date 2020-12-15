@@ -24,11 +24,19 @@ CREATE TABLE certificate_tag
     FOREIGN KEY (certificate_id) REFERENCES gift_certificate (id) ON DELETE CASCADE
 );
 
+CREATE TABLE user_role
+(
+    id        INT PRIMARY KEY AUTO_INCREMENT,
+    role_name VARCHAR(60)
+);
+
 CREATE TABLE user
 (
     id       INT PRIMARY KEY AUTO_INCREMENT,
     email    VARCHAR(40) UNIQUE,
-    password VARCHAR(128)
+    password VARCHAR(128),
+    role_id  INT,
+    FOREIGN KEY (role_id) REFERENCES user_role (id)
 );
 
 CREATE TABLE orders

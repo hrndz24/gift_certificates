@@ -26,7 +26,8 @@ public enum ControllerConstant {
     PAGES_NUMBER(Constant.PAGES_NUMBER),
     CURRENT_PAGE(Constant.CURRENT_PAGE),
     ELEMENTS_PER_PAGE(Constant.ELEMENTS_PER_PAGE),
-    ELEMENTS_NUMBER(Constant.ELEMENTS_NUMBER);
+    ELEMENTS_NUMBER(Constant.ELEMENTS_NUMBER),
+    ALL_ENDPOINTS(Constant.ALL_ENDPOINTS);
 
     private String value;
 
@@ -65,5 +66,7 @@ public enum ControllerConstant {
 
         private static final String SEARCH_BY_NAME = "search by name of certificate";
         private static final String SEARCH_BY_DESCRIPTION = "search by description of certificate";
+
+        private static final String ALL_ENDPOINTS = "/**";
     }
 }
