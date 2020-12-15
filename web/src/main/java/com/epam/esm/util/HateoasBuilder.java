@@ -7,7 +7,6 @@ import com.epam.esm.controller.UserController;
 import com.epam.esm.dto.*;
 import com.epam.esm.utils.ServiceConstant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.LinkRelation;
 import org.springframework.hateoas.RepresentationModel;
@@ -73,15 +72,14 @@ public class HateoasBuilder {
         return userDTO;
     }
 
-    public RepresentationModel<?> addLinksForListOfUserDTOs(List<UserDTO> users, Map<String, String> params, long usersCount) {
-        users.forEach(user -> user.add(linkTo(methodOn(UserController.class)
+    public RepresentationModel<?> addLinksForListOfUserDTOs(UsersDTO users, Map<String, String> params, long usersCount) {
+        users.getUsers().forEach(user -> user.add(linkTo(methodOn(UserController.class)
                 .getUserById(user.getId()))
                 .withSelfRel()));
         Map<String, Long> page = paginationPreparer.preparePageInfo(params, usersCount);
         List<Link> links = paginationPreparer.preparePaginationLinks(
                 methodOn(UserController.class).getUsers(params), params, usersCount);
-        CollectionModel<UserDTO> collectionModel = CollectionModel.of(users);
-        return buildModel(collectionModel, links, page);
+        return buildModel(users, links, page);
     }
 
     public TagDTO addLinksForTagDTO(TagDTO tagDTO) {
@@ -96,19 +94,18 @@ public class HateoasBuilder {
         return tagDTO;
     }
 
-    public RepresentationModel<?> addLinksForListOfTagDTOs(List<TagDTO> tags, Map<String, String> params, long tagsCount) {
-        tags.forEach(tagDTO -> tagDTO.add(linkTo(methodOn(TagController.class)
+    public RepresentationModel<?> addLinksForListOfTagDTOs(TagsDTO tags, Map<String, String> params, long tagsCount) {
+        tags.getTags().forEach(tagDTO -> tagDTO.add(linkTo(methodOn(TagController.class)
                 .getTagById(tagDTO.getId()))
                 .withSelfRel()));
         Map<String, Long> page = paginationPreparer.preparePageInfo(params, tagsCount);
         List<Link> links = paginationPreparer.preparePaginationLinks(
                 methodOn(TagController.class).getAllTags(params), params, tagsCount);
-        CollectionModel<TagDTO> collectionModel = CollectionModel.of(tags);
-        return buildModel(collectionModel, links, page);
+        return buildModel(tags, links, page);
     }
 
-    public RepresentationModel<?> addLinksForListOfCertificateDTOs(List<GiftCertificateDTO> certificates, Map<String, String> params, long certificatesCount) {
-        certificates.forEach(certificate -> certificate.add(linkTo(methodOn(GiftCertificateController.class)
+    public RepresentationModel<?> addLinksForListOfCertificateDTOs(GiftCertificatesDTO certificates, Map<String, String> params, long certificatesCount) {
+        certificates.getCertificates().forEach(certificate -> certificate.add(linkTo(methodOn(GiftCertificateController.class)
                 .getCertificateById(certificate.getId()))
                 .withSelfRel()));
         Map<String, Long> page = paginationPreparer.preparePageInfo(params, certificatesCount);
@@ -127,8 +124,7 @@ public class HateoasBuilder {
                 ControllerConstant.CERTIFICATE_NAME_EXAMPLE.getValue(), ControllerConstant.SEARCH_BY_NAME.getValue()));
         links.add(createLinkToGetCertificates(ServiceConstant.CERTIFICATE_DESCRIPTION_PARAM.getValue(),
                 ControllerConstant.CERTIFICATE_DESCRIPTION_EXAMPLE.getValue(), ControllerConstant.SEARCH_BY_DESCRIPTION.getValue()));
-        CollectionModel<GiftCertificateDTO> collectionModel = CollectionModel.of(certificates);
-        return buildModel(collectionModel, links, page);
+        return buildModel(certificates, links, page);
     }
 
     private Link createLinkToGetCertificates(String param, String value, String rel) {

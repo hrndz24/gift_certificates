@@ -96,7 +96,7 @@ class TagServiceImplTest {
         tagDTOs.add(tagDTO2);
         when(tagDAO.getTags(10, 0)).thenReturn(tags);
         doNothing().when(validator).validatePageNumberIsLessThanElementsCount(anyMap(), anyLong());
-        Assertions.assertEquals(tagDTOs, tagService.getTags(new HashMap<>()));
+        Assertions.assertEquals(tagDTOs, tagService.getTags(new HashMap<>()).getTags());
     }
 
     @Test

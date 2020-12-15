@@ -2,6 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.TokenDTO;
 import com.epam.esm.dto.UserDTO;
+import com.epam.esm.dto.UsersDTO;
 import com.epam.esm.service.AuthorizationService;
 import com.epam.esm.service.UserService;
 import com.epam.esm.util.HateoasBuilder;
@@ -11,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,7 +54,7 @@ public class UserController {
     @GetMapping
     @PreAuthorize("hasAuthority('ADMINISTRATOR')")
     public RepresentationModel<?> getUsers(@RequestParam Map<String, String> params) {
-        List<UserDTO> users = userService.getUsers(params);
+        UsersDTO users = userService.getUsers(params);
         long usersCount = userService.getCount();
         return hateoasBuilder.addLinksForListOfUserDTOs(users, params, usersCount);
     }

@@ -9,6 +9,9 @@ public class OrdersDTO extends RepresentationModel<OrdersDTO> {
 
     private List<OrderDTO> orders;
 
+    public OrdersDTO() {
+    }
+
     public OrdersDTO(List<OrderDTO> orders) {
         this.orders = orders;
     }

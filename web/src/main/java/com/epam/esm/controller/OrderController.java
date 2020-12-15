@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,7 +54,7 @@ public class OrderController {
     @GetMapping
     @PreAuthorize("hasAuthority('ADMINISTRATOR') or (hasAuthority('USER') and params.get('userId').equals(authentication.principal.id))")
     public RepresentationModel<?> getAllOrders(@RequestParam Map<String, String> params) {
-        OrdersDTO orders = new OrdersDTO(orderService.getOrders(params));
+        OrdersDTO orders = orderService.getOrders(params);
         long ordersCount = orderService.getCount(params);
         return hateoasBuilder.addLinksForListOfOrderDTOs(orders, params, ordersCount);
     }

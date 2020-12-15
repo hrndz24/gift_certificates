@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.dto.TagsDTO;
 import com.epam.esm.service.TagService;
 import com.epam.esm.util.HateoasBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,7 +41,7 @@ public class TagController {
     @GetMapping
     @PreAuthorize("permitAll()")
     public RepresentationModel<?> getAllTags(@RequestParam Map<String, String> params) {
-        List<TagDTO> tags = tagService.getTags(params);
+        TagsDTO tags = tagService.getTags(params);
         long tagsCount = tagService.getCount();
         return hateoasBuilder.addLinksForListOfTagDTOs(tags, params, tagsCount);
     }

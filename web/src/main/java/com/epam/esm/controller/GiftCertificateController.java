@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.GiftCertificateDTO;
+import com.epam.esm.dto.GiftCertificatesDTO;
 import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.util.HateoasBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -96,7 +96,7 @@ public class GiftCertificateController {
     @GetMapping
     @PreAuthorize("permitAll()")
     public RepresentationModel<?> getCertificates(@RequestParam Map<String, String> params) {
-        List<GiftCertificateDTO> certificates = certificateService.getCertificates(params);
+        GiftCertificatesDTO certificates = certificateService.getCertificates(params);
         long certificatesCount = certificateService.getCount(params);
         return hateoasBuilder.addLinksForListOfCertificateDTOs(certificates, params, certificatesCount);
     }

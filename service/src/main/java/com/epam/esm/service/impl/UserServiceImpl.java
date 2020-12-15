@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.UserDAO;
 import com.epam.esm.dto.UserDTO;
+import com.epam.esm.dto.UsersDTO;
 import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.exception.ValidatorException;
 import com.epam.esm.mapper.UserMapper;
@@ -56,7 +57,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTO> getUsers(Map<String, String> params) {
+    public UsersDTO getUsers(Map<String, String> params) {
         List<UserDTO> userDTOS = new ArrayList<>();
         validator.validateUserParams(params);
         int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
@@ -64,7 +65,7 @@ public class UserServiceImpl implements UserService {
         long elementsCount = userDAO.getCount();
         validator.validatePageNumberIsLessThanElementsCount(params, elementsCount);
         userDAO.getUsers(limit, offset).forEach(user -> userDTOS.add(userMapper.toDTO(user)));
-        return userDTOS;
+        return new UsersDTO(userDTOS);
     }
 
     @Override

@@ -48,7 +48,7 @@ class UserServiceImplTest {
         users.add(new User());
         when(userDAO.getUsers(10, 0)).thenReturn(users);
         doNothing().when(validator).validatePageNumberIsLessThanElementsCount(anyMap(), anyLong());
-        assertEquals(3, userService.getUsers(new HashMap<>()).size());
+        assertEquals(3, userService.getUsers(new HashMap<>()).getUsers().size());
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.epam.esm.service.impl;
 import com.epam.esm.dao.GiftCertificateDAO;
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.GiftCertificateDTO;
+import com.epam.esm.dto.GiftCertificatesDTO;
 import com.epam.esm.dto.TagDTO;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ServiceExceptionCode;
@@ -151,7 +152,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDTO> getCertificates(Map<String, String> params) {
+    public GiftCertificatesDTO getCertificates(Map<String, String> params) {
         validator.validateCertificateParams(params);
         List<Specification> specifications = giftCertificateQueryGenerator.generateQueryCriteria(params);
         long elementsCount = certificateDAO.getCount(specifications);
@@ -161,7 +162,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         int offset = (Integer.parseInt(params.get(ServiceConstant.PAGE_PARAM.getValue())) - 1) * limit;
         certificateDAO.getCertificates(specifications, limit, offset).forEach(giftCertificate ->
                 certificates.add(certificateMapper.toDTO(giftCertificate)));
-        return certificates;
+        return new GiftCertificatesDTO(certificates);
     }
 
     @Override

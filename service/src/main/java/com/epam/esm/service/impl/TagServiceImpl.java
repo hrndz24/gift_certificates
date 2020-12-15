@@ -2,6 +2,7 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.TagDAO;
 import com.epam.esm.dto.TagDTO;
+import com.epam.esm.dto.TagsDTO;
 import com.epam.esm.exception.EntityNotFoundException;
 import com.epam.esm.exception.ServiceExceptionCode;
 import com.epam.esm.exception.ValidatorException;
@@ -81,7 +82,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDTO> getTags(Map<String, String> params) {
+    public TagsDTO getTags(Map<String, String> params) {
         List<TagDTO> tags = new ArrayList<>();
         validator.validateTagParams(params);
         int limit = Integer.parseInt(params.get(ServiceConstant.SIZE_PARAM.getValue()));
@@ -89,7 +90,7 @@ public class TagServiceImpl implements TagService {
         long elementsCount = tagDAO.getCount();
         validator.validatePageNumberIsLessThanElementsCount(params, elementsCount);
         tagDAO.getTags(limit, offset).forEach(tag -> tags.add(mapper.toDTO(tag)));
-        return tags;
+        return new TagsDTO(tags);
     }
 
     @Override

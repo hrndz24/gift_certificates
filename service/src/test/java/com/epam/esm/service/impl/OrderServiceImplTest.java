@@ -115,7 +115,7 @@ class OrderServiceImplTest {
         when(orderDAO.getOrders(queryGenerator.generateQuery(
                 new HashMap<>()), 10, 0)).thenReturn(orders);
         doNothing().when(validator).validatePageNumberIsLessThanElementsCount(anyMap(), anyLong());
-        assertEquals(3, orderService.getOrders(new HashMap<>()).size());
+        assertEquals(3, orderService.getOrders(new HashMap<>()).getOrders().size());
     }
 
     @Test
