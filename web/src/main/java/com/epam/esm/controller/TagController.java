@@ -39,7 +39,7 @@ public class TagController {
      * @return list of TagDTOs corresponding to tags in the database
      */
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('USER')")
+    @PreAuthorize("permitAll()")
     public RepresentationModel<?> getAllTags(@RequestParam Map<String, String> params) {
         List<TagDTO> tags = tagService.getTags(params);
         long tagsCount = tagService.getCount();
@@ -54,7 +54,7 @@ public class TagController {
      * @return TagDTO with the requested id
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMINISTRATOR') or hasAuthority('USER')")
+    @PreAuthorize("permitAll()")
     public TagDTO getTagById(@PathVariable("id") int id) {
         TagDTO tagDTO = tagService.getTagById(id);
         return hateoasBuilder.addLinksForTagDTO(tagDTO);

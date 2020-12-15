@@ -37,14 +37,14 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, userDTO.getPassword()));
         UserDTO user = userService.getUserByEmail(username);
         String token = jwtTokenProvider.createToken(user);
-        return new TokenDTO(username, token);
+        return new TokenDTO(username, token, jwtTokenProvider.getValidityInMilliseconds());
     }
 
     @Override
     public TokenDTO signUp(UserDTO userDTO) {
         UserDTO addedUser = userService.addUser(userDTO);
         String token = jwtTokenProvider.createToken(addedUser);
-        return new TokenDTO(addedUser.getEmail(), token);
+        return new TokenDTO(addedUser.getEmail(), token, jwtTokenProvider.getValidityInMilliseconds());
     }
 
     @Override

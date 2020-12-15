@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.OrderDTO;
+import com.epam.esm.dto.OrdersDTO;
 import com.epam.esm.service.OrderService;
 import com.epam.esm.util.HateoasBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class OrderController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('ADMINISTRATOR')")
+    @PreAuthorize("hasAuthority('USER')")
     public OrderDTO createOrder(@RequestBody Map<String, Object> fields) {
         return orderService.addOrder(fields);
     }
@@ -54,7 +55,7 @@ public class OrderController {
     @GetMapping
     @PreAuthorize("hasAuthority('ADMINISTRATOR') or (hasAuthority('USER') and params.get('userId').equals(authentication.principal.id))")
     public RepresentationModel<?> getAllOrders(@RequestParam Map<String, String> params) {
-        List<OrderDTO> orders = orderService.getOrders(params);
+        OrdersDTO orders = new OrdersDTO(orderService.getOrders(params));
         long ordersCount = orderService.getCount(params);
         return hateoasBuilder.addLinksForListOfOrderDTOs(orders, params, ordersCount);
     }

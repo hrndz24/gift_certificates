@@ -6,13 +6,15 @@ public class TokenDTO {
 
     private String username;
     private String token;
+    private long validityInMilliseconds;
 
     public TokenDTO() {
     }
 
-    public TokenDTO(String username, String token) {
+    public TokenDTO(String username, String token, long validityInMilliseconds) {
         this.username = username;
         this.token = token;
+        this.validityInMilliseconds = validityInMilliseconds;
     }
 
     public String getUsername() {
@@ -31,18 +33,27 @@ public class TokenDTO {
         this.token = token;
     }
 
+    public long getValidityInMilliseconds() {
+        return validityInMilliseconds;
+    }
+
+    public void setValidityInMilliseconds(long validityInMilliseconds) {
+        this.validityInMilliseconds = validityInMilliseconds;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TokenDTO tokenDTO = (TokenDTO) o;
         return username.equals(tokenDTO.username) &&
-                token.equals(tokenDTO.token);
+                token.equals(tokenDTO.token) &&
+                validityInMilliseconds == tokenDTO.validityInMilliseconds;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, token);
+        return Objects.hash(username, token, validityInMilliseconds);
     }
 
     @Override
@@ -50,6 +61,7 @@ public class TokenDTO {
         return "TokenDTO{" +
                 "username='" + username + '\'' +
                 ", token='" + token + '\'' +
+                ", validityInMilliseconds=" + validityInMilliseconds +
                 '}';
     }
 }

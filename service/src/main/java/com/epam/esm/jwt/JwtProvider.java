@@ -81,4 +81,8 @@ public class JwtProvider {
             return false;
         }
     }
+
+    public long getValidityInMilliseconds() {
+        return validityInMilliseconds;
+    }
 }

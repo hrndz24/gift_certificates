@@ -4,10 +4,7 @@ import com.epam.esm.controller.GiftCertificateController;
 import com.epam.esm.controller.OrderController;
 import com.epam.esm.controller.TagController;
 import com.epam.esm.controller.UserController;
-import com.epam.esm.dto.GiftCertificateDTO;
-import com.epam.esm.dto.OrderDTO;
-import com.epam.esm.dto.TagDTO;
-import com.epam.esm.dto.UserDTO;
+import com.epam.esm.dto.*;
 import com.epam.esm.utils.ServiceConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -46,15 +43,14 @@ public class HateoasBuilder {
         return orderDTO;
     }
 
-    public RepresentationModel<?> addLinksForListOfOrderDTOs(List<OrderDTO> orders, Map<String, String> params, long ordersCount) {
-        orders.forEach(order -> order.add(linkTo(methodOn(OrderController.class)
+    public RepresentationModel<?> addLinksForListOfOrderDTOs(OrdersDTO orders, Map<String, String> params, long ordersCount) {
+        orders.getOrders().forEach(order -> order.add(linkTo(methodOn(OrderController.class)
                 .getOrderById(order.getId()))
                 .withSelfRel()));
         Map<String, Long> page = paginationPreparer.preparePageInfo(params, ordersCount);
         List<Link> links = paginationPreparer.preparePaginationLinks(
                 methodOn(OrderController.class).getAllOrders(params), params, ordersCount);
-        CollectionModel<OrderDTO> collectionModel = CollectionModel.of(orders);
-        return buildModel(collectionModel, links, page);
+        return buildModel(orders, links, page);
     }
 
     private RepresentationModel<?> buildModel(Object entity, Iterable<Link> links, Object embeddedEntity) {

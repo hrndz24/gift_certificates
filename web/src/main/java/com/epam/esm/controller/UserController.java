@@ -33,13 +33,13 @@ public class UserController {
         this.authorizationService = authorizationService;
     }
 
-    @PostMapping("/sign-up")
+    @PostMapping("/sign_up")
     @PreAuthorize("permitAll()")
     public TokenDTO signUp(@RequestBody UserDTO userDTO) {
         return authorizationService.signUp(userDTO);
     }
 
-    @PostMapping("/log-in")
+    @PostMapping("/log_in")
     @PreAuthorize("permitAll()")
     public TokenDTO login(@RequestBody UserDTO userDTO) {
         return authorizationService.logIn(userDTO);
